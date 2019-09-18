@@ -38,6 +38,6 @@ resource "aws_nat_gateway" "this" {
   subnet_id     = aws_subnet.public[0].id
   depends_on    = [aws_internet_gateway.this, aws_subnet.public]
   tags = {
-    Name    = "vpc-natgw-${var.service}-${var.env}"
+    Name = "vpc-natgw-${var.service}-${var.env}"
   }
 }

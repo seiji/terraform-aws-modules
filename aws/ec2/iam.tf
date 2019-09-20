@@ -1,30 +1,32 @@
-resource "aws_iam_role" "ssm" {
-  name = "AmazonEC2RoleforSSM"
-
-  assume_role_policy = <<EOF
-{
-  "Version":"2012-10-17",
-  "Statement":[
-    {
-      "Effect":"Allow",
-      "Principal": {
-        "Service": [
-          "ec2.amazonaws.com"
-        ]
-      },
-      "Action":"sts:AssumeRole"
+data "aws_iam_policy_document" "ec2_cloudwatch" {
+  statement {
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
     }
-  ]
+    actions = ["sts:AssumeRole"]
+  }
 }
-EOF
+
+resource "aws_iam_role" "ec2" {
+  name = "${module.label.id}"
+  assume_role_policy = "${data.aws_iam_policy_document.ec2_cloudwatch.json}"
+  tags = {
+    Name = "${module.label.id}"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ssm" {
-  role       = "${aws_iam_role.ssm.id}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+  role       = "${aws_iam_role.ec2.id}"
 }
 
-resource "aws_iam_instance_profile" "ssm" {
-  name = "AmazonEC2RoleforSSM"
-  role = "${aws_iam_role.ssm.id}"
+resource "aws_iam_role_policy_attachment" "cw_server" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role       = "${aws_iam_role.ec2.id}"
+}
+
+resource "aws_iam_instance_profile" "ec2" {
+  name = "ec2-role"
+  role = "${aws_iam_role.ec2.id}"
 }

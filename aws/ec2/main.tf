@@ -3,7 +3,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 2.22"
+  version = "~> 2.28"
   region = var.region
 }
 
@@ -21,6 +21,20 @@ data "aws_ami" "recent_amazon_linux2" {
   }
 }
 
+module "label" {
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  namespace  = "namespace"
+  stage      = "prod"
+  name       = "name"
+  attributes = ["public"]
+  delimiter  = "-"
+
+  tags = {
+    "BusinessUnit" = "XYZ",
+    "Snapshot"     = "true"
+  }
+}
+
 resource "aws_instance" "this" {
   count         = length(var.subnet_id_list)
   ami           = data.aws_ami.recent_amazon_linux2.image_id
@@ -30,19 +44,14 @@ resource "aws_instance" "this" {
   associate_public_ip_address = var.associate_public_ip_address
   key_name      = var.key_name
 
-  iam_instance_profile = "${aws_iam_instance_profile.ssm.id}"
+  iam_instance_profile = "${aws_iam_instance_profile.ec2.id}"
+  tags = module.label.tags
 
-  tags = {
-    Name    = "${var.service}-${var.env}-${var.name}${count.index}"
-    service = var.service
-    env     = var.env
-  }
   user_data = <<EOF
-  #!/bin/bash
-  cd /tmp
-  sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-  sudo systemctl start amazon-ssm-agent
-  ${var.user_data}
+#cloud-config
+repo_update: true
+repo_upgrade: none
+runcmd:
+ - yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 EOF
 }
-

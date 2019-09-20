@@ -24,3 +24,8 @@ variable "key_name" {}
 variable "user_data" {
   default = ""
 }
+
+variable "metrics_collection_interval" {
+  type = number
+  default = 60
+}

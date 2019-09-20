@@ -26,7 +26,7 @@ module "label" {
   namespace  = "namespace"
   stage      = "prod"
   name       = "name"
-  attributes = ["public"]
+  attributes = ["private"]
   delimiter  = "-"
 
   tags = {

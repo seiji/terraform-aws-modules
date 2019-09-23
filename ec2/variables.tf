@@ -10,7 +10,7 @@ variable "name" {}
 
 variable "instance_type" {}
 variable "associate_public_ip_address" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "subnet_id_list" {
@@ -25,7 +25,11 @@ variable "user_data" {
   default = ""
 }
 
+variable "use_cloudwatch_agent" {
+  default = false
+}
+
 variable "metrics_collection_interval" {
-  type = number
+  type    = number
   default = 60
 }

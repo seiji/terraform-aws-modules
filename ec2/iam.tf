@@ -9,7 +9,7 @@ data "aws_iam_policy_document" "ec2_cloudwatch" {
 }
 
 resource "aws_iam_role" "ec2" {
-  name = "${module.label.id}"
+  name               = "${module.label.id}"
   assume_role_policy = "${data.aws_iam_policy_document.ec2_cloudwatch.json}"
   tags = {
     Name = "${module.label.id}"

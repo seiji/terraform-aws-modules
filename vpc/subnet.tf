@@ -31,6 +31,7 @@ resource "aws_subnet" "public" {
     Name    = "vpc-subnet-public-${var.azs[count.index]}-${var.service}-${var.env}"
     service = var.service
     env     = var.env
+    Tier = "Public"
   }
 }
 
@@ -48,6 +49,7 @@ resource "aws_subnet" "private" {
     Name    = "vpc-subnet-private-${var.azs[count.index]}-${var.service}-${var.env}"
     service = var.service
     env     = var.env
+    Tier = "Private"
   }
 }
 

@@ -16,3 +16,13 @@ variable "private_subnets" {
 variable "public_subnets" {
   type = list
 }
+
+variable "use_natgw" {
+  type = bool
+  default = false
+}
+
+variable "nat_subnet_id_list" {
+  type = list
+}
+

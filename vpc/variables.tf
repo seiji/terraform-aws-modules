@@ -18,11 +18,7 @@ variable "public_subnets" {
 }
 
 variable "use_natgw" {
-  type = bool
+  type    = bool
   default = false
-}
-
-variable "nat_subnet_id_list" {
-  type = list
 }
 

@@ -28,3 +28,22 @@ data "template_file" "cloudwatch_agent_config" {
 #
 #   user_data = var.use_cloudwatch_agent ? data.template_file.cloud_init.rendered : ""
 # }
+#
+
+data "template_cloudinit_config" "merged" {
+  gzip          = true
+  base64_encode = true
+
+  part {
+    filename     = "userdata_part_cloudwatch.cfg"
+    content      = data.template_file.cloud_init.rendered
+    content_type = "text/cloud-config"
+  }
+
+  part {
+    filename     = "userdata_part_caller.cfg"
+    content      = "${var.userdata_part_content}"
+    content_type = "${var.userdata_part_content_type}"
+    merge_type   = "${var.userdata_part_merge_type}"
+  }
+}

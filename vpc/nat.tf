@@ -36,6 +36,7 @@ resource "aws_instance" "nati" {
   instance_type          = local.instance_type
   subnet_id              = aws_subnet.public[count.index].id
   vpc_security_group_ids = [aws_vpc.this.default_security_group_id]
+  source_dest_check      = false
 
   tags = module.label.tags
 }

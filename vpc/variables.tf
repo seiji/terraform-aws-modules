@@ -37,8 +37,18 @@ variable "use_endpoint_ec2" {
   type    = bool
   default = false
 }
+
 variable "use_endpoint_ec2_messages" {
   type    = bool
   default = false
 }
 
+variable "use_endpoint_logs" {
+  type    = bool
+  default = false
+}
+
+variable "use_endpoint_monitoring" {
+  type    = bool
+  default = false
+}

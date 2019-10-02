@@ -1,11 +1,7 @@
-# output "public_dns" {
-#   value = aws_instance.this.*.public_dns
-# }
-#
-# output "public_ip" {
-#   value = aws_instance.this.*.public_ip
-# }
-#
-# output "private_ip" {
-#   value = aws_instance.this.*.private_ip
-# }
+output "alb_dns_name" {
+  value = aws_alb.this.dns_name
+}
+
+output "alb_zone_id" {
+  value = aws_alb.this.zone_id
+}

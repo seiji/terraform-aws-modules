@@ -23,7 +23,12 @@ variable "subnet_private_id_list" {
 variable "subnet_public_id_list" {
   type = list
 }
-variable "security_id_list" {
+
+variable "alb_security_id_list" {
+  type = list
+}
+
+variable "ec2_security_id_list" {
   type = list
 }
 
@@ -43,16 +48,15 @@ variable "metrics_collection_interval" {
 }
 
 variable "userdata_part_content" {
-  type    = string
   default = ""
 }
 
 variable "userdata_part_content_type" {
-  type    = string
   default = "text/cloud-config"
 }
 
 variable "userdata_part_merge_type" {
-  type    = string
   default = "list(append)+dict(recurse_array)+str()"
 }
+
+variable "acm_arn" {}

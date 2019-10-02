@@ -29,7 +29,7 @@ resource "aws_launch_template" "this" {
     associate_public_ip_address = false
   }
 
-  vpc_security_group_ids = var.security_id_list
+  vpc_security_group_ids = var.ec2_security_id_list
 
   tag_specifications {
     resource_type = "instance"
@@ -48,7 +48,7 @@ resource "aws_launch_configuration" "this" {
   instance_type               = var.instance_type
   iam_instance_profile        = aws_iam_instance_profile.ec2.id
   key_name                    = var.key_name
-  security_groups             = var.security_id_list
+  security_groups             = var.ec2_security_id_list
   enable_monitoring           = true
   ebs_optimized               = false
 
@@ -71,7 +71,12 @@ resource "aws_autoscaling_group" "this" {
   vpc_zone_identifier       = var.subnet_private_id_list
 
   depends_on = [
+    "aws_alb.this",
     "aws_launch_configuration.this",
+  ]
+
+  target_group_arns = [
+    aws_alb_target_group.this.arn,
   ]
 
   lifecycle {

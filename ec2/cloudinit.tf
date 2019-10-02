@@ -1,5 +1,5 @@
 data "template_file" "cloud_init" {
-  template = file("${path.module}/templates/cloud_init.yml")
+  template = file(var.use_cloudwatch_agent ? "${path.module}/templates/cloud_init_cwa.yml" : "${path.module}/templates/cloud_init.yml")
 
   vars = {
     cwa_content = base64encode(data.template_file.cloudwatch_agent_config.rendered)

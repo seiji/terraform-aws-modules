@@ -32,6 +32,19 @@ module "vpc" {
   use_natgw       = false
 }
 
+module "sg_ssh" {
+  source      = "../../vpc-sg"
+  region      = local.region
+  service     = local.service
+  env         = local.env
+  name        = "ssh"
+  vpc_id      = module.vpc.vpc_id
+  from_port   = 22
+  to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
 module "ec2_coreos" {
   source                      = "../../ec2-coreos"
   region                      = local.region
@@ -40,23 +53,12 @@ module "ec2_coreos" {
   name                        = "private"
   instance_type               = "t3.micro"
   vpc_id                      = module.vpc.vpc_id
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   subnet_private_id_list      = module.vpc.private_subnet_id_list
   subnet_public_id_list       = module.vpc.public_subnet_id_list
   alb_security_id_list        = []
-  ec2_security_id_list        = [module.vpc.default_security_group_id]
+  ec2_security_id_list        = [module.vpc.default_security_group_id, module.sg_ssh.id]
   key_name                    = "id_rsa"
   use_cloudwatch_agent        = false
-#   userdata_part_content = <<EOF
-# #cloud-config
-# repo_update: true
-# repo_upgrade: none
-# timezone: Asia/Tokyo
-# locale: ja_JP.UTF-8
-# runcmd:
-#   - amazon-linux-extras install -y nginx1
-#   - systemctl enable nginx
-#   - systemctl start nginx
-# EOF
 }
 

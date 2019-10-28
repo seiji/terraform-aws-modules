@@ -45,15 +45,3 @@ variable "metrics_collection_interval" {
   type    = number
   default = 60
 }
-
-variable "userdata_part_content" {
-  default = ""
-}
-
-variable "userdata_part_content_type" {
-  default = "text/cloud-config"
-}
-
-variable "userdata_part_merge_type" {
-  default = "list(append)+dict(recurse_array)+str()"
-}

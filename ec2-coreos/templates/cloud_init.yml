@@ -1,24 +1,52 @@
 #cloud-config
-repo_update: true
-repo_upgrade: none
-runcmd:
-  - |
-    . /etc/os-release
-    case $NAME in
-      "Amazon Linux") echo "Installing for Amazon Linux."
-        yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-        ;;
-      Centos) echo "Installing for Centos."
-        yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-        ;;
-      Debian) echo "Installing for Debian."
-        curl -O https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
-        dpkg -i amazon-ssm-agent.deb
-        ;;
-      Ubuntu) echo "Installing for Ubuntu."
-        curl -O https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
-        dpkg -i amazon-ssm-agent.deb
-        ;;
-      *)
-        echo "Not supported"
-    esac
+
+write_files:
+  - path: /etc/systemd/timesyncd.conf
+    content: |
+      [Time]
+      NTP=169.254.169.123
+coreos:
+ update:
+  reboot-strategy: off
+ units:
+   - name: update-engine.service
+     command: stop
+   - name: locksmithd.service
+     command: stop
+   - name: settimezone.service
+     command: start
+     content: |
+       [Unit]
+       Description=Set Timezone
+       [Service]
+       ExecStart=/usr/bin/timedatectl set-timezone Asia/Tokyo
+       RemainAfterExit=yes
+       Type=oneshot
+   - name: systemd-timesyncd.service
+     command: restart
+   - name: amazon-ssm-agent.service
+     enable: true
+     content: |
+       [Unit]
+       Description=Amazon SSM Agent
+       After=docker.service
+       Requires=docker.service
+
+       [Service]
+       Restart=on-failure
+       RestartSec=30
+       RestartPreventExitStatus=5
+       SyslogIdentifier=ssm-agent
+       ExecStartPre=-/usr/bin/mkdir -p /etc/amazon /home/core/bin
+       ExecStartPre=-/usr/bin/chown core:core /home/core/bin
+       ExecStartPre=-/usr/bin/chmod 750 /home/core/bin
+       ExecStartPre=-/bin/sh -c '/usr/bin/test ! -e /home/core/bin/amazon-ssm-agent && /usr/bin/docker run -d --name="ssm-installer" --entrypoint=/usr/bin/true quay.io/johnt337/amazon-ssm-agent'
+       ExecStartPre=-/bin/sh -c '/usr/bin/test ! -e /home/core/bin/amazon-ssm-agent && /usr/bin/docker cp ssm-installer:/usr/local/amazon/bin/amazon-ssm-agent /home/core/bin/amazon-ssm-agent'
+       ExecStartPre=-/bin/sh -c '/usr/bin/test ! -d /etc/amazon/ssm && /usr/bin/docker cp ssm-installer:/etc/amazon/ssm /etc/amazon/ssm'
+       ExecStartPre=-/usr/bin/chown core:core /home/core/bin/amazon-ssm-agent
+       ExecStartPre=-/usr/bin/chmod 550 /home/core/bin/amazon-ssm-agent
+       ExecStart=/home/core/bin/amazon-ssm-agent
+       ExecStop=/usr/bin/docker stop amazon-ssm-agent
+
+       [Install]
+       WantedBy=multi-user.target

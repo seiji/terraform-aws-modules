@@ -14,36 +14,21 @@ data "template_file" "cloudwatch_agent_config" {
   }
 }
 
-# resource "aws_instance" "this" {
-#   count         = length(var.subnet_id_list)
-#   ami           = data.aws_ami.recent_amazon_linux2.image_id
-#   instance_type = var.instance_type
-#   subnet_id     = var.subnet_id_list[count.index]
-#   vpc_security_group_ids = var.security_id_list
-#   associate_public_ip_address = var.associate_public_ip_address
-#   key_name      = var.key_name
+
+# data "template_cloudinit_config" "merged" {
+#   gzip          = true
+#   base64_encode = true
 #
-#   iam_instance_profile = "${aws_iam_instance_profile.ec2.id}"
-#   tags = module.label.tags
+#   part {
+#     filename     = "userdata_part_cloudwatch.cfg"
+#     content      = data.template_file.cloud_init.rendered
+#     content_type = "text/cloud-config"
+#   }
 #
-#   user_data = var.use_cloudwatch_agent ? data.template_file.cloud_init.rendered : ""
+#   part {
+#     filename     = "userdata_part_caller.cfg"
+#     content      = "${var.userdata_part_content}"
+#     content_type = "${var.userdata_part_content_type}"
+#     merge_type   = "${var.userdata_part_merge_type}"
+#   }
 # }
-#
-
-data "template_cloudinit_config" "merged" {
-  gzip          = true
-  base64_encode = true
-
-  part {
-    filename     = "userdata_part_cloudwatch.cfg"
-    content      = data.template_file.cloud_init.rendered
-    content_type = "text/cloud-config"
-  }
-
-  part {
-    filename     = "userdata_part_caller.cfg"
-    content      = "${var.userdata_part_content}"
-    content_type = "${var.userdata_part_content_type}"
-    merge_type   = "${var.userdata_part_merge_type}"
-  }
-}

@@ -1,3 +1,12 @@
+terraform {
+  required_version = "0.9.0"
+  backend "s3" {
+    bucket = "terraform-aws-modules-tfstate"
+    region  = "ap-northeast-1"
+    key     = "v000900/development/terraform.tfstate"
+  }
+}
+
 module "vpc" {
   source          = "../../vpc-legacy"
   region          = "ap-northeast-1"

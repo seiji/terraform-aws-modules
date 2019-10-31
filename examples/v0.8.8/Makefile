@@ -7,7 +7,7 @@ config:
 		-backend-config='bucket=terraform-aws-modules-tfstate' \
 		-backend-config='key=v000800/development/terraform.tfstate'
 
-plan: config
-	rm -rf .terraform/modules && terraform get && terraform plan
+plan:
+	terraform init -get=true && terraform plan
 apply:
 	terraform apply

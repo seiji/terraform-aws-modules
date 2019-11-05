@@ -1,37 +1,53 @@
 #cloud-config
-repo_update: true
-repo_upgrade: none
+
 write_files:
+  - path: /etc/systemd/timesyncd.conf
+    content: |
+      [Time]
+      NTP=169.254.169.123
   - encoding: b64
     path: /etc/cloudwatch_agent.json
     owner: root:root
     permissions: '0644'
     content: ${cwa_content}
-runcmd:
-  - |
-    . /etc/os-release
-    case $NAME in
-      "Amazon Linux") echo "Installing for Amazon Linux."
-        yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-        yum install -y https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
-        ;;
-      Centos) echo "Installing for Centos."
-        yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-        yum install -y https://s3.amazonaws.com/amazoncloudwatch-agent/centos/amd64/latest/amazon-cloudwatch-agent.rpm
-        ;;
-      Debian) echo "Installing for Debian."
-        curl -O https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
-        dpkg -i amazon-ssm-agent.deb
-        curl -O https://s3.amazonaws.com/amazoncloudwatch-agent/debian/amd64/latest/amazon-cloudwatch-agent.deb
-        dpkg -i -E ./amazon-cloudwatch-agent.deb
-        ;;
-      Ubuntu) echo "Installing for Ubuntu."
-        curl -O https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
-        dpkg -i amazon-ssm-agent.deb
-        curl -O https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd63/latest/amazon-cloudwatch-agent.deb
-        dpkg -i -E ./amazon-cloudwatch-agent.deb
-        ;;
-      *)
-        echo "Not supported"
-    esac
-  - /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/etc/cloudwatch_agent.json -s
+coreos:
+ update:
+  reboot-strategy: off
+ units:
+   - name: update-engine.service
+     command: stop
+   - name: locksmithd.service
+     command: stop
+   - name: settimezone.service
+     command: start
+     content: |
+       [Unit]
+       Description=Set Timezone
+       [Service]
+       ExecStart=/usr/bin/timedatectl set-timezone Asia/Tokyo
+       RemainAfterExit=yes
+       Type=oneshot
+   - name: systemd-timesyncd.service
+     command: restart
+   - name: amazon-cloudwatch-agent.service
+     command: start
+     enable: true
+     content: |
+       [Unit]
+       Description=Amazon SSM Agent
+       After=docker.service
+       Requires=docker.service
+
+       [Service]
+       Restart=on-failure
+       RestartSec=30
+       RestartPreventExitStatus=5
+       SyslogIdentifier=amazon-cloudwatch-agent
+       ExecStartPre=-/usr/bin/docker kill amazon-cloudwatch-agent
+       ExecStartPre=-/usr/bin/docker rm amazon-cloudwatch-agent
+       ExecStartPre=/usr/bin/docker pull amazon/cloudwatch-agent
+       ExecStart=/usr/bin/docker run --name amazon-cloudwatch-agent --privileged --net host --pid host -v /etc/cloudwatch_agent.json:/etc/cwagentconfig amazon/cloudwatch-agent
+       ExecStop=/usr/bin/docker stop amazon-cloudwatch-agent
+
+       [Install]
+       WantedBy=multi-user.target

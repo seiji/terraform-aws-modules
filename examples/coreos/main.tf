@@ -59,6 +59,6 @@ module "ec2_coreos" {
   alb_security_id_list        = []
   ec2_security_id_list        = [module.vpc.default_security_group_id, module.sg_ssh.id]
   key_name                    = "id_rsa"
-  use_cloudwatch_agent        = false
+  use_cloudwatch_agent        = true
 }
 

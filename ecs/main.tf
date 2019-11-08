@@ -1,48 +1,37 @@
-variable "region" {
-  description = "region"
-  type        = string
-  default     = "ap-northeast-1"
+terraform {
+  required_version = ">= 0.12.0"
 }
 
-provider "aws" {
-  region = var.region
-}
-
-variable "service" {}
-variable "env" {}
-variable "name" {}
-
-resource "aws_ecs_task_definition" "this" {
-  family = "${var.service}-${var.env}-${var.name}"
-
-  requires_compatibilities = ["FARGATE"]
-
-  cpu    = "256"
-  memory = "512"
-
-  network_mode = "awsvpc" # Fargate
-
-  container_definitions = <<EOS
-[
-  {
-    "name": "nginx",
-    "image": "nginx:1.14",
-    "portMappings": [
-      {
-        "containerPort": 80,
-        "hostPort": 80
-      }
-    ]
-  }
-]
-EOS
-  tags = {
-    Name    = "ecs-taskdef-${var.service}-${var.env}-${var.name}"
-    service = "${var.service}"
-    env     = "${var.env}"
-  }
+locals {
+  name = "${var.namespace}-${var.stage}"
 }
 
 resource "aws_ecs_cluster" "this" {
-  name = "${var.service}-${var.env}-${var.name}"
+  name = local.name
+}
+
+data "aws_ecs_task_definition" "this" {
+  task_definition = local.name
+}
+
+resource "aws_ecs_service" "this" {
+  name                               = local.name
+  cluster                            = aws_ecs_cluster.this.id
+  task_definition                    = "${data.aws_ecs_task_definition.this.family}:${data.aws_ecs_task_definition.this.revision}"
+  desired_count                      = var.ecs_desired_count
+  deployment_maximum_percent         = var.ecs_deployment_maximum_percent
+  deployment_minimum_healthy_percent = var.ecs_deployment_minimum_healthy_percent
+  iam_role                           = var.ecs_iam_role
+
+  lifecycle {
+    ignore_changes = [
+      "desired_count",
+    ]
+  }
+
+  load_balancer {
+    target_group_arn = aws_alb_target_group.this.arn
+    container_name   = var.container_name
+    container_port   = var.container_port
+  }
 }

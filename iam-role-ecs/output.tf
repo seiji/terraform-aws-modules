@@ -1,7 +1,7 @@
-output id {
-  value = aws_iam_role.this.id
+output ecs_task_execution {
+  value = aws_iam_role.ecs_task_execution
 }
 
-output arn {
-  value = aws_iam_role.this.arn
+output ecs_service {
+  value = aws_iam_role.ecs_service.arn
 }

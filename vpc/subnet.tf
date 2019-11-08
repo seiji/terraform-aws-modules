@@ -1,7 +1,7 @@
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "public-${var.service}-${var.env}"
+    Name = "public-${module.label.name}"
   }
 }
 
@@ -36,9 +36,9 @@ resource "aws_subnet" "public" {
   }
 
   tags = {
-    Name    = "vpc-subnet-public-${var.azs[count.index]}-${var.service}-${var.env}"
-    service = var.service
-    env     = var.env
+    Name    = "public-${var.azs[count.index]}-${module.label.name}"
+    namespace = var.namespace
+    stage     = var.stage
     Tier    = "Public"
   }
 }
@@ -54,10 +54,10 @@ resource "aws_subnet" "private" {
   }
 
   tags = {
-    Name    = "vpc-subnet-private-${var.azs[count.index]}-${var.service}-${var.env}"
-    service = var.service
-    env     = var.env
-    Tier    = "Private"
+    Name      = "private-${var.azs[count.index]}-${module.label.name}"
+    namespace = var.namespace
+    stage     = var.stage
+    Tier      = "Private"
   }
 }
 

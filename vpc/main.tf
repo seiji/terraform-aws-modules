@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 0.12.0"
+  required_version = "~> 0.12.0"
 }
 
 provider "aws" {
@@ -9,9 +9,9 @@ provider "aws" {
 
 module "label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
-  namespace  = "examples"
-  stage      = "prod"
-  name       = "main"
+  namespace  = var.namespace
+  stage      = var.stage
+  name       = "${var.namespace}-${var.stage}"
   attributes = ["private"]
 
   tags = {

@@ -28,6 +28,11 @@ resource "aws_iam_role_policy_attachment" "ssm_ro" {
   role       = aws_iam_role.ecs_task_execution.id
 }
 
+resource "aws_iam_role_policy_attachment" "cwa_server" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role       = aws_iam_role.ecs_task_execution.id
+}
+
 data "aws_iam_policy_document" "ecs_service" {
   statement {
     actions = ["sts:AssumeRole"]

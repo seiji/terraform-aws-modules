@@ -14,15 +14,24 @@ create: ## Creates an ECS task definition from your compose file.
 		--cluster-config ${PROJ_NAME} \
     --launch-type EC2
 
-local:
+start: ## Start an ECS service
+	ecs-cli compose \
+    --project-name ${PROJ_NAME} \
+    service start \
+		--cluster-config ${PROJ_NAME} \
+		--cluster ${PROJ_NAME} \
+		--force-deployment
+
+push: ## Push ecr
+	ecs-cli push \
+		--cluster-config ${PROJ_NAME} \
+		752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/ecs-ec2
+
+local: ## Up local
 	docker-compose \
 		-f docker-compose.yml \
 		-f docker-compose-local.yml \
 		up --force-recreate
 
-push:
-	ecs-cli push \
-		--cluster-config ${PROJ_NAME} \
-		752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/ecs-ec2
 
 

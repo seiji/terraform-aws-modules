@@ -23,6 +23,7 @@ resource "aws_ecs_service" "this" {
   deployment_minimum_healthy_percent = var.ecs_deployment_minimum_healthy_percent
   iam_role                           = var.ecs_iam_role
 
+  depends_on = [aws_alb_listener.this]
   lifecycle {
     ignore_changes = [
       "desired_count",

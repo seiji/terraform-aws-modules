@@ -11,6 +11,7 @@ services:
     logging:
       driver: awslogs
       options:
+        awslogs-create-group: "true"
         awslogs-group: examples/ecs-ec2
         awslogs-region: ap-northeast-1
         awslogs-stream-prefix: examples

@@ -115,4 +115,9 @@ resource "aws_launch_configuration" "this" {
     volume_size           = 8
     delete_on_termination = true
   }
+
+  user_data                   = <<EOF
+  #!/bin/bash
+  echo ECS_CLUSTER=${local.name} >> /etc/ecs/ecs.config
+  EOF
 }

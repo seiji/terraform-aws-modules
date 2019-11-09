@@ -27,15 +27,27 @@ deploy: ## Force deployment an ECS service
 		--cluster ${PROJ_NAME} \
 		--force-deployment
 
-push: ## Push ecr
+pull: ## Creates a Compose file from remote ECS task definition
+	ecs-cli local \
+    create \
+		--task-def-remote ${PROJ_NAME} \
+
+up: ## Runs containers locally from an ECS Task Definitio
+	@IMG_URI=${IMG_URI} \
+	IMG_TAG=${IMG_TAG} \
+	ecs-cli local \
+    up --task-def-compose docker-compose.yml
+
+down: ## Runs containers locally from an ECS Task Definitio
+	@ecs-cli local \
+    down -all
+
+ps: ## Lists locally running ECS task containers
+	@ecs-cli local \
+    ps -all
+
+push_img: ## Push ecr
 	ecs-cli push \
 		--cluster-config ${PROJ_NAME} \
 		${IMG_URI}
 
-local: ## Up local
-	IMG_URI=${IMG_URI} \
-	IMG_TAG=${IMG_TAG} \
-	docker-compose \
-		-f docker-compose.yml \
-		-f docker-compose-local.yml \
-		up --force-recreate

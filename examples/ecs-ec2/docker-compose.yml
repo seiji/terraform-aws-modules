@@ -1,12 +1,10 @@
 version: "3"
 services:
   nginx:
-    image: ${IMG_URI}:${IMG_TAG}
-    ports:
-      - "80"
     environment:
-      TZ: Asia/Tokyo
       ENV: staging
+      TZ: Asia/Tokyo
+    image: ${IMG_URI}:${IMG_TAG}
     logging:
       driver: awslogs
       options:
@@ -14,3 +12,5 @@ services:
         awslogs-group: examples/ecs-ec2
         awslogs-region: ap-northeast-1
         awslogs-stream-prefix: examples
+    ports:
+      - "80"

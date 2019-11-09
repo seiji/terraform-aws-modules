@@ -1,0 +1,22 @@
+version: "3"
+services:
+  nginx:
+    build: .
+    environment:
+      AWS_CONTAINER_CREDENTIALS_RELATIVE_URI: /creds
+      ECS_CONTAINER_METADATA_URI: http://169.254.170.2/v3
+    labels:
+      ecs-local.secret.DB_PASS: /test/prod/pass
+      ecs-local.task-definition-input.type: remote
+      ecs-local.task-definition-input.value: ecs-ec2-staging
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    logging:
+      driver: json-file
+    networks:
+      ecs-local-network: null
+networks:
+  ecs-local-network:
+    external: true

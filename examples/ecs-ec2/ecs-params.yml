@@ -10,4 +10,3 @@ task_definition:
       secrets:
         - value_from: /test/prod/pass
           name: DB_PASS
-

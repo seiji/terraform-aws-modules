@@ -1,8 +1,7 @@
 version: "3"
 services:
   nginx:
-    build: .
-    image: 752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/ecs-ec2
+    image: ${IMG_URI}:${IMG_TAG}
     ports:
       - "80"
     environment:
@@ -15,7 +14,3 @@ services:
         awslogs-group: examples/ecs-ec2
         awslogs-region: ap-northeast-1
         awslogs-stream-prefix: examples
-    networks:
-      - default
-networks:
-  default:

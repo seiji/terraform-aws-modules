@@ -1,7 +1,7 @@
 version: "3"
-
 services:
   nginx:
+    build: .
     ports:
       - "8888:80"
     volumes:
@@ -10,3 +10,7 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     logging:
       driver: json-file
+    networks:
+      - default
+networks:
+  default:

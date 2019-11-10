@@ -14,6 +14,7 @@ create: ## Create an ECS task definition from your compose file.
 	IMG_TAG=${IMG_TAG} \
 	ecs-cli compose \
     --project-name ${PROJ_NAME} \
+		--file docker-compose.ecs-local.yml \
     create \
 		--cluster ${PROJ_NAME} \
     --launch-type EC2
@@ -34,7 +35,7 @@ up: ## Runs containers locally from an ECS Task Definitio
 	@IMG_URI=${IMG_URI} \
 	IMG_TAG=${IMG_TAG} \
 	ecs-cli local \
-    up --task-def-compose docker-compose.yml
+    up --task-def-compose docker-compose.ecs-local.yml
 
 down: ## Runs containers locally from an ECS Task Definitio
 	@ecs-cli local \

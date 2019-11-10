@@ -15,7 +15,6 @@ create: ## Create an ECS task definition from your compose file.
 	ecs-cli compose \
     --project-name ${PROJ_NAME} \
     create \
-		--cluster-config ${PROJ_NAME} \
 		--cluster ${PROJ_NAME} \
     --launch-type EC2
 
@@ -23,7 +22,6 @@ deploy: ## Force deployment an ECS service
 	ecs-cli compose \
     --project-name ${PROJ_NAME} \
     service start \
-		--cluster-config ${PROJ_NAME} \
 		--cluster ${PROJ_NAME} \
 		--force-deployment
 
@@ -48,6 +46,5 @@ ps: ## Lists locally running ECS task containers
 
 push_img: ## Push ecr
 	ecs-cli push \
-		--cluster-config ${PROJ_NAME} \
 		${IMG_URI}
 

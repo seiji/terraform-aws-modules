@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 0.12.0"
+  required_version = "~> 0.12.0"
   backend "s3" {
     bucket         = "aws-modules-tfstate"
     region         = "ap-northeast-1"
@@ -8,6 +8,7 @@ terraform {
     dynamodb_table = "aws-modules-tfstate-lock"
   }
 }
+
 provider "aws" {
   version = "~> 2.22"
   region  = local.region

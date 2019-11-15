@@ -1,12 +1,3 @@
-terraform {
-  required_version = ">= 0.12.0"
-}
-
-provider "aws" {
-  version = "~> 2.28"
-  region  = var.region
-}
-
 data "aws_ami" "recent_amazon_linux2" {
   most_recent = true
   owners      = ["amazon"]

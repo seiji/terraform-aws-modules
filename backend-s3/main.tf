@@ -1,12 +1,3 @@
-terraform {
-  required_version = ">= 0.12.0"
-}
-
-provider "aws" {
-  version = "~> 2.22"
-  region  = var.region
-}
-
 resource "aws_s3_bucket" "this" {
   bucket = var.s3_bucket
   versioning {

@@ -22,6 +22,7 @@ create: ## Create an ECS task definition from your compose file.
 deploy: ## Force deployment an ECS service
 	ecs-cli compose \
     --project-name ${PROJ_NAME} \
+		--file docker-compose.ecs-local.yml \
     service start \
 		--cluster ${PROJ_NAME} \
 		--force-deployment

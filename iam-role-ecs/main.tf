@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.12.0"
-}
-
 data "aws_iam_policy_document" "ecs_tasks_service" {
   statement {
     actions = ["sts:AssumeRole"]

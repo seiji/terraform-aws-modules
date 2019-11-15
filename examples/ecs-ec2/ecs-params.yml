@@ -1,12 +1,12 @@
 version: 1
 task_definition:
-  task_role_arn: ecsTaskExecutionRole
-  task_execution_role: ecsTaskExecutionRole
+  # task_role_arn: ecsTaskExecutionRole
+  # task_execution_role: ecsTaskExecutionRole
   services:
     nginx:
       essential: true
       cpu_shares: 1024
       mem_reservation: 900MB
-      secrets:
-        - value_from: /test/prod/pass
-          name: DB_PASS
+      # secrets:
+      #   - value_from: /test/prod/pass
+      #     name: DB_PASS

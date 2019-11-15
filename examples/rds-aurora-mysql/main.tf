@@ -57,11 +57,12 @@ module "rds" {
   master_password   = "password"
 }
 
-# module "rds-cloudwatch" {
-#   source          = "../../rds-cloudwatch-alarms"
-#   region          = local.region
-#   namespace       = local.namespace
-#   stage           = local.stage
-#   sns_topic_arn = module.sns_topic.arn
-# }
-#
+module "cloudwatch-alarms-rds" {
+  source          = "../../cloudwatch-alarms-rds"
+  region          = local.region
+  namespace       = local.namespace
+  stage           = local.stage
+  db_instance_ids = module.rds.instance_ids
+  sns_topic_arn   = module.sns_topic.arn
+}
+

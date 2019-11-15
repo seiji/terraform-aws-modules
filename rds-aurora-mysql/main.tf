@@ -12,8 +12,8 @@ resource "aws_rds_cluster" "this" {
 
 resource "aws_rds_cluster_instance" "this" {
   count              = var.instance_count
-  engine    = "aurora-mysql"
-  engine_version = var.engine_version
+  engine             = "aurora-mysql"
+  engine_version     = var.engine_version
   identifier         = "${var.name}-${count.index}"
   cluster_identifier = aws_rds_cluster.this.id
   instance_class     = var.instance_class

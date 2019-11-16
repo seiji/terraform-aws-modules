@@ -15,7 +15,7 @@ variable "limit_amount_lambda" {
 }
 
 variable "limit_amount_s3" {
-  default = "5.0"
+  default = "1.0"
 }
 
 variable "limit_amount_cloudwatch" {

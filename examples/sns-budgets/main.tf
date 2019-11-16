@@ -29,3 +29,8 @@ module "budgets_cost" {
   source                    = "../../budgets-cost"
   subscriber_sns_topic_arns = [module.sns_budgets.arn]
 }
+
+module "budgets_usage" {
+  source                    = "../../budgets-usage"
+  subscriber_sns_topic_arns = [module.sns_budgets.arn]
+}

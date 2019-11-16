@@ -2,7 +2,7 @@ locals {
   budget_type       = "COST"
   limit_unit        = "USD"
   time_period_start = "2019-01-01_00:00"
-  time_unit         = "MONTHLY"
+  time_unit         = var.time_unit
 
   notifications = [
     {

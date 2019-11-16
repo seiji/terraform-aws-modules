@@ -21,11 +21,11 @@ locals {
 }
 
 module "sns_budgets" {
-  source    = "../../sns-budgets"
-  name      = "budgets"
+  source = "../../sns-budgets"
+  name   = "budgets"
 }
 
 module "budgets_cost" {
-  source    = "../../budgets-cost"
-  subscriber_sns_topic_arns  = [module.sns_budgets.arn]
+  source                    = "../../budgets-cost"
+  subscriber_sns_topic_arns = [module.sns_budgets.arn]
 }

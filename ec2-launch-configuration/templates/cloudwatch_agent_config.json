@@ -1,0 +1,63 @@
+{
+  "metrics": {
+    "aggregation_dimensions": [
+      ["InstanceId"],
+      ["AutoScalingGroupName"]
+    ],
+    "append_dimensions": {
+      "AutoScalingGroupName": "$${aws:AutoScalingGroupName}",
+      "InstanceId": "$${aws:InstanceId}"
+    },
+    "metrics_collected": {
+      "cpu": {
+        "measurement": [
+          "cpu_usage_idle",
+          "cpu_usage_iowait",
+          "cpu_usage_user",
+          "cpu_usage_system"
+        ],
+        "metrics_collection_interval": ${metrics_collection_interval},
+        "resources": [ "*" ],
+        "totalcpu": true
+      },
+      "disk": {
+        "measurement": [
+          "used_percent",
+          "inodes_free"
+        ],
+        "metrics_collection_interval": ${metrics_collection_interval},
+        "resources": [ "*" ]
+      },
+      "diskio": {
+        "measurement": [
+          "io_time",
+          "write_bytes",
+          "read_bytes",
+          "writes",
+          "reads"
+        ],
+        "metrics_collection_interval": ${metrics_collection_interval},
+        "resources": [ "*" ]
+      },
+      "mem": {
+        "measurement": [
+          "mem_used_percent"
+        ],
+        "metrics_collection_interval": ${metrics_collection_interval}
+      },
+      "netstat": {
+        "measurement": [
+          "tcp_established",
+          "tcp_time_wait"
+        ],
+        "metrics_collection_interval": ${metrics_collection_interval}
+      },
+      "swap": {
+        "measurement": [
+          "swap_used_percent"
+        ],
+        "metrics_collection_interval": ${metrics_collection_interval}
+      }
+    }
+  }
+}

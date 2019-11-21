@@ -1,0 +1,24 @@
+#cloud-config
+repo_update: true
+repo_upgrade: none
+runcmd:
+  - |
+    . /etc/os-release
+    case $NAME in
+      "Amazon Linux") echo "Installing for Amazon Linux."
+        yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+        ;;
+      Centos) echo "Installing for Centos."
+        yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+        ;;
+      Debian) echo "Installing for Debian."
+        curl -O https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+        dpkg -i amazon-ssm-agent.deb
+        ;;
+      Ubuntu) echo "Installing for Ubuntu."
+        curl -O https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+        dpkg -i amazon-ssm-agent.deb
+        ;;
+      *)
+        echo "Not supported"
+    esac

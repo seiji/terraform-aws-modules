@@ -1,0 +1,34 @@
+module "label" {
+  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  namespace = var.namespace
+  stage     = var.stage
+  # name       = "name"
+  # attributes = ["private"]
+  delimiter = "-"
+  # tags = {
+  #   "BusinessUnit" = "XYZ",
+  # }
+}
+
+data "aws_iam_policy_document" "ec2_cloudwatch" {
+  statement {
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "ec2" {
+  name               = "${module.label.id}"
+  assume_role_policy = "${data.aws_iam_policy_document.ec2_cloudwatch.json}"
+  tags = {
+    Name = "${module.label.id}"
+  }
+}
+
+resource "aws_iam_instance_profile" "ec2" {
+  name = "ec2-role"
+  role = "${aws_iam_role.ec2.id}"
+}

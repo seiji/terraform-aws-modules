@@ -21,7 +21,7 @@ locals {
 }
 
 module "sns_event_health" {
-  source = "../../sns-event-health"
+  source = "../../sns-event"
   name   = "event-health"
 }
 
@@ -32,7 +32,7 @@ module "cloudwatch_event_rule_health" {
 }
 
 module "sns_event_ssm" {
-  source = "../../sns-event-ssm"
+  source = "../../sns-event"
   name   = "event-ssm"
 }
 

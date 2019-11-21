@@ -1,3 +1,3 @@
-variable "name" {
-  type = string
+variable "enable" {
+  default = true
 }

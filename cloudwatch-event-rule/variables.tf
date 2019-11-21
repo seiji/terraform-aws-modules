@@ -9,3 +9,7 @@ variable "enable_health" {
 variable "enable_ssm" {
   default = false
 }
+
+variable "enable_guard_duty" {
+  default = false
+}

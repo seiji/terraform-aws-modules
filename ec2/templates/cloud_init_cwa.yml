@@ -3,7 +3,7 @@ repo_update: true
 repo_upgrade: none
 write_files:
   - encoding: b64
-    path: /etc/cloudwatch_agent.json
+    path: /etc/cloudwatch-agent-config.json
     owner: root:root
     permissions: '0644'
     content: ${cwa_content}
@@ -34,4 +34,4 @@ runcmd:
       *)
         echo "Not supported"
     esac
-  - /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/etc/cloudwatch_agent.json -s
+  - /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/etc/cloudwatch-agent-config.json -s

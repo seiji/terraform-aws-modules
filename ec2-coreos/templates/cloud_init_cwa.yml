@@ -6,7 +6,7 @@ write_files:
       [Time]
       NTP=169.254.169.123
   - encoding: b64
-    path: /etc/cloudwatch_agent.json
+    path: /etc/cloudwatch-agent-config.json
     owner: root:root
     permissions: '0644'
     content: ${cwa_content}
@@ -34,10 +34,9 @@ coreos:
      enable: true
      content: |
        [Unit]
-       Description=Amazon SSM Agent
+       Description=Amazon CloudWatch Agent
        After=docker.service
        Requires=docker.service
-
        [Service]
        Restart=on-failure
        RestartSec=30
@@ -46,8 +45,12 @@ coreos:
        ExecStartPre=-/usr/bin/docker kill amazon-cloudwatch-agent
        ExecStartPre=-/usr/bin/docker rm amazon-cloudwatch-agent
        ExecStartPre=/usr/bin/docker pull amazon/cloudwatch-agent
-       ExecStart=/usr/bin/docker run --name amazon-cloudwatch-agent --privileged --net host --pid host -v /etc/cloudwatch_agent.json:/etc/cwagentconfig amazon/cloudwatch-agent
+       ExecStart=/usr/bin/docker run --name amazon-cloudwatch-agent \
+                                     --privileged \
+                                     --net host \
+                                     --pid host \
+                                     --volume=/etc/cloudwatch-agent-config.json:/etc/cwagentconfig \
+                                     amazon/cloudwatch-agent
        ExecStop=/usr/bin/docker stop amazon-cloudwatch-agent
-
        [Install]
        WantedBy=multi-user.target

@@ -39,7 +39,7 @@ variable ebs_optimized {
 }
 
 variable metrics_collection_interval {
-  default = "60"
+  default = 60
 }
 
 variable cloudwatch_agent_use {

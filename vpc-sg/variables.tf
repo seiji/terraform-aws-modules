@@ -4,8 +4,8 @@ variable "region" {
   default     = "ap-northeast-1"
 }
 
-variable "service" {}
-variable "env" {}
+variable "namespace" {}
+variable "stage" {}
 variable "name" {}
 variable "vpc_id" {}
 variable "from_port" {

@@ -34,7 +34,7 @@ data "template_cloudinit_config" "merged" {
 
 resource "aws_launch_configuration" "this" {
   name_prefix                 = "${var.name}-"
-  associate_public_ip_address = false
+  associate_public_ip_address = var.associate_public_ip_address
   image_id                    = var.image_id
   instance_type               = var.instance_type
   iam_instance_profile        = var.iam_instance_profile

@@ -6,10 +6,10 @@ output "default_security_group_id" {
   value = aws_vpc.this.default_security_group_id
 }
 
-output "public_subnet_id_list" {
+output "public_subnet_ids" {
   value = aws_subnet.public.*.id
 }
 
-output "private_subnet_id_list" {
+output "private_subnet_ids" {
   value = aws_subnet.private.*.id
 }

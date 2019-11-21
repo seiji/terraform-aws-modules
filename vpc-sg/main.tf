@@ -1,5 +1,5 @@
 resource "aws_security_group" "this" {
-  name    = "${var.service}-${var.env}-${var.name}"
+  name    = "${var.namespace}-${var.stage}-${var.name}"
   vpc_id      = var.vpc_id
 
   egress {
@@ -10,9 +10,9 @@ resource "aws_security_group" "this" {
   }
 
   tags = {
-    Name    = "${var.service}-${var.env}-${var.name}"
-    service = "${var.service}"
-    env     = "${var.env}"
+    Name      = "${var.namespace}-${var.stage}-${var.name}"
+    namespace = var.namespace
+    stage     = var.stage
   }
 }
 

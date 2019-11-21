@@ -37,16 +37,64 @@ module "iam_instance_profile_ec2" {
   stage     = local.stage
 }
 
+module "sg_ssh" {
+  source      = "../../vpc-sg"
+  namespace   = local.namespace
+  stage       = local.stage
+  name        = "ssh"
+  vpc_id      = module.vpc.vpc_id
+  from_port   = 22
+  to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
 module "ec2_lc" {
-  source               = "../../ec2-launch-configuration"
+  source               = "../../ec2-launch-configurations"
   namespace            = local.namespace
   stage                = local.stage
   name                 = "couchbase"
+  associate_public_ip_address = true
   iam_instance_profile = module.iam_instance_profile_ec2.id
   image_id             = "ami-045f38c93733dd48d"
   instance_type        = "t3.micro"
   key_name             = "id_rsa"
+  security_groups      =  [module.vpc.default_security_group_id, module.sg_ssh.id]
+  userdata_part_content = <<EOF
+#cloud-config
+repo_update: true
+repo_upgrade: none
+timezone: Asia/Tokyo
+locale: ja_JP.UTF-8
+bootcmd:
+  - |
+    rm -f /etc/sysconfig/network-scripts/ifcfg-eth0
+    for PATH_DHCLIENT_PID in /var/run/dhclient*; do
+        export PATH_DHCLIENT_PID
+        dhclient -r
+        # Making sure it really truly stopped
+        kill $(<PATH_DHCLIENT_PID) || true
+        rm -f "$PATH_DHCLIENT_PID"
+    done
+    systemctl restart network
+  - sysctl vm.swappiness=0
+  - echo never > /sys/kernel/mm/transparent_hugepage/enabled
+  - echo never > /sys/kernel/mm/transparent_hugepage/defrag
+EOF
 }
+
+module "ec2_asg" {
+  source               = "../../ec2-auto-scaling-groups"
+  namespace            = local.namespace
+  stage                = local.stage
+  name                 = "couchbase"
+  max_size             = 3
+  min_size             = 1
+  desired_capacity     = 1
+  launch_configuration = module.ec2_lc.name
+  vpc_zone_identifier  = module.vpc.public_subnet_ids
+}
+
 #
 # module "ec2_private" {
 #   source                      = "../../ec2"

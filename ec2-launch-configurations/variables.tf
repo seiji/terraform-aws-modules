@@ -10,6 +10,10 @@ variable name {
   type = string
 }
 
+variable associate_public_ip_address {
+  default = false
+}
+
 variable image_id {
   type = string
 }

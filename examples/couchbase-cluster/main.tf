@@ -38,7 +38,7 @@ module "iam_instance_profile_ec2" {
   stage     = local.stage
 }
 
-module "ec2_lc" {
+module "lc" {
   source                      = "../../ec2-launch-configurations"
   namespace                   = local.namespace
   stage                       = local.stage
@@ -74,7 +74,60 @@ runcmd:
 EOF
 }
 
-module "ec2_asg" {
+data "aws_acm_certificate" "this" {
+  domain      = "*.seiji.me"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
+
+module "sg_https" {
+  source      = "../../vpc-sg"
+  namespace   = local.namespace
+  stage       = local.stage
+  name        = "https"
+  vpc_id      = module.vpc.vpc_id
+  from_port   = 443
+  to_port     = 443
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+module "sg_http" {
+  source      = "../../vpc-sg"
+  namespace   = local.namespace
+  stage       = local.stage
+  name        = "http"
+  vpc_id      = module.vpc.vpc_id
+  from_port   = 80
+  to_port     = 80
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+module "alb_tg_rest" {
+  source            = "../../alb-target-group"
+  namespace         = local.namespace
+  stage             = local.stage
+  name              = "couchbase-rest"
+  vpc_id            = module.vpc.vpc_id
+  port              = 8091
+  protocol          = "HTTP"
+  health_check_path = "/favicon.ico"
+}
+
+module "alb" {
+  source           = "../../alb-https"
+  namespace        = local.namespace
+  stage            = local.stage
+  name             = "couchbase"
+  vpc_id           = module.vpc.vpc_id
+  security_groups  = [module.vpc.default_security_group_id, module.sg_https.id, module.sg_http.id]
+  subnets          = module.vpc.public_subnet_ids
+  certificate_arn  = data.aws_acm_certificate.this.arn
+  target_group_arn = module.alb_tg_rest.arn
+}
+
+module "asg" {
   source               = "../../ec2-auto-scaling-groups"
   namespace            = local.namespace
   stage                = local.stage
@@ -82,6 +135,22 @@ module "ec2_asg" {
   max_size             = 3
   min_size             = 3
   desired_capacity     = 3
-  launch_configuration = module.ec2_lc.name
+  health_check_type    = "ELB"
+  target_group_arns    = [module.alb_tg_rest.arn]
+  launch_configuration = module.lc.name
   vpc_zone_identifier  = module.vpc.private_subnet_ids
 }
+
+data "aws_route53_zone" "this" {
+  name         = "seiji.me."
+  private_zone = false
+}
+
+module "route53_record_alias" {
+  source        = "../../route53-record-alias"
+  name          = "cb.seiji.me"
+  zone_id       = data.aws_route53_zone.this.zone_id
+  alias_name    = module.alb.dns_name
+  alias_zone_id = module.alb.zone_id
+}
+

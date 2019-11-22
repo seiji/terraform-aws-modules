@@ -41,3 +41,4 @@ variable vpc_zone_identifier {
 variable target_group_arns {
   default = []
 }
+

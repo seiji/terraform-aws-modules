@@ -1,5 +1,5 @@
 resource "aws_autoscaling_group" "this" {
-  name                      = var.name
+  name_prefix               = "${var.name}-"
   max_size                  = var.max_size
   min_size                  = var.min_size
   health_check_grace_period = var.health_check_grace_period
@@ -38,4 +38,3 @@ resource "aws_autoscaling_group" "this" {
 
   # tags = module.label.tags
 }
-

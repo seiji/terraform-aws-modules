@@ -21,17 +21,17 @@ resource "aws_autoscaling_group" "this" {
   tags = [
     {
       key                 = "Name"
-      value               = "example"
+      value               = var.name
       propagate_at_launch = true
     },
     {
-      key                 = "env"
-      value               = "Development"
+      key                 = "stage"
+      value               = var.stage
       propagate_at_launch = true
     },
     {
-      key                 = "Type"
-      value               = "test"
+      key                 = "namespace"
+      value               = var.namespace
       propagate_at_launch = true
     }
   ]

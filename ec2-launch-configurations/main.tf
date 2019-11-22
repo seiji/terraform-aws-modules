@@ -47,5 +47,9 @@ resource "aws_launch_configuration" "this" {
     create_before_destroy = true
   }
 
+  root_block_device {
+    encrypted = true
+  }
+
   user_data_base64 = data.template_cloudinit_config.merged.rendered
 }

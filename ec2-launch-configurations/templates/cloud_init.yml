@@ -2,7 +2,6 @@
 
 repo_update: true
 repo_upgrade: none
-timezone: Asia/Tokyo
 runcmd:
   - systemctl stop postfix.service
   - systemctl disable postfix.service

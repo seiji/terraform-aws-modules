@@ -19,16 +19,23 @@ data "template_cloudinit_config" "merged" {
   base64_encode = true
 
   part {
-    filename     = "userdata_part_cloudwatch.cfg"
+    filename     = "userdata_part_cloudinit.cfg"
     content      = data.template_file.cloud_init.rendered
     content_type = "text/cloud-config"
   }
 
   part {
-    filename     = "userdata_part_caller.cfg"
-    content      = "${var.userdata_part_content}"
-    content_type = "${var.userdata_part_content_type}"
-    merge_type   = "${var.userdata_part_merge_type}"
+    filename     = "userdata_part_caller_cloudinit.cfg"
+    content      = var.userdata_part_cloud_config
+    content_type = "text/cloud-config"
+    merge_type   = "list(append)+dict(recurse_array)+str()"
+  }
+
+  part {
+    filename     = "userdata_part_caller_shellscript.cfg"
+    content      = var.userdata_part_shellscript
+    content_type = "text/x-shellscript"
+    merge_type   = "list(append)+dict(recurse_array)+str()"
   }
 }
 
@@ -40,8 +47,8 @@ resource "aws_launch_configuration" "this" {
   iam_instance_profile        = var.iam_instance_profile
   key_name                    = var.key_name
   security_groups             = var.security_groups
-  enable_monitoring           = true
-  ebs_optimized               = false
+  enable_monitoring           = false
+  ebs_optimized               = true
 
   lifecycle {
     create_before_destroy = true

@@ -50,15 +50,10 @@ variable cloudwatch_agent_use {
   default = false
 }
 
-variable userdata_part_content {
+variable userdata_part_cloud_config {
   default = ""
 }
 
-variable userdata_part_content_type {
-  default = "text/cloud-config"
+variable userdata_part_shellscript {
+  default = ""
 }
-
-variable userdata_part_merge_type {
-  default = "list(append)+dict(recurse_array)+str()"
-}
-

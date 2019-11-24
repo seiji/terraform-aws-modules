@@ -15,12 +15,11 @@ provider aws {
 }
 
 locals {
-  region    = "ap-northeast-1"
   namespace = "alb-ec2"
   stage     = "staging"
 }
 
-module ami_amazonlinux2 {
+module ami {
   source = "../../ami-amazonlinux2"
 }
 
@@ -48,7 +47,7 @@ module lc {
   name                        = "alb-ec2"
   associate_public_ip_address = false
   iam_instance_profile        = module.iam_instance_profile_ec2.id
-  image_id                    = module.ami_amazonlinux2.id
+  image_id                    = module.ami.id
   instance_type               = "t3.micro"
   key_name                    = "id_rsa"
   security_groups             = [module.vpc.default_security_group_id]
@@ -65,7 +64,7 @@ runcmd:
 EOF
 }
 
-module "alb_tg" {
+module alb_tg {
   source            = "../../alb-target-group"
   namespace         = local.namespace
   stage             = local.stage
@@ -76,7 +75,7 @@ module "alb_tg" {
   health_check_path = "/"
 }
 
-module "asg" {
+module asg {
   source               = "../../ec2-auto-scaling-groups"
   namespace            = local.namespace
   stage                = local.stage
@@ -114,13 +113,13 @@ module "sg_https" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-data "aws_acm_certificate" "this" {
+data aws_acm_certificate this {
   domain      = "*.seiji.me"
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }
 
-module "alb" {
+module alb {
   source           = "../../alb-https"
   namespace        = local.namespace
   stage            = local.stage
@@ -132,12 +131,12 @@ module "alb" {
   target_group_arn = module.alb_tg.arn
 }
 
-data "aws_route53_zone" "this" {
+data aws_route53_zone this {
   name         = "seiji.me."
   private_zone = false
 }
 
-module "route53_record_alias" {
+module route53_record_alias {
   source        = "../../route53-record-alias"
   name          = "example.seiji.me"
   zone_id       = data.aws_route53_zone.this.zone_id

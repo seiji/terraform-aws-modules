@@ -8,7 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        examples: [alb-asg-nginx]
+        examples:
+          - alb-asg-nginx
+          - backend
     steps:
     - uses: actions/checkout@v1
     - name: Install tfenv
@@ -17,18 +19,11 @@ jobs:
         echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
         source ~/.bash_profile
         cd ./examples && tfenv install && terraform --version
-    - name: Terraform init
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        source ~/.bash_profile
-        cd ./examples/${{matrix.examples}} && terraform --version && terraform init
     - name: Terraform validate
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         source ~/.bash_profile
-        cd ./examples/${{matrix.examples}} && terraform --version && terraform validate
+        cd ./examples/${{matrix.examples}} && terraform --version && terraform init && terraform validate
 

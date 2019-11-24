@@ -1,7 +1,3 @@
-variable "time_unit" {
-  default = "MONTHLY"
-}
-
 variable "limit_amount" {
   default = "10.0"
 }

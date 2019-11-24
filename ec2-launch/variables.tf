@@ -59,5 +59,5 @@ variable userdata_part_cloud_config {
 }
 
 variable userdata_part_shellscript {
-  default = ""
+  default = "echo 'shellscript';"
 }

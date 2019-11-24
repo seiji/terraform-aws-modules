@@ -20,7 +20,7 @@ resource aws_launch_configuration this {
   user_data_base64 = data.template_cloudinit_config.merged.rendered
 }
 
-resource "aws_launch_template" "this" {
+resource aws_launch_template this {
   name_prefix = "${var.name}-"
 
   disable_api_termination     = var.disable_api_termination

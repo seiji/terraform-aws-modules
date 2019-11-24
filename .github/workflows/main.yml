@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+    - master
+name: plan and check
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        examples: [alb-asg-nginx]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install tfenv
+      run: |
+        git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+        echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
+        source ~/.bash_profile
+        tfenv install
+        terraform --version
+    - name: Terraform init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: |
+        source ~/.bash_profile
+        cd ./example/${{matrix.examples}} && terraform --version && terraform init
+    - name: Terraform validate
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: |
+        source ~/.bash_profile
+        cd ./example/${{matrix.examples}} && terraform --version && terraform validate
+

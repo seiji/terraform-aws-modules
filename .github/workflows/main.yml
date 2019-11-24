@@ -16,19 +16,19 @@ jobs:
         git clone https://github.com/tfutils/tfenv.git ~/.tfenv
         echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
         source ~/.bash_profile
-        cd examples && tfenv install && terraform --version
+        cd ./examples && tfenv install && terraform --version
     - name: Terraform init
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         source ~/.bash_profile
-        cd ./example/${{matrix.examples}} && terraform --version && terraform init
+        cd ./examples/${{matrix.examples}} && terraform --version && terraform init
     - name: Terraform validate
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         source ~/.bash_profile
-        cd ./example/${{matrix.examples}} && terraform --version && terraform validate
+        cd ./examples/${{matrix.examples}} && terraform --version && terraform validate
 

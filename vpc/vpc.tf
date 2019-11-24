@@ -5,7 +5,7 @@ resource "aws_vpc" "this" {
 
   lifecycle {
     ignore_changes = [
-      "tags"
+      tags
     ]
   }
   tags = module.label.tags

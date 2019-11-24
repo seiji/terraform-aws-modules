@@ -32,7 +32,7 @@ resource "aws_subnet" "public" {
   availability_zone = var.azs[count.index]
 
   lifecycle {
-    ignore_changes = ["tags"]
+    ignore_changes = [tags]
   }
 
   tags = {
@@ -50,7 +50,7 @@ resource "aws_subnet" "private" {
   availability_zone = var.azs[count.index]
 
   lifecycle {
-    ignore_changes = ["tags"]
+    ignore_changes = [tags]
   }
 
   tags = {

@@ -14,12 +14,24 @@ variable associate_public_ip_address {
   default = false
 }
 
+variable disable_api_termination {
+  default = false
+}
+
+variable ebs_optimized {
+  default = false
+}
+
+variable enable_monitoring {
+  default = false
+}
+
 variable image_id {
   type = string
 }
 
 variable instance_type {
-  default = "t3a.micro"
+  default = "t3.micro"
 }
 
 variable iam_instance_profile {
@@ -32,14 +44,6 @@ variable key_name {
 
 variable security_groups {
   default = []
-}
-
-variable enable_monitoring {
-  default = true
-}
-
-variable ebs_optimized {
-  default = false
 }
 
 variable metrics_collection_interval {

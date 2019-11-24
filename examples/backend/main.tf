@@ -3,8 +3,7 @@ terraform {
 }
 
 module "backend" {
-  source         = "../../backend-s3"
-  region         = "ap-northeast-1"
+  source         = "../../backend"
   s3_bucket      = "terraform-aws-modules-tfstate"
   dynamodb_table = "terraform-aws-modules-tfstate-lock"
 }

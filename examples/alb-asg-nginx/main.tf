@@ -10,7 +10,7 @@ terraform {
 }
 
 provider aws {
-  version = "~> 2.22"
+  version = "~> 2.39"
   region  = "ap-northeast-1"
 }
 

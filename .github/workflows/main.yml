@@ -11,7 +11,7 @@ jobs:
         examples:
           - alb-asg-nginx
           - backend
-          - ssm
+          - ssm-cloudwatch-agent-config
     steps:
     - uses: actions/checkout@v1
     - name: Install tfenv

@@ -14,6 +14,10 @@ variable associate_public_ip_address {
   default = false
 }
 
+variable ami_block_device_mappings {
+  type = list
+}
+
 variable disable_api_termination {
   default = false
 }
@@ -52,6 +56,14 @@ variable metrics_collection_interval {
 
 variable cloudwatch_agent_use {
   default = false
+}
+
+variable root_block_device_size {
+  default = 8
+}
+
+variable root_block_device_type {
+  default = "gp2"
 }
 
 variable userdata_part_cloud_config {

@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         examples:
-          - alb-asg-nginx
+          - alb-asg-lc
           - backend
           - ssm-cloudwatch-agent-config
     steps:

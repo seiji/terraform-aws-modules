@@ -3,8 +3,8 @@ terraform {
   backend "s3" {
     bucket         = "terraform-aws-modules-tfstate"
     region         = "ap-northeast-1"
-    key            = "alb-ec2.examples"
     encrypt        = true
+    key            = "alb-asg-lc.examples"
     dynamodb_table = "terraform-aws-modules-tfstate-lock"
   }
 }
@@ -15,7 +15,7 @@ provider aws {
 }
 
 locals {
-  namespace = "alb-ec2"
+  namespace = "alb-asg-lc"
   stage     = "staging"
 }
 
@@ -45,10 +45,11 @@ module lc {
   namespace                   = local.namespace
   stage                       = local.stage
   name                        = "alb-ec2"
+  ami_block_device_mappings   = module.ami.block_device_mappings
   associate_public_ip_address = false
   iam_instance_profile        = module.iam_instance_profile_ec2.id
   image_id                    = module.ami.id
-  instance_type               = "t3.micro"
+  instance_type               = "t3a.micro"
   key_name                    = "id_rsa"
   security_groups             = [module.vpc.default_security_group_id]
   userdata_part_cloud_config  = <<EOF
@@ -68,7 +69,7 @@ module alb_tg {
   source            = "../../alb-target-group"
   namespace         = local.namespace
   stage             = local.stage
-  name              = "alb-ec2"
+  name              = "alb-asg-lc"
   vpc_id            = module.vpc.vpc_id
   port              = 80
   protocol          = "HTTP"
@@ -79,7 +80,7 @@ module asg {
   source               = "../../ec2-auto-scaling-groups"
   namespace            = local.namespace
   stage                = local.stage
-  name                 = "alb-ec2"
+  name                 = "alb-asg-lc"
   max_size             = 1
   min_size             = 1
   desired_capacity     = 1
@@ -101,7 +102,7 @@ module sg_http {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-module "sg_https" {
+module sg_https {
   source      = "../../vpc-sg"
   namespace   = local.namespace
   stage       = local.stage

@@ -21,7 +21,7 @@ locals {
 }
 
 module ami {
-  source = "../../ami-amazonlinux2"
+  source = "../../ami-amzn2"
 }
 
 module vpc {

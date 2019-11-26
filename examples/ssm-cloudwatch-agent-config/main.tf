@@ -46,6 +46,7 @@ module lc {
   namespace                   = local.namespace
   stage                       = local.stage
   name                        = "cwa"
+  ami_block_device_mappings   = module.ami.block_device_mappings
   associate_public_ip_address = false
   iam_instance_profile        = module.iam_instance_profile_ec2.id
   image_id                    = module.ami.id

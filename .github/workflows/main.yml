@@ -2,9 +2,9 @@ on:
   push:
     branches:
     - master
-name: plan and check
+name: validate
 jobs:
-  plan:
+  validate:
     runs-on: ubuntu-latest
     strategy:
       matrix:

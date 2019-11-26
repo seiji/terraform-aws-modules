@@ -1,10 +1,10 @@
 # com.amazonaws.region.ssm
-data "aws_vpc_endpoint_service" "ssm" {
+data aws_vpc_endpoint_service ssm {
   count   = var.use_endpoint_ssm ? 1 : 0
   service = "ssm"
 }
 
-resource "aws_vpc_endpoint" "ssm" {
+resource aws_vpc_endpoint ssm {
   count             = var.use_endpoint_ssm ? 1 : 0
   vpc_id            = aws_vpc.this.id
   service_name      = data.aws_vpc_endpoint_service.ssm[count.index].service_name
@@ -18,12 +18,12 @@ resource "aws_vpc_endpoint" "ssm" {
 }
 
 # com.amazonaws.region.ssmmessages
-data "aws_vpc_endpoint_service" "ssm_messages" {
+data aws_vpc_endpoint_service ssm_messages {
   count   = var.use_endpoint_ssm_messages ? 1 : 0
   service = "ssmmessages"
 }
 
-resource "aws_vpc_endpoint" "ssm_messages" {
+resource aws_vpc_endpoint ssm_messages {
   count             = var.use_endpoint_ssm_messages ? 1 : 0
   vpc_id            = aws_vpc.this.id
   service_name      = data.aws_vpc_endpoint_service.ssm_messages[count.index].service_name
@@ -36,12 +36,12 @@ resource "aws_vpc_endpoint" "ssm_messages" {
   tags = module.label.tags
 }
 # com.amazonaws.region.ec2
-data "aws_vpc_endpoint_service" "ec2" {
+data aws_vpc_endpoint_service ec2 {
   count   = var.use_endpoint_ec2 ? 1 : 0
   service = "ec2"
 }
 
-resource "aws_vpc_endpoint" "ec2" {
+resource aws_vpc_endpoint ec2 {
   count             = var.use_endpoint_ec2 ? 1 : 0
   vpc_id            = aws_vpc.this.id
   service_name      = data.aws_vpc_endpoint_service.ec2[count.index].service_name
@@ -55,12 +55,12 @@ resource "aws_vpc_endpoint" "ec2" {
 }
 
 # com.amazonaws.region.ec2messages
-data "aws_vpc_endpoint_service" "ec2_messages" {
+data aws_vpc_endpoint_service ec2_messages {
   count   = var.use_endpoint_ec2_messages ? 1 : 0
   service = "ec2messages"
 }
 
-resource "aws_vpc_endpoint" "ec2_messages" {
+resource aws_vpc_endpoint ec2_messages {
   count             = var.use_endpoint_ec2_messages ? 1 : 0
   vpc_id            = aws_vpc.this.id
   service_name      = data.aws_vpc_endpoint_service.ec2_messages[count.index].service_name
@@ -74,12 +74,12 @@ resource "aws_vpc_endpoint" "ec2_messages" {
 }
 
 # com.amazonaws.region.logs
-data "aws_vpc_endpoint_service" "logs" {
+data aws_vpc_endpoint_service logs {
   count   = var.use_endpoint_logs ? 1 : 0
   service = "logs"
 }
 
-resource "aws_vpc_endpoint" "logs" {
+resource aws_vpc_endpoint logs {
   count             = var.use_endpoint_logs ? 1 : 0
   vpc_id            = aws_vpc.this.id
   service_name      = data.aws_vpc_endpoint_service.logs[count.index].service_name
@@ -93,12 +93,12 @@ resource "aws_vpc_endpoint" "logs" {
 }
 
 # com.amazonaws.region.monitoring
-data "aws_vpc_endpoint_service" "monitoring" {
+data aws_vpc_endpoint_service monitoring {
   count   = var.use_endpoint_monitoring ? 1 : 0
   service = "monitoring"
 }
 
-resource "aws_vpc_endpoint" "monitoring" {
+resource aws_vpc_endpoint monitoring {
   count             = var.use_endpoint_monitoring ? 1 : 0
   vpc_id            = aws_vpc.this.id
   service_name      = data.aws_vpc_endpoint_service.monitoring[count.index].service_name

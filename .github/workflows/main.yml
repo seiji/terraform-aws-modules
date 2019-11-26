@@ -12,6 +12,7 @@ jobs:
           - alb-asg-lc
           - backend
           - ssm-cloudwatch-agent-config
+          - vpc-nati
     steps:
     - uses: actions/checkout@v1
     - name: Install tfenv

@@ -2,7 +2,7 @@ locals {
   instance_type = "t3.nano"
 }
 
-data "aws_ami" "recent_amzn_vpc_nat" {
+data aws_ami nat {
   most_recent = true
   owners      = ["amazon"]
 
@@ -16,32 +16,34 @@ data "aws_ami" "recent_amzn_vpc_nat" {
   }
 }
 
-resource "aws_eip" "nat" {
+resource aws_eip nat {
   vpc        = true
   depends_on = [aws_internet_gateway.this]
+
+  tags = module.label_nat.tags
 }
 
-resource "aws_nat_gateway" "this" {
+resource aws_nat_gateway this {
   count         = var.use_natgw ? 1 : 0
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public[count.index].id
   depends_on    = [aws_internet_gateway.this, aws_subnet.public]
 
-  tags = module.label.tags
+  tags = module.label_nat.tags
 }
 
-resource "aws_instance" "nati" {
+resource aws_instance nati {
   count                  = var.use_natgw ? 0 : 1
-  ami                    = data.aws_ami.recent_amzn_vpc_nat.image_id
+  ami                    = data.aws_ami.nat.image_id
   instance_type          = local.instance_type
   subnet_id              = aws_subnet.public[count.index].id
   vpc_security_group_ids = [aws_vpc.this.default_security_group_id]
   source_dest_check      = false
 
-  tags = module.label.tags
+  tags = module.label_nat.tags
 }
 
-resource "aws_eip_association" "nati" {
+resource aws_eip_association nati {
   count         = var.use_natgw ? 0 : 1
   instance_id   = aws_instance.nati[count.index].id
   allocation_id = aws_eip.nat.id

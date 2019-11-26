@@ -1,74 +1,61 @@
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.this.id
-  tags = {
-    Name = "public-${module.label.name}"
-  }
-}
-
-resource "aws_route" "public" {
-  route_table_id         = aws_route_table.public.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.this.id
-}
-
-resource "aws_route" "private_natg" {
-  count                  = var.use_natgw ? 1 : 0
-  route_table_id         = aws_vpc.this.main_route_table_id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.this[count.index].id
-}
-
-resource "aws_route" "private_nati" {
-  count                  = var.use_natgw ? 0 : 1
-  route_table_id         = aws_vpc.this.main_route_table_id
-  destination_cidr_block = "0.0.0.0/0"
-  instance_id            = aws_instance.nati[count.index].id
-}
-
-resource "aws_subnet" "public" {
+resource aws_subnet public {
   count             = length(var.azs)
   vpc_id            = aws_vpc.this.id
   cidr_block        = var.public_subnets[count.index]
   availability_zone = var.azs[count.index]
 
-  lifecycle {
-    ignore_changes = [tags]
-  }
-
-  tags = {
-    Name    = "public-${var.azs[count.index]}-${module.label.name}"
-    namespace = var.namespace
-    stage     = var.stage
-    Tier    = "Public"
-  }
+  tags = module.label_public.tags
 }
 
-resource "aws_subnet" "private" {
+resource aws_subnet private {
   count             = length(var.azs)
   vpc_id            = aws_vpc.this.id
   cidr_block        = var.private_subnets[count.index]
   availability_zone = var.azs[count.index]
 
-  lifecycle {
-    ignore_changes = [tags]
-  }
-
-  tags = {
-    Name      = "private-${var.azs[count.index]}-${module.label.name}"
-    namespace = var.namespace
-    stage     = var.stage
-    Tier      = "Private"
-  }
+  tags = module.label_private.tags
 }
 
-resource "aws_route_table_association" "public" {
+resource aws_default_route_table private {
+  default_route_table_id = aws_vpc.this.default_route_table_id
+
+  tags = module.label_private.tags
+}
+
+resource aws_route_table public {
+  vpc_id = aws_vpc.this.id
+
+  tags = module.label_public.tags
+}
+
+resource aws_route public {
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.this.id
+}
+
+resource aws_route private_natg {
+  count                  = var.use_natgw ? 1 : 0
+  route_table_id         = aws_default_route_table.private.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.this[count.index].id
+}
+
+resource aws_route private_nati {
+  count                  = var.use_natgw ? 0 : 1
+  route_table_id         = aws_default_route_table.private.id
+  destination_cidr_block = "0.0.0.0/0"
+  instance_id            = aws_instance.nati[count.index].id
+}
+
+resource aws_route_table_association public {
   count          = length(aws_subnet.public.*.id)
   route_table_id = aws_route_table.public.id
   subnet_id      = element(aws_subnet.public.*.id, count.index)
 }
 
-resource "aws_route_table_association" "private" {
+resource aws_route_table_association private {
   count          = length(aws_subnet.private.*.id)
-  route_table_id = aws_vpc.this.main_route_table_id
+  route_table_id = aws_default_route_table.private.id
   subnet_id      = element(aws_subnet.private.*.id, count.index)
 }

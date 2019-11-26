@@ -11,6 +11,7 @@ jobs:
         examples:
           - alb-asg-nginx
           - backend
+          - ssm
     steps:
     - uses: actions/checkout@v1
     - name: Install tfenv

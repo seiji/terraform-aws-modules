@@ -3,8 +3,8 @@ terraform {
   backend "s3" {
     bucket         = "terraform-aws-modules-tfstate"
     region         = "ap-northeast-1"
-    encrypt        = true
     key            = "alb-asg-lc.examples"
+    encrypt        = true
     dynamodb_table = "terraform-aws-modules-tfstate-lock"
   }
 }
@@ -14,24 +14,29 @@ provider aws {
   region  = "ap-northeast-1"
 }
 
+data terraform_remote_state vpc {
+  backend = "s3"
+
+  config = {
+    bucket = "terraform-aws-modules-tfstate"
+    region = "ap-northeast-1"
+    key    = "vpc-nati.examples"
+  }
+}
+
 locals {
   namespace = "alb-asg-lc"
   stage     = "staging"
+  vpc = {
+    id                        = data.terraform_remote_state.vpc.outputs.id
+    default_security_group_id = data.terraform_remote_state.vpc.outputs.default_security_group_id
+    private_subnet_ids        = data.terraform_remote_state.vpc.outputs.private_subnet_ids
+    public_subnet_ids         = data.terraform_remote_state.vpc.outputs.public_subnet_ids
+  }
 }
 
 module ami {
   source = "../../ami-amzn2"
-}
-
-module vpc {
-  source          = "../../vpc"
-  namespace       = local.namespace
-  stage           = local.stage
-  cidr_block      = "10.0.0.0/16"
-  azs             = ["ap-northeast-1a", "ap-northeast-1c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
-  use_natgw       = false
 }
 
 module iam_instance_profile_ec2 {
@@ -44,14 +49,13 @@ module lc {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
-  name                        = "alb-ec2"
   ami_block_device_mappings   = module.ami.block_device_mappings
   associate_public_ip_address = false
   iam_instance_profile        = module.iam_instance_profile_ec2.id
   image_id                    = module.ami.id
   instance_type               = "t3a.micro"
   key_name                    = "id_rsa"
-  security_groups             = [module.vpc.default_security_group_id]
+  security_groups             = [local.vpc.default_security_group_id]
   userdata_part_cloud_config  = <<EOF
 #cloud-config
 repo_update: true
@@ -70,7 +74,7 @@ module alb_tg {
   namespace         = local.namespace
   stage             = local.stage
   name              = "alb-asg-lc"
-  vpc_id            = module.vpc.vpc_id
+  vpc_id            = local.vpc.id
   port              = 80
   protocol          = "HTTP"
   health_check_path = "/"
@@ -87,7 +91,7 @@ module asg {
   health_check_type    = "ELB"
   target_group_arns    = [module.alb_tg.arn]
   launch_configuration = module.lc.configuration_name
-  vpc_zone_identifier  = module.vpc.private_subnet_ids
+  vpc_zone_identifier  = local.vpc.private_subnet_ids
 }
 
 module sg_http {
@@ -95,7 +99,7 @@ module sg_http {
   namespace   = local.namespace
   stage       = local.stage
   name        = "alb_80"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc.id
   from_port   = 80
   to_port     = 80
   protocol    = "tcp"
@@ -107,7 +111,7 @@ module sg_https {
   namespace   = local.namespace
   stage       = local.stage
   name        = "alb_443"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc.id
   from_port   = 443
   to_port     = 443
   protocol    = "tcp"
@@ -125,9 +129,9 @@ module alb {
   namespace        = local.namespace
   stage            = local.stage
   name             = "alb-ec2"
-  vpc_id           = module.vpc.vpc_id
-  security_groups  = [module.vpc.default_security_group_id, module.sg_https.id, module.sg_http.id]
-  subnets          = module.vpc.public_subnet_ids
+  vpc_id           = local.vpc.id
+  security_groups  = [local.vpc.default_security_group_id, module.sg_https.id, module.sg_http.id]
+  subnets          = local.vpc.public_subnet_ids
   certificate_arn  = data.aws_acm_certificate.this.arn
   target_group_arn = module.alb_tg.arn
 }

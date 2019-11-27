@@ -8,8 +8,11 @@ validate:
 	@terragrunt validate-all
 
 clean:
-	@find . -type d -name '.terragrunt-cache' -exec rm -rf {} +
-	@find . -type d -name '.terraform' -exec rm -rf {} +
+	@find . -type d -name '.terragrunt-cache' -prune -exec rm -rf {} \;
+	@find . -type d -name '.terraform' -prune -exec rm -rf {} \;
+
+destroy:
+	@terragrunt destroy-all
 
 list:
 	@find . -type f -name '*.hcl'

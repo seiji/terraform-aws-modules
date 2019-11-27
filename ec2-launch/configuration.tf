@@ -8,13 +8,15 @@ resource aws_launch_configuration this {
   image_id                    = var.image_id
   instance_type               = var.instance_type
   key_name                    = var.key_name
-  security_groups             = var.security_groups
 
   root_block_device {
     volume_size = var.root_block_device_size
     volume_type = var.root_block_device_type
     encrypted   = true
   }
+
+  security_groups = var.security_groups
+  spot_price      = var.spot_price
 
   user_data_base64 = data.template_cloudinit_config.merged.rendered
 

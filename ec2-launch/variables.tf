@@ -62,6 +62,10 @@ variable root_block_device_type {
   default = "gp2"
 }
 
+variable spot_price {
+  default = null
+}
+
 variable userdata_part_cloud_config {
   default = ""
 }

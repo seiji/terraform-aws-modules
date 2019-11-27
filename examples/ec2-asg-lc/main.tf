@@ -53,9 +53,10 @@ module launch {
   associate_public_ip_address = false
   iam_instance_profile        = module.iam_instance_profile.id
   image_id                    = module.ami.id
-  instance_type               = "t3a.micro"
+  instance_type               = "t3.nano"
   key_name                    = "id_rsa"
   security_groups             = [local.vpc.default_security_group_id]
+  spot_price                  = "0.002"
   userdata_part_cloud_config  = <<EOF
 #cloud-config
 repo_update: true

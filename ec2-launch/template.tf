@@ -30,9 +30,9 @@ resource aws_launch_template this {
     enabled = var.enable_monitoring
   }
 
-  network_interfaces {
-    associate_public_ip_address = var.associate_public_ip_address
-  }
+  # network_interfaces {
+  #   associate_public_ip_address = var.associate_public_ip_address
+  # }
 
   user_data              = data.template_cloudinit_config.merged.rendered
   vpc_security_group_ids = var.security_groups
@@ -50,4 +50,6 @@ resource aws_launch_template this {
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = module.label.tags
 }

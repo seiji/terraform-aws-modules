@@ -10,6 +10,10 @@ variable name {
   type = string
 }
 
+variable desired_capacity {
+  default = 1
+}
+
 variable max_size {
   default = 1
 }
@@ -26,19 +30,14 @@ variable health_check_type {
   default = "EC2"
 }
 
-variable desired_capacity {
-  default = 1
-}
-
 variable launch_configuration {
   type = string
-}
-
-variable vpc_zone_identifier {
-  type = list
 }
 
 variable target_group_arns {
   default = []
 }
 
+variable vpc_zone_identifier {
+  type = list
+}

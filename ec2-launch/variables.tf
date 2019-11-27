@@ -6,10 +6,6 @@ variable stage {
   type = string
 }
 
-variable name {
-  type = string
-}
-
 variable associate_public_ip_address {
   default = false
 }

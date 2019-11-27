@@ -11,9 +11,9 @@ resource aws_launch_configuration this {
   security_groups             = var.security_groups
 
   root_block_device {
-    volume_size           = var.root_block_device_size
-    volume_type           = var.root_block_device_type
-    encrypted = true
+    volume_size = var.root_block_device_size
+    volume_type = var.root_block_device_type
+    encrypted   = true
   }
 
   user_data_base64 = data.template_cloudinit_config.merged.rendered

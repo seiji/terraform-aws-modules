@@ -87,14 +87,14 @@ module "ecs_ec2" {
   subnet_private_id_list = module.vpc.private_subnet_id_list
   subnet_public_id_list  = module.vpc.public_subnet_id_list
   alb_security_id_list   = [module.vpc.default_security_group_id, module.sg_alb_80.id, module.sg_alb.id]
-  image_id                    = data.aws_ami.ecs_ami.id
-  instance_type               = "t3.micro"
-  ec2_security_id_list        = [module.vpc.default_security_group_id]
-  ec2_iam_role = "ecsInstanceRole"
+  image_id               = data.aws_ami.ecs_ami.id
+  instance_type          = "t3.micro"
+  ec2_security_id_list   = [module.vpc.default_security_group_id]
+  ec2_iam_role           = "ecsInstanceRole"
   acm_arn                = data.aws_acm_certificate.this.arn
   container_port         = 80
   container_name         = "nginx"
   ecs_iam_role           = "ecsServiceRole"
-  key_name                    = "id_rsa"
+  key_name               = "id_rsa"
 }
 

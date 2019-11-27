@@ -3,16 +3,16 @@ resource "aws_appautoscaling_target" "this" {
   resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   # role_arn           = data.aws_iam_role.ecs_autoscale_service_linked_role.arn
-  min_capacity       = var.min_capacity
-  max_capacity       = var.max_capacity
+  min_capacity = var.min_capacity
+  max_capacity = var.max_capacity
 }
 
 resource "aws_appautoscaling_policy" "scale_out" {
-  name                    = "${local.name}-scale-out"
-  resource_id             = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
-  depends_on              = ["aws_appautoscaling_target.this"]
-  scalable_dimension      = "${aws_appautoscaling_target.this.scalable_dimension}"
-  service_namespace       = "${aws_appautoscaling_target.this.service_namespace}"
+  name               = "${local.name}-scale-out"
+  resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
+  depends_on         = ["aws_appautoscaling_target.this"]
+  scalable_dimension = "${aws_appautoscaling_target.this.scalable_dimension}"
+  service_namespace  = "${aws_appautoscaling_target.this.service_namespace}"
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
@@ -27,11 +27,11 @@ resource "aws_appautoscaling_policy" "scale_out" {
 }
 
 resource "aws_appautoscaling_policy" "scale_in" {
-  name                    = "${local.name}-scale-in"
-  resource_id             = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
-  depends_on              = ["aws_appautoscaling_target.this"]
-  scalable_dimension      = "${aws_appautoscaling_target.this.scalable_dimension}"
-  service_namespace       = "${aws_appautoscaling_target.this.service_namespace}"
+  name               = "${local.name}-scale-in"
+  resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
+  depends_on         = ["aws_appautoscaling_target.this"]
+  scalable_dimension = "${aws_appautoscaling_target.this.scalable_dimension}"
+  service_namespace  = "${aws_appautoscaling_target.this.service_namespace}"
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
@@ -47,7 +47,7 @@ resource "aws_appautoscaling_policy" "scale_in" {
 
 resource "aws_autoscaling_policy" "scale_out" {
   name                   = "${local.name}-scale-out"
-  adjustment_type         = "ChangeInCapacity"
+  adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
   scaling_adjustment     = 1
   autoscaling_group_name = aws_autoscaling_group.this.name
@@ -55,7 +55,7 @@ resource "aws_autoscaling_policy" "scale_out" {
 
 resource "aws_autoscaling_policy" "scale_in" {
   name                   = "${local.name}-scale-in"
-  adjustment_type         = "ChangeInCapacity"
+  adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
   scaling_adjustment     = -1
   autoscaling_group_name = aws_autoscaling_group.this.name
@@ -116,7 +116,7 @@ resource "aws_launch_configuration" "this" {
     delete_on_termination = true
   }
 
-  user_data                   = <<EOF
+  user_data = <<EOF
   #!/bin/bash
   echo ECS_CLUSTER=${local.name} >> /etc/ecs/ecs.config
   EOF

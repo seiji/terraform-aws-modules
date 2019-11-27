@@ -36,5 +36,5 @@ module "sns_event_guard_duty" {
 module "cloudwatch_event_rule_ssm" {
   source               = "../../cloudwatch-event-rule"
   target_sns_topic_arn = module.sns_event_guard_duty.arn
-  enable_guard_duty = true
+  enable_guard_duty    = true
 }

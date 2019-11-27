@@ -1,5 +1,5 @@
 locals {
-  use_asg             = true
+  use_asg = true
   autoscaling_metrics = [
     "GroupMinSize",
     "GroupMaxSize",

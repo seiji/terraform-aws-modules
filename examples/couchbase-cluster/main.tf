@@ -72,7 +72,7 @@ bootcmd:
 runcmd:
   - yum install -y https://packages.couchbase.com/releases/${local.cb_version}/couchbase-server-community-${local.cb_version}-centos7.x86_64.rpm
 EOF
-  userdata_part_shellscript  = file("templates/couchbase-server.sh")
+  userdata_part_shellscript   = file("templates/couchbase-server.sh")
 }
 
 module "asg" {

@@ -39,5 +39,5 @@ module "sns_event_ssm" {
 module "cloudwatch_event_rule_ssm" {
   source               = "../../cloudwatch-event-rule"
   target_sns_topic_arn = module.sns_event_ssm.arn
-  enable_ssm = true
+  enable_ssm           = true
 }

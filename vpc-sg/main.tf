@@ -1,6 +1,6 @@
 resource aws_security_group this {
-  name    = "${var.namespace}-${var.stage}-${var.name}"
-  vpc_id      = var.vpc_id
+  name   = "${var.namespace}-${var.stage}-${var.name}"
+  vpc_id = var.vpc_id
 
   egress {
     from_port   = 0
@@ -21,8 +21,8 @@ resource aws_security_group_rule this {
 
   type = "ingress"
 
-  from_port = var.from_port
-  to_port   = var.to_port
-  protocol  = var.protocol
+  from_port   = var.from_port
+  to_port     = var.to_port
+  protocol    = var.protocol
   cidr_blocks = var.cidr_blocks
 }

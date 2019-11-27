@@ -1,7 +1,7 @@
 module label {
-  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
-  namespace = var.namespace
-  stage     = var.stage
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  namespace  = var.namespace
+  stage      = var.stage
   attributes = ["ec2"]
 }
 
@@ -18,7 +18,7 @@ data aws_iam_policy_document ec2_cloudwatch {
 resource aws_iam_role ec2 {
   name               = module.label.id
   assume_role_policy = data.aws_iam_policy_document.ec2_cloudwatch.json
-  tags = module.label.tags
+  tags               = module.label.tags
 }
 
 resource aws_iam_role_policy_attachment ssm {

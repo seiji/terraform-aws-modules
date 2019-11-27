@@ -76,7 +76,7 @@ EOF
 }
 
 module "asg" {
-  source               = "../../ec2-auto-scaling-groups"
+  source               = "../../ec2-asg-lc"
   namespace            = local.namespace
   stage                = local.stage
   name                 = "couchbase"

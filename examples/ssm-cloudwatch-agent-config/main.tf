@@ -45,7 +45,6 @@ module lc {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
-  name                        = "cwa"
   ami_block_device_mappings   = module.ami.block_device_mappings
   associate_public_ip_address = false
   iam_instance_profile        = module.iam_instance_profile_ec2.id
@@ -67,7 +66,7 @@ EOF
 }
 
 module asg {
-  source               = "../../ec2-auto-scaling-groups"
+  source               = "../../ec2-asg-lc"
   namespace            = local.namespace
   stage                = local.stage
   name                 = "cwa"

@@ -39,19 +39,19 @@ module ami {
   source = "../../ami-amzn2"
 }
 
-module iam_instance_profile_ec2 {
+module iam_instance_profile {
   source    = "../../iam-instance-profile-ec2"
   namespace = local.namespace
   stage     = local.stage
 }
 
-module lc {
+module launch {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
   ami_block_device_mappings   = module.ami.block_device_mappings
   associate_public_ip_address = false
-  iam_instance_profile        = module.iam_instance_profile_ec2.id
+  iam_instance_profile        = module.iam_instance_profile.id
   image_id                    = module.ami.id
   instance_type               = "t3a.micro"
   key_name                    = "id_rsa"
@@ -70,14 +70,14 @@ EOF
 }
 
 module asg {
-  source               = "../../ec2-auto-scaling-groups"
+  source               = "../../ec2-asg-lc"
   namespace            = local.namespace
   stage                = local.stage
-  name                 = module.lc.configuration_name
+  name                 = module.launch.configuration_name
   max_size             = 1
   min_size             = 1
   desired_capacity     = 1
   health_check_type    = "EC2"
-  launch_configuration = module.lc.configuration_name
+  launch_configuration = module.launch.configuration_name
   vpc_zone_identifier  = local.vpc.private_subnet_ids
 }

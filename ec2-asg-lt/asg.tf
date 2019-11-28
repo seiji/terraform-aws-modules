@@ -28,7 +28,7 @@ resource aws_autoscaling_group this {
       launch_template_specification {
         launch_template_id = var.launch_template_id
         # version            = var.launch_template_version
-        version           = "$Latest"
+        version = "$Latest"
       }
 
       dynamic override {
@@ -40,7 +40,7 @@ resource aws_autoscaling_group this {
     }
 
     instances_distribution {
-      on_demand_base_capacity = 1
+      on_demand_base_capacity                  = 1
       on_demand_percentage_above_base_capacity = 0
       spot_allocation_strategy                 = "lowest-price"
       spot_instance_pools                      = "2"
@@ -53,7 +53,7 @@ resource aws_autoscaling_group this {
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes = [desired_capacity]
+    ignore_changes        = [desired_capacity]
   }
 
   tags = module.label.tags_as_list_of_maps

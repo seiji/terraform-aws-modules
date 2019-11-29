@@ -2,8 +2,8 @@ terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
     bucket         = "terraform-aws-modules-tfstate"
-    region         = "ap-northeast-1"
     key            = "security-hub.examples"
+    region         = "ap-northeast-1"
     encrypt        = true
     dynamodb_table = "terraform-aws-modules-tfstate-lock"
   }
@@ -16,8 +16,16 @@ provider "aws" {
 
 locals {
   region    = "ap-northeast-1"
-  namespace = "security-hub"
-  stage     = "staging"
+  namespace = "default"
+  stage     = ""
+}
+
+module "cloud_trails" {
+  source                 = "../../cloud-trails"
+  namespace              = local.namespace
+  stage                  = ""
+  bucket_name            = "trail.seiji.me"
+  logging_s3_bucket_arns = ["arn:aws:s3:::terraform-aws-modules-tfstate/"]
 }
 
 module "security_hub" {

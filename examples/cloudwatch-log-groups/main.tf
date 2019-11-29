@@ -9,7 +9,7 @@ terraform {
   }
 }
 
-provider "aws" {
+provider aws {
   version = "~> 2.36"
   region  = local.region
 }
@@ -20,10 +20,21 @@ locals {
   stage     = "staging"
 }
 
-module "cloudwatch_log_group" {
+module cloudwatch_log_group {
   source            = "../../cloudwatch-log-group"
   namespace         = local.namespace
   stage             = local.stage
   name              = "/examples/staging/cloudwatch-log-groups"
   retention_in_days = 7
+}
+
+module cloudwatch_log_metric_filter {
+  source         = "../../cloudwatch-log-metric-filter"
+  namespace      = local.namespace
+  stage          = local.stage
+  attributes     = ["test"]
+  pattern        = <<PATTERN
+    { $.responseElements.ConsoleLogin = "Failure" }
+PATTERN
+  log_group_name = module.cloudwatch_log_group.name
 }

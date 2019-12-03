@@ -3,35 +3,8 @@ module label {
   namespace = var.namespace
   stage     = var.stage
 }
+
 data aws_caller_identity this {}
-
-resource aws_cloudtrail this {
-  name           = module.label.id
-  s3_bucket_name = aws_s3_bucket.this.id
-
-  enable_log_file_validation    = true
-  enable_logging                = true
-  include_global_service_events = true
-  is_multi_region_trail         = var.is_multi_region_trail
-  is_organization_trail         = var.is_organization_trail
-
-  event_selector {
-    include_management_events = true
-    read_write_type           = "All"
-
-    data_resource {
-      type   = "AWS::S3::Object"
-      values = var.logging_s3_bucket_arns
-    }
-    data_resource {
-      type   = "AWS::Lambda::Function"
-      values = var.logging_lambda_function_arns
-    }
-  }
-
-  depends_on = [aws_s3_bucket.this]
-  tags       = module.label.tags
-}
 
 resource aws_s3_bucket this {
   bucket        = var.bucket_name
@@ -54,7 +27,7 @@ resource aws_s3_bucket_policy this {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:GetBucketAcl",
-            "Resource": "arn:aws:s3:::${var.bucket_name}"
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.this.id}"
         },
         {
             "Sid": "AWSCloudTrailWrite",
@@ -63,7 +36,7 @@ resource aws_s3_bucket_policy this {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::${var.bucket_name}/AWSLogs/*",
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.this.id}/AWSLogs/*",
             "Condition": {
                 "StringEquals": {
                     "s3:x-amz-acl": "bucket-owner-full-control"
@@ -76,3 +49,32 @@ POLICY
 
   depends_on = [aws_s3_bucket.this]
 }
+
+resource aws_cloudtrail this {
+  name           = module.label.id
+  s3_bucket_name = aws_s3_bucket.this.id
+
+  enable_log_file_validation    = true
+  enable_logging                = true
+  include_global_service_events = true
+  is_multi_region_trail         = true
+  is_organization_trail         = var.is_organization_trail
+
+  event_selector {
+    include_management_events = true
+    read_write_type           = "All"
+
+    data_resource {
+      type   = "AWS::S3::Object"
+      values = var.logging_s3_bucket_arns
+    }
+    data_resource {
+      type   = "AWS::Lambda::Function"
+      values = var.logging_lambda_function_arns
+    }
+  }
+
+  depends_on = [aws_s3_bucket.this]
+  tags       = module.label.tags
+}
+

@@ -10,26 +10,23 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 2.22"
-  region  = local.region
+  version = "~> 2.40"
+  region    = "ap-northeast-1"
+}
+
+data terraform_remote_state vpc {
+  backend = "s3"
+
+  config = {
+    bucket = "terraform-aws-modules-tfstate"
+    region = "ap-northeast-1"
+    key    = "vpc-nati.examples"
+  }
 }
 
 locals {
-  region    = "ap-northeast-1"
   namespace = "ecs-ec2"
   stage     = "staging"
-}
-
-module "vpc" {
-  source          = "../../vpc"
-  region          = local.region
-  namespace       = local.namespace
-  stage           = local.stage
-  cidr_block      = "10.0.0.0/16"
-  azs             = ["ap-northeast-1a", "ap-northeast-1c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
-  use_natgw       = false
 }
 
 module "iam_role_ecs" {

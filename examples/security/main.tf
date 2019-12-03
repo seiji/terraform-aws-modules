@@ -20,8 +20,8 @@ locals {
   stage     = ""
 }
 
-module "cloud_trails" {
-  source                 = "../../cloud-trails"
+module "cloudtrail" {
+  source                 = "../../cloudtrail"
   namespace              = local.namespace
   stage                  = ""
   bucket_name            = "trail.seiji.me"

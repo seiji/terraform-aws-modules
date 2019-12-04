@@ -1,5 +1,12 @@
+module "label" {
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  namespace  = var.namespace
+  stage      = var.stage
+  attributes = var.attributes
+}
+
 resource aws_security_group this {
-  name   = "${var.namespace}-${var.stage}-${var.name}"
+  name   = module.label.id
   vpc_id = var.vpc_id
 
   egress {
@@ -9,11 +16,7 @@ resource aws_security_group this {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name      = "${var.namespace}-${var.stage}-${var.name}"
-    namespace = var.namespace
-    stage     = var.stage
-  }
+  tags = module.label.tags
 }
 
 resource aws_security_group_rule this {

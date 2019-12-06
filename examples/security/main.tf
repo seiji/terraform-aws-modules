@@ -28,10 +28,6 @@ module "cloudtrail" {
   logging_s3_bucket_arns = ["arn:aws:s3:::terraform-aws-modules-tfstate/"]
 }
 
-module "security_hub" {
-  source = "../../security-hub"
-}
-
 module "guard_duty" {
   source = "../../guard-duty"
 }
@@ -39,6 +35,10 @@ module "guard_duty" {
 module "sns_event_guard_duty" {
   source = "../../sns-event"
   name   = "event-guard-duty"
+}
+
+module "security_hub" {
+  source = "../../security-hub"
 }
 
 module "cloudwatch_event_rule_ssm" {

@@ -32,27 +32,44 @@ module "iam_role_ecs" {
   source = "../../iam-role-ecs"
 }
 
-module "sg_alb_80" {
-  source      = "../../vpc-sg"
-  namespace   = local.namespace
-  stage       = local.stage
-  attributes  = ["http"]
-  vpc_id      = local.vpc.id
-  from_port   = 80
-  to_port     = 80
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+module ami {
+  source = "git::https://github.com/seiji/terraform-aws-ecs-ami.git?ref=master"
 }
 
-module "sg_alb" {
-  source      = "../../vpc-sg"
+module iam_instance_profile {
+  source    = "../../iam-instance-profile-ec2"
+  namespace = local.namespace
+  stage     = local.stage
+}
+
+module launch {
+  source                      = "../../ec2-launch"
+  namespace                   = local.namespace
+  stage                       = local.stage
+  ami_block_device_mappings   = module.ami.block_device_mappings
+  associate_public_ip_address = false
+  iam_instance_profile        = module.iam_instance_profile.id
+  image_id                    = module.ami.id
+  image_name                  = "amzn2-ami-ecs"
+  key_name                    = "id_rsa"
+  security_groups             = [local.vpc.default_security_group_id]
+  userdata_part_cloud_config  = <<EOF
+#cloud-config
+repo_update: true
+repo_upgrade: none
+timezone: Asia/Tokyo
+runcmd:
+  - amazon-linux-extras install -y nginx1
+  - systemctl enable nginx
+  - systemctl start nginx
+EOF
+}
+
+module "sg_https" {
+  source      = "../../vpc-sg-https"
   namespace   = local.namespace
   stage       = local.stage
-  attributes  = ["https"]
   vpc_id      = local.vpc.id
-  from_port   = 443
-  to_port     = 443
-  protocol    = "tcp"
   cidr_blocks = ["0.0.0.0/0"]
 }
 
@@ -62,28 +79,19 @@ module "sg_alb" {
 #   most_recent = true
 # }
 #
-# data "aws_ami" "ecs_ami" {
-#   most_recent = true
-#   owners      = ["amazon"]
-#
-#   filter {
-#     name   = "name"
-#     values = ["amzn-ami-*-amazon-ecs-optimized"]
-#   }
-# }
-#
+
 # module "ecs_ec2" {
-#   source = "../../ecs"
+#   source = "../../ecs-ec2"
 #
 #   namespace              = local.namespace
 #   stage                  = local.stage
-#   vpc_id                 = module.vpc.vpc_id
-#   subnet_private_id_list = module.vpc.private_subnet_id_list
-#   subnet_public_id_list  = module.vpc.public_subnet_id_list
-#   alb_security_id_list   = [module.vpc.default_security_group_id, module.sg_alb_80.id, module.sg_alb.id]
-#   image_id               = data.aws_ami.ecs_ami.id
+#   vpc_id                 = local.vpc.id
+#   subnet_private_id_list = local.vpc.private_subnet_ids
+#   subnet_public_id_list  = local.vpc.public_subnet_ids
+#   alb_security_id_list   = [local.vpc.default_security_group_id, module.sg_https.id]
+#   image_id               = module.ami.image_id
 #   instance_type          = "t3.micro"
-#   ec2_security_id_list   = [module.vpc.default_security_group_id]
+#   ec2_security_id_list   = [local.vpc.default_security_group_id]
 #   ec2_iam_role           = "ecsInstanceRole"
 #   acm_arn                = data.aws_acm_certificate.this.arn
 #   container_port         = 80
@@ -91,4 +99,4 @@ module "sg_alb" {
 #   ecs_iam_role           = "ecsServiceRole"
 #   key_name               = "id_rsa"
 # }
-#
+

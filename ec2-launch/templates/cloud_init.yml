@@ -1,7 +1,7 @@
 #cloud-config
 
 repo_update: true
-repo_upgrade: none
+repo_upgrade: security
 runcmd:
   - systemctl stop postfix.service
   - systemctl disable postfix.service

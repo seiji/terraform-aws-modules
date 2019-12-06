@@ -1,17 +1,19 @@
-locals {
-  name = "${var.namespace}-${var.stage}"
+module label {
+  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  namespace = var.namespace
+  stage     = var.stage
 }
 
 resource "aws_ecs_cluster" "this" {
-  name = local.name
+  name = module.label.id
 }
 
 data "aws_ecs_task_definition" "this" {
-  task_definition = local.name
+  task_definition = module.label.id
 }
 
 resource "aws_ecs_service" "this" {
-  name                               = local.name
+  name                               = module.label.id
   cluster                            = aws_ecs_cluster.this.id
   task_definition                    = "${data.aws_ecs_task_definition.this.family}:${data.aws_ecs_task_definition.this.revision}"
   desired_count                      = var.ecs_desired_count

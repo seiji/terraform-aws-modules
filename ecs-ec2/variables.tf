@@ -1,7 +1,15 @@
-variable namespace {}
-variable stage {}
+variable namespace {
+  type = string
+}
 
-variable vpc_id {}
+variable stage {
+  type = string
+}
+
+variable vpc_id {
+  type = string
+}
+
 variable subnet_private_id_list {
   type = list
 }

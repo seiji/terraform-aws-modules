@@ -1,4 +1,5 @@
 data "aws_region" "this" {}
+
 resource "aws_securityhub_account" "this" {}
 
 resource "aws_securityhub_standards_subscription" "this" {

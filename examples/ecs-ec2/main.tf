@@ -50,7 +50,7 @@ module launch {
   associate_public_ip_address = false
   iam_instance_profile        = module.iam_instance_profile.id
   image_id                    = module.ami.id
-  image_name                  = "amzn2-ami-ecs"
+  image_name                  = "amzn2-ecs"
   key_name                    = "id_rsa"
   security_groups             = [local.vpc.default_security_group_id]
   userdata_part_cloud_config  = <<EOF

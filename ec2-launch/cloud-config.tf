@@ -1,13 +1,18 @@
+locals {
+  template_path = var.cloudwatch_agent_use ? "${path.module}/templates/cloud-init-cwa.yml" : "${path.module}/templates/cloud-init-${var.image_name}.yml"
+}
+
 data template_file cloud_init {
-  template = file(var.cloudwatch_agent_use ? "${path.module}/templates/cloud_init_cwa.yml" : "${path.module}/templates/cloud_init.yml")
+  template = file(local.template_path)
 
   vars = {
     cwa_content = base64encode(data.template_file.cloudwatch_agent_config.rendered)
+    ecs_cluster = var.ecs_cluster_name
   }
 }
 
 data template_file cloudwatch_agent_config {
-  template = file("${path.module}/templates/cloudwatch_agent_config.json")
+  template = file("${path.module}/templates/cloudwatch-agent-config.json")
 
   vars = {
     metrics_collection_interval = "${var.metrics_collection_interval}"

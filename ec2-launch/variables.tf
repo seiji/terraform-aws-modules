@@ -30,6 +30,10 @@ variable image_id {
   type = string
 }
 
+variable image_name {
+  default = "amzn2-ami"
+}
+
 variable instance_type {
   default = "t3.micro"
 }
@@ -72,4 +76,8 @@ variable userdata_part_cloud_config {
 
 variable userdata_part_shellscript {
   default = "echo 'shellscript';"
+}
+
+variable ecs_cluster_name {
+  default = "default"
 }

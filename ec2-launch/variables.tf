@@ -31,7 +31,7 @@ variable image_id {
 }
 
 variable image_name {
-  default = "amzn2-ami"
+  default = "amzn2"
 }
 
 variable instance_type {

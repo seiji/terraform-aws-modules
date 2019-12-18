@@ -65,7 +65,7 @@ runcmd:
 EOF
 }
 
-module "sg_https" {
+module sg_https {
   source      = "../../vpc-sg-https"
   namespace   = local.namespace
   stage       = local.stage

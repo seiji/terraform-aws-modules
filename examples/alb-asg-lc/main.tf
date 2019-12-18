@@ -94,27 +94,11 @@ module asg {
   vpc_zone_identifier  = local.vpc.private_subnet_ids
 }
 
-module sg_http {
-  source      = "../../vpc-sg"
-  namespace   = local.namespace
-  stage       = local.stage
-  name        = "alb_80"
-  vpc_id      = local.vpc.id
-  from_port   = 80
-  to_port     = 80
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
 module sg_https {
-  source      = "../../vpc-sg"
+  source      = "../../vpc-sg-https"
   namespace   = local.namespace
   stage       = local.stage
-  name        = "alb_443"
   vpc_id      = local.vpc.id
-  from_port   = 443
-  to_port     = 443
-  protocol    = "tcp"
   cidr_blocks = ["0.0.0.0/0"]
 }
 
@@ -130,7 +114,7 @@ module alb {
   stage            = local.stage
   name             = "alb-ec2"
   vpc_id           = local.vpc.id
-  security_groups  = [local.vpc.default_security_group_id, module.sg_https.id, module.sg_http.id]
+  security_groups  = [local.vpc.default_security_group_id, module.sg_https.id]
   subnets          = local.vpc.public_subnet_ids
   certificate_arn  = data.aws_acm_certificate.this.arn
   target_group_arn = module.alb_tg.arn

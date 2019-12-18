@@ -35,8 +35,8 @@ module vpc {
   use_natgw       = false
 }
 
-module iam_instance_profile_ec2 {
-  source    = "../../iam-instance-profile-ec2"
+module iam_role_ec2 {
+  source    = "../../iam-role-ec2"
   namespace = local.namespace
   stage     = local.stage
 }
@@ -47,7 +47,7 @@ module lc {
   stage                       = local.stage
   ami_block_device_mappings   = module.ami.block_device_mappings
   associate_public_ip_address = false
-  iam_instance_profile        = module.iam_instance_profile_ec2.id
+  iam_instance_profile        = module.iam_role_ec2.instance_profile_id
   image_id                    = module.ami.id
   instance_type               = "t3.micro"
   key_name                    = "id_rsa"

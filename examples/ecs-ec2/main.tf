@@ -28,7 +28,7 @@ locals {
   }
 }
 
-module "iam_role_ecs" {
+module iam_role_ecs {
   source = "../../iam-role-ecs"
 }
 
@@ -36,8 +36,8 @@ module ami {
   source = "git::https://github.com/seiji/terraform-aws-ecs-ami.git?ref=master"
 }
 
-module iam_instance_profile {
-  source    = "../../iam-instance-profile-ec2"
+module iam_role_ec2 {
+  source    = "../../iam-role-ec2"
   namespace = local.namespace
   stage     = local.stage
 }

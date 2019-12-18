@@ -32,8 +32,8 @@ module ami {
   source = "../../ami-amzn2"
 }
 
-module iam_instance_profile {
-  source    = "../../iam-instance-profile-ec2"
+module iam_role_ec2 {
+  source    = "../../iam-role-ec2"
   namespace = local.namespace
   stage     = local.stage
 }
@@ -44,7 +44,7 @@ module launch {
   stage                       = local.stage
   ami_block_device_mappings   = module.ami.block_device_mappings
   associate_public_ip_address = false
-  iam_instance_profile        = module.iam_instance_profile.id
+  iam_instance_profile        = module.iam_role_ec2.instance_profile_id
   image_id                    = module.ami.id
   key_name                    = "id_rsa"
   security_groups             = [local.vpc.default_security_group_id]

@@ -26,6 +26,7 @@ locals {
     private_subnet_ids        = data.terraform_remote_state.vpc.outputs.private_subnet_ids
     public_subnet_ids         = data.terraform_remote_state.vpc.outputs.public_subnet_ids
   }
+  cluster_name = "ecs-ec2-staging"
 }
 
 module iam_role_ecs {
@@ -36,33 +37,33 @@ module ami {
   source = "git::https://github.com/seiji/terraform-aws-ecs-ami.git?ref=master"
 }
 
-module iam_role_ec2 {
-  source    = "../../iam-role-ec2"
-  namespace = local.namespace
-  stage     = local.stage
-}
-
 module launch {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
   ami_block_device_mappings   = module.ami.block_device_mappings
   associate_public_ip_address = false
-  iam_instance_profile        = module.iam_instance_profile.id
+  iam_instance_profile        = module.iam_role_ecs.instance_profile_id
   image_id                    = module.ami.id
   image_name                  = "amzn2-ecs"
   key_name                    = "id_rsa"
   security_groups             = [local.vpc.default_security_group_id]
-  userdata_part_cloud_config  = <<EOF
-#cloud-config
-repo_update: true
-repo_upgrade: none
-timezone: Asia/Tokyo
-runcmd:
-  - amazon-linux-extras install -y nginx1
-  - systemctl enable nginx
-  - systemctl start nginx
-EOF
+  ecs_cluster_name            = local.cluster_name
+  root_block_device_size      = 30 # >= 30GB
+}
+
+module asg {
+  source              = "../../ec2-asg-lt"
+  namespace           = local.namespace
+  stage               = local.stage
+  name                = module.launch.template_name
+  instance_types      = ["t3a.micro"]
+  max_size            = 1
+  min_size            = 1
+  desired_capacity    = 1
+  health_check_type   = "EC2"
+  launch_template_id  = module.launch.template_id
+  vpc_zone_identifier = local.vpc.private_subnet_ids
 }
 
 module sg_https {
@@ -73,30 +74,65 @@ module sg_https {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-# data "aws_acm_certificate" "this" {
-#   domain      = "*.seiji.me"
-#   types       = ["AMAZON_ISSUED"]
-#   most_recent = true
-# }
-#
+data aws_acm_certificate this {
+  domain      = "*.seiji.me"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
 
-# module "ecs_ec2" {
-#   source = "../../ecs-ec2"
-#
-#   namespace              = local.namespace
-#   stage                  = local.stage
-#   vpc_id                 = local.vpc.id
-#   subnet_private_id_list = local.vpc.private_subnet_ids
-#   subnet_public_id_list  = local.vpc.public_subnet_ids
-#   alb_security_id_list   = [local.vpc.default_security_group_id, module.sg_https.id]
-#   image_id               = module.ami.image_id
-#   instance_type          = "t3.micro"
-#   ec2_security_id_list   = [local.vpc.default_security_group_id]
-#   ec2_iam_role           = "ecsInstanceRole"
-#   acm_arn                = data.aws_acm_certificate.this.arn
-#   container_port         = 80
-#   container_name         = "nginx"
-#   ecs_iam_role           = "ecsServiceRole"
-#   key_name               = "id_rsa"
-# }
+module ecs_ec2 {
+  source            = "../../ecs-ec2"
+  namespace         = local.namespace
+  stage             = local.stage
+  acm_arn           = data.aws_acm_certificate.this.arn
+  alb_security_ids  = [local.vpc.default_security_group_id, module.sg_https.id]
+  container_name    = "nginx"
+  container_port    = 80
+  ecs_cluster_name  = local.cluster_name
+  ecs_iam_role      = "ecsServiceRole"
+  subnet_public_ids = local.vpc.public_subnet_ids
+  vpc_id            = local.vpc.id
+}
 
+data aws_route53_zone this {
+  name         = "seiji.me."
+  private_zone = false
+}
+
+module route53_record_alias {
+  source        = "../../route53-record-alias"
+  name          = "nginx.seiji.me"
+  zone_id       = data.aws_route53_zone.this.zone_id
+  alias_name    = module.ecs_ec2.alb_dns_name
+  alias_zone_id = module.ecs_ec2.alb_zone_id
+}
+
+module cloudwatch_log_group {
+  source            = "../../cloudwatch-log-group"
+  namespace         = local.namespace
+  stage             = local.stage
+  name              = "examples/ecs-ec2"
+  retention_in_days = 3
+}
+
+module cloudwatch_log_s3 {
+  source    = "../../s3"
+  namespace = local.namespace
+  stage     = local.stage
+}
+
+module kinesis_firehose_s3 {
+  source         = "../../kinesis-firehose-s3"
+  namespace      = local.namespace
+  stage          = local.stage
+  bucket_arn     = module.cloudwatch_log_s3.arn
+  log_group_name = module.cloudwatch_log_group.name
+}
+
+module cloudwatch_log_subscription_filter {
+  source          = "../../cloudwatch-log-subscription-filter"
+  namespace       = local.namespace
+  stage           = local.stage
+  destination_arn = module.kinesis_firehose_s3.arn
+  log_group_name  = module.cloudwatch_log_group.name
+}

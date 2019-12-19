@@ -1,12 +1,12 @@
-resource "aws_alb" "this" {
-  name            = local.name
+resource aws_alb this {
+  name            = module.label.id
   internal        = false
-  security_groups = var.alb_security_id_list
-  subnets         = var.subnet_public_id_list
+  security_groups = var.alb_security_ids
+  subnets         = var.subnet_public_ids
   idle_timeout    = 60
 }
 
-resource "aws_alb_listener" "this" {
+resource aws_alb_listener this {
   load_balancer_arn = aws_alb.this.arn
   port              = "443"
   protocol          = "HTTPS"
@@ -17,6 +17,11 @@ resource "aws_alb_listener" "this" {
     target_group_arn = aws_alb_target_group.this.arn
     type             = "forward"
   }
+
+  depends_on = [
+    aws_alb.this,
+    aws_alb_target_group.this,
+  ]
 }
 
 resource "aws_alb_listener" "http" {
@@ -33,10 +38,14 @@ resource "aws_alb_listener" "http" {
       status_code = "HTTP_301"
     }
   }
+
+  depends_on = [
+    aws_alb.this,
+  ]
 }
 
-resource "aws_alb_target_group" "this" {
-  name     = local.name
+resource aws_alb_target_group this {
+  name     = module.label.id
   port     = 80
   protocol = "HTTP"
   vpc_id   = var.vpc_id

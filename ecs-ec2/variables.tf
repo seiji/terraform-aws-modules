@@ -6,38 +6,34 @@ variable stage {
   type = string
 }
 
-variable vpc_id {
+variable acm_arn {
   type = string
 }
 
-variable subnet_private_id_list {
+variable alb_security_ids {
   type = list
 }
 
-variable subnet_public_id_list {
-  type = list
+variable container_name {
+  type = string
 }
 
-variable alb_security_id_list {
-  type = list
+variable container_port {
+  type = number
 }
 
-variable ec2_security_id_list {
-  type = list
+variable ecs_cluster_name {
+  type = string
 }
-variable key_name {}
-variable image_id {}
-variable instance_type {}
-variable ec2_iam_role {}
-
-variable acm_arn {}
 
 variable ecs_desired_count {
   default = 1
 }
+
 variable ecs_deployment_maximum_percent {
   default = 200
 }
+
 variable ecs_deployment_minimum_healthy_percent {
   default = 100
 }
@@ -46,9 +42,12 @@ variable ecs_iam_role {
   default = "ecsServiceRole"
 }
 
-variable container_name {}
-variable container_port {
-  type = number
+variable subnet_public_ids {
+  type = list
+}
+
+variable vpc_id {
+  type = string
 }
 
 variable min_capacity {

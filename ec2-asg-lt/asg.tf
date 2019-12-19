@@ -58,3 +58,19 @@ resource aws_autoscaling_group this {
 
   tags = module.label.tags_as_list_of_maps
 }
+
+resource aws_autoscaling_policy scale_out {
+  name                   = "${var.name}-scale-out"
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = 300
+  scaling_adjustment     = 1
+  autoscaling_group_name = aws_autoscaling_group.this.name
+}
+
+resource aws_autoscaling_policy scale_in {
+  name                   = "${var.name}-scale-in"
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = 300
+  scaling_adjustment     = -1
+  autoscaling_group_name = aws_autoscaling_group.this.name
+}

@@ -9,8 +9,8 @@ services:
       driver: awslogs
       options:
         awslogs-create-group: "true"
-        awslogs-group: examples/ecs-ec2
+        awslogs-group: /example/ecs-ec2/stg
         awslogs-region: ap-northeast-1
-        awslogs-stream-prefix: examples
+        awslogs-stream-prefix: nginx
     ports:
       - "80"

@@ -10,10 +10,14 @@ jobs:
       matrix:
         examples:
           - alb-asg-lc
+          - alb-ecs-ec2
           - cloudwatch-log-groups
           - ec2-asg-lc
           - ec2-asg-lt
           - backend
+          - security
+          - sns-budgets
+          - sns-event
           - ssm-cloudwatch-agent-config
           - vpc-nati
     steps:

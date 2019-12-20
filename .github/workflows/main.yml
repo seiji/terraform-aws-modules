@@ -11,10 +11,10 @@ jobs:
         examples:
           - alb-asg-lc
           - alb-ecs-ec2
-          - cloudwatch-log-groups
-          - ec2-asg-lc
-          - ec2-asg-lt
+          - asg-lc-ec2
+          - asg-lt-ec2
           - backend
+          - cloudwatch-log-groups
           - security
           - sns-budgets
           - sns-event

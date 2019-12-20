@@ -38,3 +38,25 @@ module cloudwatch_log_metric_filter {
 PATTERN
   log_group_name = module.cloudwatch_log_group.name
 }
+
+module cloudwatch_log_s3 {
+  source    = "../../s3"
+  namespace = local.namespace
+  stage     = local.stage
+}
+
+module kinesis_firehose_s3 {
+  source         = "../../kinesis-firehose-s3"
+  namespace      = local.namespace
+  stage          = local.stage
+  bucket_arn     = module.cloudwatch_log_s3.arn
+  log_group_name = module.cloudwatch_log_group.name
+}
+
+module cloudwatch_log_subscription_filter {
+  source          = "../../cloudwatch-log-subscription-filter"
+  namespace       = local.namespace
+  stage           = local.stage
+  destination_arn = module.kinesis_firehose_s3.arn
+  log_group_name  = module.cloudwatch_log_group.name
+}

@@ -106,33 +106,3 @@ module route53_record_alias {
   alias_name    = module.ecs_ec2.alb_dns_name
   alias_zone_id = module.ecs_ec2.alb_zone_id
 }
-
-module cloudwatch_log_group {
-  source            = "../../cloudwatch-log-group"
-  namespace         = local.namespace
-  stage             = local.stage
-  name              = "examples/ecs-ec2"
-  retention_in_days = 3
-}
-
-module cloudwatch_log_s3 {
-  source    = "../../s3"
-  namespace = local.namespace
-  stage     = local.stage
-}
-
-module kinesis_firehose_s3 {
-  source         = "../../kinesis-firehose-s3"
-  namespace      = local.namespace
-  stage          = local.stage
-  bucket_arn     = module.cloudwatch_log_s3.arn
-  log_group_name = module.cloudwatch_log_group.name
-}
-
-module cloudwatch_log_subscription_filter {
-  source          = "../../cloudwatch-log-subscription-filter"
-  namespace       = local.namespace
-  stage           = local.stage
-  destination_arn = module.kinesis_firehose_s3.arn
-  log_group_name  = module.cloudwatch_log_group.name
-}

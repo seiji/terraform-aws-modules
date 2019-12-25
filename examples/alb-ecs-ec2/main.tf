@@ -57,7 +57,7 @@ module asg {
   namespace           = local.namespace
   stage               = local.stage
   name                = module.launch.template_name
-  instance_types      = ["t3a.micro"]
+  instance_types      = ["t3.micro"]
   max_size            = 1
   min_size            = 1
   desired_capacity    = 1

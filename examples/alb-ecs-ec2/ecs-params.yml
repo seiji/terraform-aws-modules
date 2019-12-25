@@ -1,7 +1,8 @@
 version: 1
 task_definition:
-  # task_role_arn: ecsTaskExecutionRole
-  # task_execution_role: ecsTaskExecutionRole
+  ecs_network_mode: bridge
+  task_role_arn: ecsTaskExecutionRole
+  task_execution_role: ecsTaskExecutionRole
   services:
     nginx:
       essential: true
@@ -10,3 +11,10 @@ task_definition:
       # secrets:
       #   - value_from: /test/prod/pass
       #     name: DB_PASS
+run_params:
+  task_placement:
+    strategy:
+      - type: spread
+        field: attribute:ecs.availability-zone
+      - type: spread
+        field: instanceId

@@ -1,4 +1,4 @@
-PROJ_NAME=ecs-ec2-staging
+PROJ_NAME=alb-ecs-ec2-staging
 IMG_URI=752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/ecs-ec2
 IMG_TAG=latest
 
@@ -42,7 +42,7 @@ img_push: ## Push ecr
 
 define taskdef_create
 	@IMG_URI=$(1) \
-	@IMG_TAG=$(2) \
+	IMG_TAG=$(2) \
 	ecs-cli \
 		compose \
 		--project-name $(3) \

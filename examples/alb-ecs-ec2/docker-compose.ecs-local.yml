@@ -13,4 +13,4 @@ services:
         awslogs-region: ap-northeast-1
         awslogs-stream-prefix: nginx
     ports:
-      - "80"
+      - "80:80"

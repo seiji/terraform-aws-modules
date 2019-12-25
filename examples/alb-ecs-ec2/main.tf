@@ -18,7 +18,7 @@ data terraform_remote_state vpc {
 }
 
 locals {
-  namespace = "ecs-ec2"
+  namespace = "alb-ecs-ec2"
   stage     = "staging"
   vpc = {
     id                        = data.terraform_remote_state.vpc.outputs.id
@@ -26,7 +26,7 @@ locals {
     private_subnet_ids        = data.terraform_remote_state.vpc.outputs.private_subnet_ids
     public_subnet_ids         = data.terraform_remote_state.vpc.outputs.public_subnet_ids
   }
-  cluster_name = "ecs-ec2-staging"
+  cluster_name = "alb-ecs-ec2-staging"
 }
 
 module iam_role_ecs {
@@ -80,18 +80,19 @@ data aws_acm_certificate this {
   most_recent = true
 }
 
-module ecs_ec2 {
-  source            = "../../ecs-ec2"
-  namespace         = local.namespace
-  stage             = local.stage
-  acm_arn           = data.aws_acm_certificate.this.arn
-  alb_security_ids  = [local.vpc.default_security_group_id, module.sg_https.id]
-  container_name    = "nginx"
-  container_port    = 80
-  ecs_cluster_name  = local.cluster_name
-  ecs_iam_role      = "ecsServiceRole"
-  subnet_public_ids = local.vpc.public_subnet_ids
-  vpc_id            = local.vpc.id
+module ecs_alb {
+  source              = "../../ecs-alb"
+  namespace           = local.namespace
+  stage               = local.stage
+  acm_arn             = data.aws_acm_certificate.this.arn
+  alb_security_ids    = [local.vpc.default_security_group_id, module.sg_https.id]
+  container_name      = "nginx"
+  container_port      = 80
+  ecs_cluster_name    = local.cluster_name
+  ecs_iam_role        = "ecsServiceRole"
+  ecs_task_definition = "ecs-ec2-staging"
+  subnet_public_ids   = local.vpc.public_subnet_ids
+  vpc_id              = local.vpc.id
 }
 
 data aws_route53_zone this {
@@ -103,6 +104,6 @@ module route53_record_alias {
   source        = "../../route53-record-alias"
   name          = "nginx.seiji.me"
   zone_id       = data.aws_route53_zone.this.zone_id
-  alias_name    = module.ecs_ec2.alb_dns_name
-  alias_zone_id = module.ecs_ec2.alb_zone_id
+  alias_name    = module.ecs_alb.alb_dns_name
+  alias_zone_id = module.ecs_alb.alb_zone_id
 }

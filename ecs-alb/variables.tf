@@ -42,6 +42,10 @@ variable ecs_iam_role {
   default = "ecsServiceRole"
 }
 
+variable ecs_task_definition {
+  type = string
+}
+
 variable subnet_public_ids {
   type = list
 }

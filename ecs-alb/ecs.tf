@@ -3,7 +3,7 @@ resource aws_ecs_cluster this {
 }
 
 data aws_ecs_task_definition this {
-  task_definition = module.label.id
+  task_definition = var.ecs_task_definition
 }
 
 resource aws_ecs_service this {

@@ -1,5 +1,5 @@
 PROJ_NAME=alb-ecs-ec2-staging
-IMG_URI=752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/ecs-ec2
+IMG_URI=752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/alb-ecs-ec2
 IMG_TAG=latest
 
 .PHONY: help create

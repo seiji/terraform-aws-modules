@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   app:
-    image: 752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/ecs-ec2
+    image: 752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/alb-ecs-ec2
     build:
       context: .
     environment:

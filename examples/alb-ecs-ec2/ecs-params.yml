@@ -7,7 +7,7 @@ task_definition:
     nginx:
       essential: true
       cpu_shares: 1024
-      mem_reservation: 900MB
+      mem_reservation: 256MB
       # secrets:
       #   - value_from: /test/prod/pass
       #     name: DB_PASS

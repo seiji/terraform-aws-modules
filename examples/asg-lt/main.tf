@@ -18,7 +18,7 @@ data terraform_remote_state vpc {
 }
 
 locals {
-  namespace = "ec2-asg-lt"
+  namespace = "asg-lt"
   stage     = "staging"
   vpc = {
     id                        = data.terraform_remote_state.vpc.outputs.id
@@ -51,7 +51,7 @@ module launch {
   userdata_part_cloud_config  = <<EOF
 #cloud-config
 repo_update: true
-repo_upgrade: none
+repo_upgrade: security
 timezone: Asia/Tokyo
 locale: ja_JP.UTF-8
 runcmd:

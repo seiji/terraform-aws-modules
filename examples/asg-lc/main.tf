@@ -1,12 +1,5 @@
 terraform {
   required_version = "~> 0.12.0"
-  backend "s3" {
-    bucket         = "terraform-aws-modules-tfstate"
-    region         = "ap-northeast-1"
-    key            = "ec2-asg-lc.examples"
-    encrypt        = true
-    dynamodb_table = "terraform-aws-modules-tfstate-lock"
-  }
 }
 
 provider aws {
@@ -25,7 +18,7 @@ data terraform_remote_state vpc {
 }
 
 locals {
-  namespace = "ec2-asg-lc"
+  namespace = "asg-lc"
   stage     = "staging"
   vpc = {
     id                        = data.terraform_remote_state.vpc.outputs.id
@@ -60,7 +53,7 @@ module launch {
   userdata_part_cloud_config  = <<EOF
 #cloud-config
 repo_update: true
-repo_upgrade: none
+repo_upgrade: security
 timezone: Asia/Tokyo
 locale: ja_JP.UTF-8
 runcmd:

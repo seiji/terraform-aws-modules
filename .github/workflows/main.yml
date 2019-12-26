@@ -11,8 +11,8 @@ jobs:
         examples:
           - alb-asg-lc
           - alb-ecs-ec2
-          - asg-lc-ec2
-          - asg-lt-ec2
+          - asg-lc
+          - asg-lt
           - backend
           - cloudwatch-log-groups
           - security

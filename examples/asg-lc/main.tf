@@ -55,7 +55,6 @@ module launch {
 repo_update: true
 repo_upgrade: security
 timezone: Asia/Tokyo
-locale: ja_JP.UTF-8
 runcmd:
   - amazon-linux-extras install -y nginx1
   - systemctl enable nginx
@@ -68,10 +67,14 @@ module asg {
   namespace            = local.namespace
   stage                = local.stage
   name                 = module.launch.configuration_name
-  max_size             = 1
+  max_size             = 5
   min_size             = 1
-  desired_capacity     = 1
   health_check_type    = "EC2"
   launch_configuration = module.launch.configuration_name
   vpc_zone_identifier  = local.vpc.private_subnet_ids
+  policy_target_tracking = {
+    predefined_metric_type = "ASGAverageCPUUtilization"
+    disable_scale_in       = false
+    target_value           = 20.0
+  }
 }

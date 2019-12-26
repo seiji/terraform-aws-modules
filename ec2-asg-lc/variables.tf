@@ -10,10 +10,6 @@ variable name {
   type = string
 }
 
-variable desired_capacity {
-  default = 1
-}
-
 variable max_size {
   default = 1
 }
@@ -40,4 +36,12 @@ variable target_group_arns {
 
 variable vpc_zone_identifier {
   type = list
+}
+
+variable policy_target_tracking {
+  type = object({
+    predefined_metric_type = string
+    disable_scale_in       = bool
+    target_value           = number
+  })
 }

@@ -18,21 +18,26 @@ locals {
   region    = "ap-northeast-1"
   namespace = "cloudwatch-agent-config"
   stage     = "staging"
+  vpc = {
+    id                        = data.terraform_remote_state.vpc.outputs.id
+    default_security_group_id = data.terraform_remote_state.vpc.outputs.default_security_group_id
+    private_subnet_ids        = data.terraform_remote_state.vpc.outputs.private_subnet_ids
+    public_subnet_ids         = data.terraform_remote_state.vpc.outputs.public_subnet_ids
+  }
 }
 
 module ami {
   source = "../../ami-amzn2"
 }
 
-module vpc {
-  source          = "../../vpc"
-  namespace       = local.namespace
-  stage           = local.stage
-  cidr_block      = "10.0.0.0/16"
-  azs             = ["ap-northeast-1a", "ap-northeast-1c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
-  use_natgw       = false
+data terraform_remote_state vpc {
+  backend = "s3"
+
+  config = {
+    bucket = "terraform-aws-modules-tfstate"
+    region = "ap-northeast-1"
+    key    = "vpc-nati.examples"
+  }
 }
 
 module iam_role_ec2 {
@@ -51,7 +56,7 @@ module lc {
   image_id                    = module.ami.id
   instance_type               = "t3.micro"
   key_name                    = "id_rsa"
-  security_groups             = [module.vpc.default_security_group_id]
+  security_groups             = [local.vpc.default_security_group_id]
   userdata_part_cloud_config  = <<EOF
 #cloud-config
 repo_update: true
@@ -72,10 +77,9 @@ module asg {
   name                 = "cwa"
   max_size             = 1
   min_size             = 1
-  desired_capacity     = 1
   health_check_type    = "EC2"
   launch_configuration = module.lc.configuration_name
-  vpc_zone_identifier  = module.vpc.private_subnet_ids
+  vpc_zone_identifier  = local.vpc.private_subnet_ids
 }
 
 data "template_file" "cloudwatch_agent_config" {

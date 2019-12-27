@@ -44,4 +44,10 @@ variable policy_target_tracking {
     disable_scale_in       = bool
     target_value           = number
   })
+
+  default = {
+    predefined_metric_type = "ASGAverageCPUUtilization"
+    disable_scale_in       = true
+    target_value           = 50.0
+  }
 }

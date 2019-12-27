@@ -87,7 +87,6 @@ module asg {
   name                 = "alb-asg-lc"
   max_size             = 1
   min_size             = 1
-  desired_capacity     = 1
   health_check_type    = "ELB"
   target_group_arns    = [module.alb_tg.arn]
   launch_configuration = module.lc.configuration_name

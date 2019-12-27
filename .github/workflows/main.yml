@@ -19,6 +19,7 @@ jobs:
           - sns-budgets
           - sns-event
           - ssm-cloudwatch-agent-config
+          - vpc-natgw
           - vpc-nati
     steps:
     - uses: actions/checkout@v1

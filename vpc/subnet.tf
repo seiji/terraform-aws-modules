@@ -34,20 +34,6 @@ resource aws_route public {
   gateway_id             = aws_internet_gateway.this.id
 }
 
-resource aws_route private_natg {
-  count                  = var.use_natgw ? 1 : 0
-  route_table_id         = aws_default_route_table.private.id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.this[count.index].id
-}
-
-resource aws_route private_nati {
-  count                  = var.use_natgw ? 0 : 1
-  route_table_id         = aws_default_route_table.private.id
-  destination_cidr_block = "0.0.0.0/0"
-  instance_id            = aws_instance.nati[count.index].id
-}
-
 resource aws_route_table_association public {
   count          = length(aws_subnet.public.*.id)
   route_table_id = aws_route_table.public.id

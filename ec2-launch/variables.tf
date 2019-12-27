@@ -39,7 +39,7 @@ variable instance_type {
 }
 
 variable iam_instance_profile {
-  type = string
+  default = null
 }
 
 variable key_name {

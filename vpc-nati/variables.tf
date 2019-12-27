@@ -22,6 +22,10 @@ variable public_subnets {
   type = list
 }
 
+variable use_natgw {
+  default = false
+}
+
 variable use_endpoint_ssm {
   default = false
 }

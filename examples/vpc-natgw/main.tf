@@ -1,12 +1,5 @@
 terraform {
   required_version = "~> 0.12.0"
-  backend "s3" {
-    bucket         = "terraform-aws-modules-tfstate"
-    region         = "ap-northeast-1"
-    encrypt        = true
-    key            = "vpc-nati.examples"
-    dynamodb_table = "terraform-aws-modules-tfstate-lock"
-  }
 }
 
 provider aws {
@@ -15,12 +8,12 @@ provider aws {
 }
 
 locals {
-  namespace = "vpc-nati"
+  namespace = "vpc-natgw"
   stage     = "staging"
 }
 
 module vpc {
-  source          = "../../vpc-nati"
+  source          = "../../vpc-natgw"
   namespace       = local.namespace
   stage           = local.stage
   cidr_block      = "10.0.0.0/16"

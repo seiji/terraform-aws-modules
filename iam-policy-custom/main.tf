@@ -28,7 +28,8 @@ data aws_iam_policy_document allow_change_password {
     resources = ["arn:aws:iam::${local.account_id}:user/&{aws:username}"]
   }
 }
-resource aws_iam_policy allow_change_passwod {
+
+resource aws_iam_policy allow_change_password {
   name   = "AllowChangePassword"
   path   = "/"
   policy = data.aws_iam_policy_document.allow_change_password.json

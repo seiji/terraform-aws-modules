@@ -16,3 +16,14 @@ locals {
 module iam_policies {
   source = "../../iam-policy-custom"
 }
+
+module iam_groups {
+  source = "../../iam-group"
+  groups = {
+    "Developers" : {
+      path     = "/users/"
+      policies = [module.iam_policies.allow_change_password.arn]
+    }
+  }
+}
+

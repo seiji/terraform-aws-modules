@@ -21,8 +21,12 @@ module iam_groups {
   source = "../../iam-group"
   groups = {
     "Developers" : {
-      path     = "/users/"
-      policies = [module.iam_policies.allow_change_password.arn]
+      path = "/users/"
+      policies = [
+        module.iam_policies.allow_access_key.arn,
+        module.iam_policies.allow_change_password.arn,
+        module.iam_policies.allow_mfa_device.arn,
+      ]
     }
   }
 }

@@ -1,19 +1,22 @@
-locals {
-  group_policy = flatten([for k, v in var.groups : [for policy in v.policies : format("%s-%s", k, policy)]])
-}
-
 resource aws_iam_group this {
-  for_each = var.groups
-
-  name = each.key
-  path = each.value.path
+  name = var.name
+  path = var.path
 }
 
 resource aws_iam_group_policy_attachment this {
-  for_each = toset(local.group_policy)
+  count = length(var.policies)
 
-  group      = split("-", each.value)[0]
-  policy_arn = split("-", each.value)[1]
+  group      = aws_iam_group.this.name
+  policy_arn = var.policies[count.index]
+
+  depends_on = [aws_iam_group.this]
+}
+
+resource aws_iam_group_membership this {
+  name = "${var.name}-membership"
+
+  group = aws_iam_group.this.name
+  users = var.users
 
   depends_on = [aws_iam_group.this]
 }

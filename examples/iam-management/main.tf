@@ -15,18 +15,23 @@ provider "aws" {
 }
 
 locals {
-  region    = "ap-northeast-1"
-  namespace = "iam-policies"
-  stage     = "staging"
+  region = "ap-northeast-1"
 }
 
-module iam_policies {
+module iam_policy_managed {
+  source = "../../iam-policy-managed"
+}
+
+module iam_policy_custom {
   source = "../../iam-policy-custom"
 }
 
 module iam_users {
   source = "../../iam-users"
   users = {
+    admin : {
+      path = "/users/"
+    }
     guest1 : {
       path = "/users/"
     }
@@ -39,14 +44,30 @@ module iam_users {
   }
 }
 
-module group_developers {
+module group_admin {
   source = "../../iam-group"
-  name   = "Developers"
+  name   = "admin"
   path   = "/users/"
   policies = [
-    module.iam_policies.allow_access_key.arn,
-    module.iam_policies.allow_change_password.arn,
-    module.iam_policies.allow_mfa_device.arn,
+    module.iam_policy_managed.administrator_access.arn
   ]
-  users = [for k, v in module.iam_users.users : v.name]
+  users = [
+    module.iam_users.users.admin.name,
+  ]
+}
+
+module group_developers {
+  source = "../../iam-group"
+  name   = "developers"
+  path   = "/users/"
+  policies = [
+    module.iam_policy_custom.allow_access_key.arn,
+    module.iam_policy_custom.allow_change_password.arn,
+    module.iam_policy_custom.allow_mfa_device.arn,
+  ]
+  users = [
+    module.iam_users.users.guest1.name,
+    module.iam_users.users.guest2.name,
+    module.iam_users.users.guest3.name,
+  ]
 }

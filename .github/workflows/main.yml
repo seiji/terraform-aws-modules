@@ -15,6 +15,7 @@ jobs:
           - asg-lt
           - backend
           - cloudwatch-log-groups
+          - iam-management
           - security
           - sns-budgets
           - sns-event

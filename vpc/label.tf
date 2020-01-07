@@ -9,6 +9,9 @@ module "label_private" {
   namespace  = var.namespace
   stage      = var.stage
   attributes = ["private"]
+  tags = {
+    Tier = "private"
+  }
 }
 
 module "label_public" {
@@ -16,4 +19,7 @@ module "label_public" {
   namespace  = var.namespace
   stage      = var.stage
   attributes = ["public"]
+  tags = {
+    Tier = "public"
+  }
 }

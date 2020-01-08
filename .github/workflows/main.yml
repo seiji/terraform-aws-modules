@@ -15,6 +15,8 @@ jobs:
           - asg-lt
           - backend
           - cloudwatch-log-groups
+          - cognito4iam
+          - es71-vpc-cognito
           - iam-management
           - security
           - sns-budgets

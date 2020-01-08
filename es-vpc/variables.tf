@@ -56,11 +56,13 @@ variable cognito {
     user_pool_id     = string
     identity_pool_id = string
     role_arn         = string
+    auth_role_name   = string
   })
   default = {
     enabled          = false
     user_pool_id     = ""
     identity_pool_id = ""
     role_arn         = ""
+    auth_role_name   = ""
   }
 }

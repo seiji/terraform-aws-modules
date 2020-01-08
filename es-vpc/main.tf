@@ -4,8 +4,13 @@ module label {
   stage     = var.stage
 }
 
+data aws_caller_identity this {}
+
 resource aws_iam_service_linked_role this {
   aws_service_name = "es.amazonaws.com"
+  provisioner local-exec {
+    command = "sleep 10"
+  }
 }
 
 resource aws_elasticsearch_domain this {
@@ -55,24 +60,29 @@ resource aws_elasticsearch_domain this {
     aws_iam_service_linked_role.this,
   ]
 }
-#
-# resource aws_elasticsearch_domain_policy this {
-#   domain_name = aws_elasticsearch_domain.this.domain_name
-#
-#   access_policies = <<POLICIES
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Action": "es:*",
-#       "Principal": "*",
-#       "Effect": "Allow",
-#       "Condition": {
-#         "IpAddress": {"aws:SourceIp": "103.5.140.172/32"}
-#       },
-#       "Resource": "${aws_elasticsearch_domain.this.arn}/*"
-#     }
-#   ]
-# }
-# POLICIES
-# }
+
+resource aws_elasticsearch_domain_policy this {
+  count       = var.cognito.enabled ? 1 : 0
+  domain_name = aws_elasticsearch_domain.this.domain_name
+
+  access_policies = <<POLICIES
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS":"arn:aws:sts::${data.aws_caller_identity.this.account_id}:assumed-role/${var.cognito.auth_role_name}/CognitoIdentityCredentials"
+      },
+      "Action": [
+        "es:*"
+      ],
+      "Resource": "${aws_elasticsearch_domain.this.arn}/*"
+    }
+  ]
+}
+POLICIES
+  depends_on = [
+    aws_elasticsearch_domain.this,
+  ]
+}

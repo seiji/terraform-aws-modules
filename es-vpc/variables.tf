@@ -50,3 +50,17 @@ variable automated_snapshot_start_hour {
   default = 23
 }
 
+variable cognito {
+  type = object({
+    enabled          = bool
+    user_pool_id     = string
+    identity_pool_id = string
+    role_arn         = string
+  })
+  default = {
+    enabled          = false
+    user_pool_id     = ""
+    identity_pool_id = ""
+    role_arn         = ""
+  }
+}

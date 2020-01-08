@@ -36,6 +36,15 @@ locals {
     private_subnet_ids        = data.terraform_remote_state.vpc.outputs.private_subnet_ids
     public_subnet_ids         = data.terraform_remote_state.vpc.outputs.public_subnet_ids
   }
+  cognito = {
+    user_pool     = data.terraform_remote_state.cognito.outputs.user_pool
+    identity_pool = data.terraform_remote_state.cognito.outputs.identity_pool
+  }
+}
+
+module iam_role_es_cognito {
+  source = "../../iam-role-es-cognito"
+  name   = "ESCognitoAccess"
 }
 
 module es {
@@ -47,5 +56,11 @@ module es {
   security_group_ids    = [local.vpc.default_security_group_id]
   instance_type         = "t2.small.elasticsearch"
   instance_count        = 2
+  cognito = {
+    enabled          = true
+    user_pool_id     = local.cognito.user_pool.id
+    identity_pool_id = local.cognito.identity_pool.id
+    role_arn         = module.iam_role_es_cognito.role.arn
+  }
 }
 

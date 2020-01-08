@@ -17,6 +17,16 @@ data terraform_remote_state vpc {
   }
 }
 
+data terraform_remote_state cognito {
+  backend = "s3"
+
+  config = {
+    bucket = "terraform-aws-modules-tfstate"
+    region = "ap-northeast-1"
+    key    = "cognito4iam.examples"
+  }
+}
+
 locals {
   namespace = "es71-cognito"
   stage     = "staging"

@@ -39,6 +39,12 @@ resource aws_elasticsearch_domain this {
   snapshot_options {
     automated_snapshot_start_hour = var.automated_snapshot_start_hour
   }
+  cognito_options {
+    enabled = true
+    # user_pool_id
+    # identity_pool_id
+    # role_arn
+  }
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
   }

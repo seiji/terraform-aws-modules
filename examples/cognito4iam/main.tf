@@ -4,7 +4,7 @@ terraform {
     bucket         = "terraform-aws-modules-tfstate"
     region         = "ap-northeast-1"
     encrypt        = true
-    key            = "cognito-iam.examples"
+    key            = "cognito4iam.examples"
     dynamodb_table = "terraform-aws-modules-tfstate-lock"
   }
 }
@@ -15,14 +15,13 @@ provider "aws" {
 }
 
 locals {
-  name = "auth2iam"
+  name = "auth4iam"
 }
 
 data aws_caller_identity this {}
 
 module cognito {
-  source           = "../../cognito"
+  source           = "../../cognito-iam"
   name             = local.name
   user_pool_domain = "${local.name}-${data.aws_caller_identity.this.account_id}"
 }
-

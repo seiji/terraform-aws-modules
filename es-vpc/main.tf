@@ -30,14 +30,14 @@ resource aws_elasticsearch_domain this {
     volume_size = var.volume_size
   }
   encrypt_at_rest {
-    enabled    = false
-    kms_key_id = "aws/es"
+    enabled    = var.encrypt_at_rest
+    kms_key_id = var.kms_key_id
   }
   node_to_node_encryption {
-    enabled = false
+    enabled = var.node_to_node_encryption
   }
   snapshot_options {
-    automated_snapshot_start_hour = 23
+    automated_snapshot_start_hour = var.automated_snapshot_start_hour
   }
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
@@ -49,24 +49,24 @@ resource aws_elasticsearch_domain this {
     aws_iam_service_linked_role.this,
   ]
 }
-
-# resource "aws_elasticsearch_domain_policy" "main" {
-#   domain_name = "${aws_elasticsearch_domain.example.domain_name}"
+#
+# resource aws_elasticsearch_domain_policy this {
+#   domain_name = aws_elasticsearch_domain.this.domain_name
 #
 #   access_policies = <<POLICIES
 # {
-#     "Version": "2012-10-17",
-#     "Statement": [
-#         {
-#             "Action": "es:*",
-#             "Principal": "*",
-#             "Effect": "Allow",
-#             "Condition": {
-#                 "IpAddress": {"aws:SourceIp": "127.0.0.1/32"}
-#             },
-#             "Resource": "${aws_elasticsearch_domain.example.arn}/*"
-#         }
-#     ]
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Action": "es:*",
+#       "Principal": "*",
+#       "Effect": "Allow",
+#       "Condition": {
+#         "IpAddress": {"aws:SourceIp": "103.5.140.172/32"}
+#       },
+#       "Resource": "${aws_elasticsearch_domain.this.arn}/*"
+#     }
+#   ]
 # }
 # POLICIES
 # }

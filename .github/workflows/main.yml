@@ -16,6 +16,7 @@ jobs:
           - backend
           - cloudwatch-log-groups
           - cognito4iam
+          - ec2-instance-connect
           - es71-vpc-cognito
           - iam-management
           - security

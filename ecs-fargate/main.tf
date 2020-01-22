@@ -10,6 +10,22 @@ data aws_ecs_task_definition this {
 
 resource aws_ecs_cluster this {
   name = module.label.id
+
+  capacity_providers  = ["FARGATE", "FARGATE_SPOT"]
+  # default_capacity_provider_strategy {
+  #   base              = 1
+  #   capacity_provider = "FARGATE"
+  #   weight            = 1
+  # }
+  default_capacity_provider_strategy {
+    base              = 1
+    capacity_provider = "FARGATE_SPOT"
+    weight            = 1
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource aws_ecs_service this {

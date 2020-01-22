@@ -1,15 +1,8 @@
 terraform {
   required_version = "~> 0.12.0"
-  backend "s3" {
-    bucket         = "terraform-aws-modules-tfstate"
-    region         = "ap-northeast-1"
-    key            = "alb-asg-lc.examples"
-    encrypt        = true
-    dynamodb_table = "terraform-aws-modules-tfstate-lock"
-  }
 }
 
-provider aws {
+provider "aws" {
   version = "~> 2.0"
   region  = "ap-northeast-1"
 }
@@ -25,7 +18,7 @@ data terraform_remote_state vpc {
 }
 
 locals {
-  namespace = "alb-asg-lc"
+  namespace = "alb-ecs-fargate"
   stage     = "staging"
   vpc = {
     id                        = data.terraform_remote_state.vpc.outputs.id
@@ -33,40 +26,11 @@ locals {
     private_subnet_ids        = data.terraform_remote_state.vpc.outputs.private_subnet_ids
     public_subnet_ids         = data.terraform_remote_state.vpc.outputs.public_subnet_ids
   }
+  cluster_name = "alb-ecs-fargate-staging"
 }
 
-module ami {
-  source = "../../ami-amzn2"
-}
-
-module iam_role_ec2 {
-  source    = "../../iam-role-ec2"
-  namespace = local.namespace
-  stage     = local.stage
-}
-
-module lc {
-  source                      = "../../ec2-launch"
-  namespace                   = local.namespace
-  stage                       = local.stage
-  ami_block_device_mappings   = module.ami.block_device_mappings
-  associate_public_ip_address = false
-  iam_instance_profile        = module.iam_role_ec2.instance_profile_id
-  image_id                    = module.ami.id
-  instance_type               = "t3a.micro"
-  key_name                    = "id_rsa"
-  security_groups             = [local.vpc.default_security_group_id]
-  userdata_part_cloud_config  = <<EOF
-#cloud-config
-repo_update: true
-repo_upgrade: none
-timezone: Asia/Tokyo
-locale: ja_JP.UTF-8
-runcmd:
-  - amazon-linux-extras install -y nginx1
-  - systemctl enable nginx
-  - systemctl start nginx
-EOF
+module iam_role_ecs {
+  source = "../../iam-role-ecs"
 }
 
 module alb_tg {
@@ -77,19 +41,19 @@ module alb_tg {
   port              = 80
   protocol          = "HTTP"
   health_check_path = "/"
+  target_type       = "ip"
 }
 
-module asg {
-  source               = "../../ec2-asg-lc"
-  namespace            = local.namespace
-  stage                = local.stage
-  name                 = "alb-asg-lc"
-  max_size             = 1
-  min_size             = 1
-  health_check_type    = "ELB"
-  target_group_arns    = [module.alb_tg.arn]
-  launch_configuration = module.lc.configuration_name
-  vpc_zone_identifier  = local.vpc.private_subnet_ids
+module ecs {
+  source              = "../../ecs-fargate"
+  namespace           = local.namespace
+  stage               = local.stage
+  ecs_task_definition = "nginx-html"
+  subnets             = local.vpc.private_subnet_ids
+  security_groups     = [local.vpc.default_security_group_id]
+  lb_container_name   = "nginx"
+  lb_container_port   = 80
+  lb_target_group_arn = module.alb_tg.arn
 }
 
 module sg_https {
@@ -124,7 +88,7 @@ data aws_route53_zone this {
 
 module route53_record_alias {
   source        = "../../route53-record-alias"
-  name          = "example.seiji.me"
+  name          = "${local.namespace}.seiji.me"
   zone_id       = data.aws_route53_zone.this.zone_id
   alias_name    = module.alb.dns_name
   alias_zone_id = module.alb.zone_id

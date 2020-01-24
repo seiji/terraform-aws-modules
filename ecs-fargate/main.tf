@@ -11,7 +11,7 @@ data aws_ecs_task_definition this {
 resource aws_ecs_cluster this {
   name = module.label.id
 
-  capacity_providers  = ["FARGATE", "FARGATE_SPOT"]
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
   # default_capacity_provider_strategy {
   #   base              = 1
   #   capacity_provider = "FARGATE"

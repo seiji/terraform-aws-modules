@@ -22,3 +22,19 @@ resource aws_s3_bucket this {
   force_destroy = true
   tags          = module.label.tags
 }
+
+data "aws_iam_policy_document" "this" {
+  statement {
+    actions = [
+      "s3:DeleteObject",
+      "s3:GetBucketLocation",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:PutObject",
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.this.id}",
+      "arn:aws:s3:::${aws_s3_bucket.this.id}/*",
+    ]
+  }
+}

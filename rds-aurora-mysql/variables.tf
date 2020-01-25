@@ -30,6 +30,10 @@ variable "backup_retention_period" {
   default = 1
 }
 
+variable "vpc_security_group_ids" {
+  default = []
+}
+
 variable "instance_class" {
   default = "db.t3.small"
 }
@@ -37,3 +41,8 @@ variable "instance_class" {
 variable "instance_count" {
   default = 2
 }
+
+variable "publicly_accessible" {
+  default = false
+}
+

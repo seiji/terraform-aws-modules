@@ -63,3 +63,9 @@ module "iam_role_export" {
   policies  = [module.export_s3.policy_document.json]
 }
 
+module "export_kms" {
+  source    = "../../kms"
+  namespace = local.namespace
+  stage     = local.stage
+  role_arn  = module.iam_role_export.arn
+}

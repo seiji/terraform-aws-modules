@@ -20,6 +20,7 @@ jobs:
           - ec2-instance-connect
           - es71-vpc-cognito
           - iam-management
+          - rds-aurora-mysql-backup
           - security
           - sns-budgets
           - sns-event

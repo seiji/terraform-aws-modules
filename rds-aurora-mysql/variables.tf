@@ -7,15 +7,11 @@ variable "stage" {
 }
 
 variable "engine_version" {
-  default = "5.7.mysql_aurora.2.03.2"
+  default = "5.7.mysql_aurora.2.07.1"
 }
 
-variable "subnet_group_name" {
-  type = string
-}
-
-variable "name" {
-  type = string
+variable "subnet_ids" {
+  type = list(string)
 }
 
 variable "database_name" {
@@ -31,7 +27,7 @@ variable "master_password" {
 }
 
 variable "backup_retention_period" {
-  default = 7
+  default = 1
 }
 
 variable "instance_class" {
@@ -39,5 +35,5 @@ variable "instance_class" {
 }
 
 variable "instance_count" {
-  default = "2"
+  default = 2
 }

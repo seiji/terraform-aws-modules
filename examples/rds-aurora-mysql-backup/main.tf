@@ -1,12 +1,5 @@
 terraform {
   required_version = ">= 0.12"
-  backend "s3" {
-    bucket         = "terraform-aws-modules-tfstate"
-    region         = "ap-northeast-1"
-    key            = "aurora.examples"
-    encrypt        = true
-    dynamodb_table = "terraform-aws-modules-tfstate-lock"
-  }
 }
 
 provider "aws" {
@@ -25,7 +18,7 @@ data terraform_remote_state vpc {
 }
 
 locals {
-  namespace = "rds-aurora-mysql"
+  namespace = "rds-aurora-mysql-backup"
   stage     = "staging"
   vpc = {
     id                        = data.terraform_remote_state.vpc.outputs.id
@@ -40,20 +33,16 @@ locals {
 #   name      = "rds-alarts"
 # }
 
-resource "aws_db_subnet_group" "this" {
-  name       = "rds-alerts"
-  subnet_ids = local.vpc.private_subnet_ids
-}
-
 module "rds" {
-  source            = "../../rds-aurora-mysql"
-  namespace         = local.namespace
-  stage             = local.stage
-  name              = "sample"
-  subnet_group_name = aws_db_subnet_group.this.name
-  database_name     = "test"
-  master_username   = "username"
-  master_password   = "password"
+  source          = "../../rds-aurora-mysql"
+  namespace       = local.namespace
+  stage           = local.stage
+  subnet_ids      = local.vpc.private_subnet_ids
+  database_name   = "test"
+  instance_class  = "db.t3.small"
+  instance_count  = 1
+  master_username = "username"
+  master_password = "password"
 }
 
 # module "cloudwatch-alarms-rds" {

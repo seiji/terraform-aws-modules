@@ -20,8 +20,8 @@ resource "aws_alb_target_group" "this" {
   }
 
   stickiness {
-    type    = "lb_cookie"
-    enabled = true
+    type    = var.stickiness_type
+    enabled = var.stickiness_enabled
   }
 
   tags = module.label.tags

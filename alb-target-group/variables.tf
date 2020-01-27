@@ -25,3 +25,11 @@ variable health_check_path {
 variable target_type {
   default = "instance"
 }
+
+variable stickiness_type {
+  default = "lb_cookie"
+}
+
+variable stickiness_enabled {
+  default = false
+}

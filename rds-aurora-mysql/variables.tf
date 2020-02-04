@@ -22,10 +22,6 @@ variable "master_username" {
   type = string
 }
 
-variable "master_password" {
-  type = string
-}
-
 variable "backup_retention_period" {
   default = 1
 }

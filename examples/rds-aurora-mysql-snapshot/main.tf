@@ -45,7 +45,6 @@ module "rds" {
   instance_class         = "db.t3.small"
   instance_count         = 1
   master_username        = "username"
-  master_password        = "password"
   vpc_security_group_ids = [local.vpc.default_security_group_id, module.sg_mysql.id]
   publicly_accessible    = true
 }

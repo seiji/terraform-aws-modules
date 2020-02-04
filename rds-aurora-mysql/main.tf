@@ -8,13 +8,25 @@ data "aws_iam_role" "aws_service_role_for_rds" {
   name = "AWSServiceRoleForRDS"
 }
 
+resource "random_password" "password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
+resource "aws_ssm_parameter" "password" {
+  name  = format("/%s/%s/%s", var.namespace, var.stage, "rds/master_password")
+  type  = "SecureString"
+  value = aws_rds_cluster.this.master_password
+}
+
 resource "aws_rds_cluster" "this" {
   cluster_identifier              = module.label.id
   copy_tags_to_snapshot           = true
   database_name                   = var.database_name
   deletion_protection             = false
   db_subnet_group_name            = aws_db_subnet_group.this.name
-  master_password                 = var.master_password
+  master_password                 = random_password.password.result
   master_username                 = var.master_username
   backup_retention_period         = var.backup_retention_period
   preferred_backup_window         = "07:00-09:00"

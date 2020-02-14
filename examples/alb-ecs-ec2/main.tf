@@ -3,7 +3,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 2.40"
+  version = ">= 2.48"
   region  = "ap-northeast-1"
 }
 
@@ -116,17 +116,18 @@ module route53_record_alias {
 }
 
 module ecs {
-  source              = "../../ecs-ec2"
-  namespace           = local.namespace
-  stage               = local.stage
-  ecs_task_definition = "nginx-html"
-  min_capacity        = 1
-  max_capacity        = 10
-  desired_capacity    = 3
-  subnets             = local.vpc.private_subnet_ids
-  security_groups     = [local.vpc.default_security_group_id]
-  lb_container_name   = "nginx"
-  lb_container_port   = 80
-  lb_target_group_arn = module.alb_tg.arn
+  source                = "../../ecs-ec2"
+  namespace             = local.namespace
+  stage                 = local.stage
+  autoscaling_group_arn = module.asg.arn
+  ecs_task_definition   = "nginx-html"
+  min_capacity          = 1
+  max_capacity          = 10
+  desired_capacity      = 3
+  subnets               = local.vpc.private_subnet_ids
+  security_groups       = [local.vpc.default_security_group_id]
+  lb_container_name     = "nginx"
+  lb_container_port     = 80
+  lb_target_group_arn   = module.alb_tg.arn
 }
 

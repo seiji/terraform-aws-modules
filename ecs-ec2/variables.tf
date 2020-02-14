@@ -6,6 +6,10 @@ variable stage {
   type = string
 }
 
+variable autoscaling_group_arn {
+  type = string
+}
+
 variable lb_container_name {
   type = string
 }

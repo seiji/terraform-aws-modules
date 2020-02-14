@@ -10,10 +10,6 @@ variable name {
   type = string
 }
 
-variable desired_capacity {
-  default = 1
-}
-
 variable instance_types {
   type = list(string)
 }
@@ -27,7 +23,11 @@ variable max_size {
 }
 
 variable min_size {
-  default = 1
+  default = 0
+}
+
+variable desired_capacity {
+  default = 0
 }
 
 variable health_check_grace_period {

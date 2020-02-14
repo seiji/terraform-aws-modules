@@ -1,5 +1,4 @@
-resource aws_autoscaling_group this {
-  name = var.name
+locals {
   enabled_metrics = [
     "GroupMinSize",
     "GroupMaxSize",
@@ -8,8 +7,14 @@ resource aws_autoscaling_group this {
     "GroupPendingInstances",
     "GroupStandbyInstances",
     "GroupTerminatingInstances",
-    "GroupTotalInstances",
+    "GroupTotalInstances"
   ]
+}
+
+resource aws_autoscaling_group this {
+  name                      = var.name
+  desired_capacity          = var.desired_capacity
+  enabled_metrics           = local.enabled_metrics
   force_delete              = true
   health_check_grace_period = var.health_check_grace_period
   health_check_type         = var.health_check_type

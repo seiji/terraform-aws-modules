@@ -46,7 +46,7 @@ resource aws_autoscaling_group this {
       spot_instance_pools                      = "2"
     }
   }
-
+  protect_from_scale_in = true
   timeouts {
     delete = "15m"
   }

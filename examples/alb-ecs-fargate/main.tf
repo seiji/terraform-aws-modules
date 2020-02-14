@@ -44,18 +44,6 @@ module alb_tg {
   target_type       = "ip"
 }
 
-module ecs {
-  source              = "../../ecs-fargate"
-  namespace           = local.namespace
-  stage               = local.stage
-  ecs_task_definition = "nginx-html"
-  subnets             = local.vpc.private_subnet_ids
-  security_groups     = [local.vpc.default_security_group_id]
-  lb_container_name   = "nginx"
-  lb_container_port   = 80
-  lb_target_group_arn = module.alb_tg.arn
-}
-
 module sg_https {
   source      = "../../vpc-sg-https"
   namespace   = local.namespace
@@ -93,3 +81,16 @@ module route53_record_alias {
   alias_name    = module.alb.dns_name
   alias_zone_id = module.alb.zone_id
 }
+
+module ecs {
+  source              = "../../ecs-fargate"
+  namespace           = local.namespace
+  stage               = local.stage
+  ecs_task_definition = "nginx-html"
+  subnets             = local.vpc.private_subnet_ids
+  security_groups     = [local.vpc.default_security_group_id]
+  lb_container_name   = "nginx"
+  lb_container_port   = 80
+  lb_target_group_arn = module.alb_tg.arn
+}
+

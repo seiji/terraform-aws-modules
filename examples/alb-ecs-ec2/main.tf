@@ -58,12 +58,23 @@ module asg {
   stage               = local.stage
   name                = module.launch.template_name
   instance_types      = ["t3.micro"]
-  max_size            = 1
-  min_size            = 1
-  desired_capacity    = 1
+  max_size            = 10
+  min_size            = 0
+  desired_capacity    = 0
   health_check_type   = "EC2"
   launch_template_id  = module.launch.template_id
   vpc_zone_identifier = local.vpc.private_subnet_ids
+}
+
+module alb_tg {
+  source            = "../../alb-target-group"
+  namespace         = local.namespace
+  stage             = local.stage
+  vpc_id            = local.vpc.id
+  port              = 80
+  protocol          = "HTTP"
+  health_check_path = "/"
+  target_type       = "ip" # awsvpc
 }
 
 module sg_https {
@@ -80,30 +91,42 @@ data aws_acm_certificate this {
   most_recent = true
 }
 
-module ecs_alb {
-  source              = "../../ecs-alb"
-  namespace           = local.namespace
-  stage               = local.stage
-  acm_arn             = data.aws_acm_certificate.this.arn
-  alb_security_ids    = [local.vpc.default_security_group_id, module.sg_https.id]
-  container_name      = "nginx"
-  container_port      = 80
-  ecs_cluster_name    = local.cluster_name
-  ecs_iam_role        = "ecsServiceRole"
-  ecs_task_definition = "ecs-ec2-staging"
-  subnet_public_ids   = local.vpc.public_subnet_ids
-  vpc_id              = local.vpc.id
-}
-
 data aws_route53_zone this {
   name         = "seiji.me."
   private_zone = false
 }
 
+module alb {
+  source           = "../../alb-https"
+  namespace        = local.namespace
+  stage            = local.stage
+  vpc_id           = local.vpc.id
+  security_groups  = [local.vpc.default_security_group_id, module.sg_https.id]
+  subnets          = local.vpc.public_subnet_ids
+  certificate_arn  = data.aws_acm_certificate.this.arn
+  target_group_arn = module.alb_tg.arn
+}
+
 module route53_record_alias {
   source        = "../../route53-record-alias"
-  name          = "nginx.seiji.me"
+  name          = "${local.namespace}.seiji.me"
   zone_id       = data.aws_route53_zone.this.zone_id
-  alias_name    = module.ecs_alb.alb_dns_name
-  alias_zone_id = module.ecs_alb.alb_zone_id
+  alias_name    = module.alb.dns_name
+  alias_zone_id = module.alb.zone_id
 }
+
+module ecs {
+  source              = "../../ecs-ec2"
+  namespace           = local.namespace
+  stage               = local.stage
+  ecs_task_definition = "nginx-html"
+  min_capacity        = 1
+  max_capacity        = 10
+  desired_capacity    = 3
+  subnets             = local.vpc.private_subnet_ids
+  security_groups     = [local.vpc.default_security_group_id]
+  lb_container_name   = "nginx"
+  lb_container_port   = 80
+  lb_target_group_arn = module.alb_tg.arn
+}
+

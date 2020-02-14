@@ -6,23 +6,15 @@ variable stage {
   type = string
 }
 
-variable acm_arn {
+variable lb_container_name {
   type = string
 }
 
-variable alb_security_ids {
-  type = list
-}
-
-variable container_name {
-  type = string
-}
-
-variable container_port {
+variable lb_container_port {
   type = number
 }
 
-variable ecs_cluster_name {
+variable lb_target_group_arn {
   type = string
 }
 
@@ -38,19 +30,7 @@ variable ecs_deployment_minimum_healthy_percent {
   default = 100
 }
 
-variable ecs_iam_role {
-  default = "ecsServiceRole"
-}
-
 variable ecs_task_definition {
-  type = string
-}
-
-variable subnet_public_ids {
-  type = list
-}
-
-variable vpc_id {
   type = string
 }
 
@@ -63,5 +43,17 @@ variable max_capacity {
 }
 
 variable desired_capacity {
-  default = 1
+  default = 0
+}
+
+variable subnets {
+  type = list(string)
+}
+
+variable security_groups {
+  type = list(string)
+}
+
+variable assign_public_ip {
+  default = false
 }

@@ -61,3 +61,7 @@ variable security_groups {
 variable assign_public_ip {
   default = false
 }
+
+variable "service_discovery_namespace_id" {
+  type = string
+}

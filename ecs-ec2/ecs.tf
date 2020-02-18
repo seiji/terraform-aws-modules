@@ -12,6 +12,7 @@ resource aws_ecs_cluster this {
   capacity_providers = [aws_ecs_capacity_provider.this.name]
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.this.name
+    base              = 1
     weight            = 1
   }
 
@@ -26,10 +27,10 @@ resource aws_ecs_capacity_provider this {
     managed_termination_protection = "ENABLED"
 
     managed_scaling {
-      maximum_scaling_step_size = 1
+      maximum_scaling_step_size = 2
       minimum_scaling_step_size = 1
       status                    = "ENABLED"
-      target_capacity           = 100
+      target_capacity           = 90
     }
   }
 }
@@ -41,39 +42,45 @@ resource aws_ecs_service this {
   desired_count                      = var.ecs_desired_count
   name                               = module.label.id
   task_definition                    = "${data.aws_ecs_task_definition.this.family}:${data.aws_ecs_task_definition.this.revision}"
-
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.this.name
+    base              = 1
+    weight            = 1
+  }
   deployment_controller {
     type = "ECS"
   }
-
   load_balancer {
     container_name   = var.lb_container_name
     container_port   = var.lb_container_port
     target_group_arn = var.lb_target_group_arn
   }
-
   network_configuration {
     subnets          = var.subnets
     security_groups  = var.security_groups
     assign_public_ip = var.assign_public_ip
   }
-
   ordered_placement_strategy {
     type  = "spread"
     field = "attribute:ecs.availability-zone"
   }
-
   ordered_placement_strategy {
     type  = "spread"
     field = "instanceId"
   }
+  placement_constraints {
+    type = "distinctInstance"
+  }
+  service_registries {
+    registry_arn = aws_service_discovery_service.this.arn
+  }
 
   depends_on = [
-    aws_ecs_cluster.this,
-    data.aws_ecs_task_definition.this,
     aws_ecs_capacity_provider.this,
+    aws_ecs_cluster.this,
+    aws_service_discovery_service.this,
+    data.aws_ecs_task_definition.this,
   ]
-
   lifecycle {
     ignore_changes = [
       desired_count,
@@ -81,3 +88,21 @@ resource aws_ecs_service this {
   }
 }
 
+resource "aws_service_discovery_service" "this" {
+  name = module.label.id
+
+  dns_config {
+    namespace_id = var.service_discovery_namespace_id
+
+    dns_records {
+      ttl  = 60
+      type = "A"
+    }
+
+    routing_policy = "MULTIVALUE"
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}

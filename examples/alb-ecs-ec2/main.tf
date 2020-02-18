@@ -18,7 +18,7 @@ data terraform_remote_state vpc {
 }
 
 locals {
-  namespace = "alb-ecs-ec2"
+  namespace = "alb-ecs-ec2-3"
   stage     = "staging"
   vpc = {
     id                        = data.terraform_remote_state.vpc.outputs.id
@@ -26,7 +26,8 @@ locals {
     private_subnet_ids        = data.terraform_remote_state.vpc.outputs.private_subnet_ids
     public_subnet_ids         = data.terraform_remote_state.vpc.outputs.public_subnet_ids
   }
-  cluster_name = "alb-ecs-ec2-staging"
+  cluster_name           = join("-", [local.namespace, local.stage])
+  cloud_map_namespace_id = data.terraform_remote_state.vpc.outputs.cloud_map_namespace_id
 }
 
 module iam_role_ecs {
@@ -116,18 +117,19 @@ module route53_record_alias {
 }
 
 module ecs {
-  source                = "../../ecs-ec2"
-  namespace             = local.namespace
-  stage                 = local.stage
-  autoscaling_group_arn = module.asg.arn
-  ecs_task_definition   = "nginx-html"
-  min_capacity          = 1
-  max_capacity          = 10
-  desired_capacity      = 3
-  subnets               = local.vpc.private_subnet_ids
-  security_groups       = [local.vpc.default_security_group_id]
-  lb_container_name     = "nginx"
-  lb_container_port     = 80
-  lb_target_group_arn   = module.alb_tg.arn
+  source                         = "../../ecs-ec2"
+  namespace                      = local.namespace
+  stage                          = local.stage
+  autoscaling_group_arn          = module.asg.arn
+  ecs_task_definition            = "nginx-html"
+  min_capacity                   = 1
+  max_capacity                   = 10
+  desired_capacity               = 2
+  subnets                        = local.vpc.private_subnet_ids
+  security_groups                = [local.vpc.default_security_group_id]
+  lb_container_name              = "nginx"
+  lb_container_port              = 80
+  lb_target_group_arn            = module.alb_tg.arn
+  service_discovery_namespace_id = local.cloud_map_namespace_id
 }
 

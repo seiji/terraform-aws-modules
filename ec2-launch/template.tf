@@ -23,7 +23,7 @@ resource aws_launch_template this {
   }
 
   image_id                             = var.image_id
-  instance_initiated_shutdown_behavior = "stop"
+  instance_initiated_shutdown_behavior = "terminate"
   key_name                             = var.key_name
 
   monitoring {

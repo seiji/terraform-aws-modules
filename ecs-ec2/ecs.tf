@@ -30,7 +30,7 @@ resource aws_ecs_capacity_provider this {
       maximum_scaling_step_size = 2
       minimum_scaling_step_size = 1
       status                    = "ENABLED"
-      target_capacity           = 90
+      target_capacity           = 100
     }
   }
 }
@@ -67,9 +67,6 @@ resource aws_ecs_service this {
   ordered_placement_strategy {
     type  = "spread"
     field = "instanceId"
-  }
-  placement_constraints {
-    type = "distinctInstance"
   }
   service_registries {
     registry_arn = aws_service_discovery_service.this.arn

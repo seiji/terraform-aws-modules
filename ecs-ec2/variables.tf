@@ -26,6 +26,14 @@ variable ecs_desired_count {
   default = 1
 }
 
+variable ecs_min_capacity {
+  default = 1
+}
+
+variable ecs_max_capacity {
+  default = 1
+}
+
 variable ecs_deployment_maximum_percent {
   default = 200
 }
@@ -36,18 +44,6 @@ variable ecs_deployment_minimum_healthy_percent {
 
 variable ecs_task_definition {
   type = string
-}
-
-variable min_capacity {
-  default = 1
-}
-
-variable max_capacity {
-  default = 1
-}
-
-variable desired_capacity {
-  default = 0
 }
 
 variable subnets {

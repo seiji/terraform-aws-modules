@@ -43,6 +43,7 @@ write_files:
       ECS_AVAILABLE_LOGGING_DRIVERS=["json-file","syslog","fluentd","awslogs"]
       ECS_CLUSTER=${ecs_cluster}
       ECS_DATADIR=/data
+      ECS_ENABLE_SPOT_INSTANCE_DRAINING=true
       ECS_LOGFILE=/log/ecs-agent.log
       ECS_LOGLEVEL=info
   - path: /etc/cloudwatch-agent-config.json
@@ -55,4 +56,3 @@ runcmd:
   - systemctl restart docker.service
   - systemctl stop postfix.service
   - systemctl disable postfix.service
-  - yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm

@@ -1,3 +1,11 @@
+data aws_iam_policy ec2_for_ssm {
+  arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+}
+
+data aws_iam_policy_document ec2_for_ssm {
+  source_json = data.aws_iam_policy.ec2_for_ssm.policy
+}
+
 data aws_iam_policy ecs_task_execution {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }

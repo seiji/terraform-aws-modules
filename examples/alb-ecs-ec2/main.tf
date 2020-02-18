@@ -18,7 +18,7 @@ data terraform_remote_state vpc {
 }
 
 locals {
-  namespace = "alb-ecs-ec2-3"
+  namespace = "alb-ecs-ec2-5"
   stage     = "staging"
   vpc = {
     id                        = data.terraform_remote_state.vpc.outputs.id
@@ -58,7 +58,7 @@ module asg {
   namespace           = local.namespace
   stage               = local.stage
   name                = module.launch.template_name
-  instance_types      = ["t3.micro"]
+  instance_types      = ["t3.small"]
   max_size            = 10
   min_size            = 0
   desired_capacity    = 0
@@ -122,9 +122,9 @@ module ecs {
   stage                          = local.stage
   autoscaling_group_arn          = module.asg.arn
   ecs_task_definition            = "nginx-html"
-  min_capacity                   = 1
-  max_capacity                   = 10
-  desired_capacity               = 2
+  ecs_min_capacity               = 1
+  ecs_max_capacity               = 10
+  ecs_desired_count              = 2
   subnets                        = local.vpc.private_subnet_ids
   security_groups                = [local.vpc.default_security_group_id]
   lb_container_name              = "nginx"

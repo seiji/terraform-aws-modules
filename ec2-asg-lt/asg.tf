@@ -21,6 +21,7 @@ resource aws_autoscaling_group this {
   max_size                  = var.max_size
   min_size                  = var.min_size
   target_group_arns         = var.target_group_arns
+  termination_policies      = ["OldestInstance"]
   vpc_zone_identifier       = var.vpc_zone_identifier
 
   mixed_instances_policy {

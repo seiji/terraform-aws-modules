@@ -24,6 +24,7 @@ module iam_role_ecs_instance {
   identifier = "ec2.amazonaws.com"
   policies = [
     data.aws_iam_policy_document.ec2_container_ec2.json,
+    data.aws_iam_policy_document.ec2_for_ssm.json,
   ]
 }
 

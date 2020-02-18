@@ -1,11 +1,21 @@
-# resource "aws_appautoscaling_target" "this" {
-#   service_namespace  = "ecs"
-#   resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
-#   scalable_dimension = "ecs:service:DesiredCount"
-#   # role_arn           = data.aws_iam_role.ecs_autoscale_service_linked_role.arn
-#   min_capacity = var.min_capacity
-#   max_capacity = var.max_capacity
-# }
+data "aws_iam_role" "aas_ecs" {
+  name = "AWSServiceRoleForApplicationAutoScaling_ECSService"
+}
+
+resource "aws_appautoscaling_target" "this" {
+  service_namespace  = "ecs"
+  resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  role_arn           = data.aws_iam_role.aas_ecs.arn
+  min_capacity       = var.ecs_min_capacity
+  max_capacity       = var.ecs_max_capacity
+
+  depends_on = [
+    aws_ecs_cluster.this,
+    aws_ecs_service.this,
+    data.aws_iam_role.aas_ecs,
+  ]
+}
 #
 # resource "aws_appautoscaling_policy" "scale_out" {
 #   name               = "${local.name}-scale-out"

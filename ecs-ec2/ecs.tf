@@ -15,7 +15,9 @@ resource aws_ecs_cluster this {
     base              = 1
     weight            = 1
   }
-
+  provisioner "local-exec" {
+    command = "sleep 10"
+  }
   depends_on = [aws_ecs_capacity_provider.this]
 }
 

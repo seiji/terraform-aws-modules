@@ -45,3 +45,11 @@ variable target_group_arns {
 variable vpc_zone_identifier {
   type = list
 }
+
+variable on_demand_base_capacity {
+  default = 0
+}
+
+variable on_demand_percentage_above_base_capacity {
+  default = 0
+}

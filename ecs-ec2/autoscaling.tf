@@ -78,7 +78,7 @@ resource "aws_cloudwatch_metric_alarm" "scalein" {
 
   metric_query {
     id          = "mq"
-    expression  = "asg>1 AND cpu<=${var.aas_policy_cpu.threshold_low}"
+    expression  = "asg>1 AND cpu<${var.aas_policy_cpu.threshold_low}"
     label       = "AutoScaling GroupTotalInstances and CPU Utilization for ScaleIn"
     return_data = "true"
   }

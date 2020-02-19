@@ -6,16 +6,20 @@ variable stage {
   type = string
 }
 
-variable autoscaling_group_arn {
+variable asg_arn {
   type = string
 }
 
-variable load_balancer {
-  type = object({
+variable asg_name {
+  type = string
+}
+
+variable load_balancers {
+  type = list(object({
     container_name   = string
     container_port   = number
     target_group_arn = string
-  })
+  }))
 }
 
 variable network_configuration {
@@ -30,12 +34,25 @@ variable ecs_desired_count {
   default = 1
 }
 
-variable ecs_min_capacity {
+variable aas_min_capacity {
   default = 1
 }
 
-variable ecs_max_capacity {
+variable aas_max_capacity {
   default = 1
+}
+
+variable aas_policy_cpu {
+  type = object({
+    enabled        = bool
+    threshold_high = number
+    threshold_low  = number
+  })
+  default = {
+    enabled        = false
+    threshold_high = 60
+    threshold_low  = 30
+  }
 }
 
 variable ecs_deployment_maximum_percent {

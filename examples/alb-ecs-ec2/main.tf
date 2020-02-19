@@ -105,19 +105,25 @@ module alb {
 }
 
 module ecs {
-  source                = "../../ecs-ec2"
-  namespace             = local.namespace
-  stage                 = local.stage
-  autoscaling_group_arn = module.asg.arn
-  ecs_desired_count     = 2
-  ecs_max_capacity      = 10
-  ecs_min_capacity      = 1
-  ecs_task_definition   = "nginx-html"
-  load_balancer = {
+  source           = "../../ecs-ec2"
+  namespace        = local.namespace
+  stage            = local.stage
+  aas_max_capacity = 10
+  aas_min_capacity = 1
+  aas_policy_cpu = {
+    enabled        = true
+    threshold_high = 60
+    threshold_low  = 30
+  }
+  asg_arn             = module.asg.arn
+  asg_name            = module.asg.name
+  ecs_desired_count   = 2
+  ecs_task_definition = "nginx-html"
+  load_balancers = [{
     container_name   = "nginx"
     container_port   = 80
     target_group_arn = module.alb.tg_arn
-  }
+  }]
   network_configuration = {
     subnets          = local.vpc.private_subnet_ids
     security_groups  = [local.vpc.default_security_group_id]

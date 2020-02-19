@@ -25,7 +25,7 @@ resource aws_ecs_cluster this {
 resource aws_ecs_capacity_provider this {
   name = join("-", [module.label.id, random_id.this.hex])
   auto_scaling_group_provider {
-    auto_scaling_group_arn         = var.autoscaling_group_arn
+    auto_scaling_group_arn         = var.asg_arn
     managed_termination_protection = "ENABLED"
 
     managed_scaling {
@@ -53,10 +53,14 @@ resource aws_ecs_service this {
   deployment_controller {
     type = "ECS"
   }
-  load_balancer {
-    container_name   = var.load_balancer.container_name
-    container_port   = var.load_balancer.container_port
-    target_group_arn = var.load_balancer.target_group_arn
+
+  dynamic load_balancer {
+    for_each = var.load_balancers
+    content {
+      target_group_arn = load_balancer.value.target_group_arn
+      container_name   = load_balancer.value.container_name
+      container_port   = load_balancer.value.container_port
+    }
   }
   network_configuration {
     subnets          = var.network_configuration.subnets

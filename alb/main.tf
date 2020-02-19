@@ -3,7 +3,7 @@ locals {
 }
 
 module "label" {
-  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 }
@@ -18,7 +18,7 @@ resource "aws_alb" "this" {
   tags = module.label.tags
 }
 
-resource "aws_alb_listener" "this" {
+resource "aws_alb_listener" "https" {
   load_balancer_arn = aws_alb.this.arn
   port              = "443"
   protocol          = "HTTPS"

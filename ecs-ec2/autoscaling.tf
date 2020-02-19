@@ -2,13 +2,9 @@ data "aws_iam_role" "aas_ecs" {
   name = "AWSServiceRoleForApplicationAutoScaling_ECSService"
 }
 
-locals {
-  aas_resource_id = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
-}
-
 resource "aws_appautoscaling_target" "this" {
   service_namespace  = "ecs"
-  resource_id        = local.aas_resource_id
+  resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   role_arn           = data.aws_iam_role.aas_ecs.arn
   min_capacity       = var.aas_min_capacity
@@ -21,9 +17,10 @@ resource "aws_appautoscaling_target" "this" {
   ]
 }
 
-resource "aws_appautoscaling_policy" "scalein" {
-  name               = join("-", [module.label.id, "scaleIn"])
-  resource_id        = local.aas_resource_id
+resource "aws_appautoscaling_policy" "scale_in" {
+  name               = join("-", [module.label.id, "scale_in"])
+  policy_type        = "StepScaling"
+  resource_id        = aws_appautoscaling_target.this.resource_id
   scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
   service_namespace  = aws_appautoscaling_target.this.service_namespace
 
@@ -45,54 +42,32 @@ resource "aws_appautoscaling_policy" "scalein" {
   ]
 }
 
-resource "aws_appautoscaling_policy" "scaleout" {
-  name               = join("-", [module.label.id, "scaleout"])
-  resource_id        = local.aas_resource_id
-  scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.this.service_namespace
-
-  step_scaling_policy_configuration {
-    adjustment_type         = "ChangeInCapacity"
-    cooldown                = 300
-    metric_aggregation_type = "Maximum"
-
-    step_adjustment {
-      metric_interval_lower_bound = 0
-      scaling_adjustment          = 1
-    }
-  }
-
-  depends_on = [
-    aws_ecs_cluster.this,
-    aws_ecs_service.this,
-    aws_appautoscaling_target.this,
-  ]
-}
-
-resource "aws_cloudwatch_metric_alarm" "scalein" {
-  alarm_name          = join("-", ["CustomTracking", module.label.id, "AlarmLow"])
-  alarm_actions       = [aws_appautoscaling_policy.scalein.arn]
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "5"
-  threshold           = "1"
+resource "aws_cloudwatch_metric_alarm" "scale_in" {
+  alarm_name          = join("-", ["ECSService", module.label.id, "AlarmLow"])
+  alarm_actions       = [aws_appautoscaling_policy.scale_in.arn]
+  comparison_operator = "GreaterThanThreshold"
+  datapoints_to_alarm = 10
+  evaluation_periods  = 10
+  threshold           = 0
 
   metric_query {
     id          = "mq"
-    expression  = "asg>1 AND cpu<${var.aas_policy_cpu.threshold_low}"
-    label       = "AutoScaling GroupTotalInstances and CPU Utilization for ScaleIn"
+    expression  = "ecs>1 AND cpu<${var.aas_policy_cpu.threshold_low}"
+    label       = "ECS DesiredTaskCount and CPU Utilization for Scalein"
     return_data = "true"
   }
 
   metric_query {
-    id = "asg"
+    id = "ecs"
     metric {
-      metric_name = "GroupTotalInstances"
-      namespace   = "AWS/AutoScaling"
+      metric_name = "DesiredTaskCount"
+      namespace   = "ECS/ContainerInsights"
       period      = "60"
       stat        = "Average"
       unit        = "Count"
       dimensions = {
-        AutoScalingGroupName = var.asg_name
+        ClusterName = aws_ecs_cluster.this.name
+        ServiceName = aws_ecs_service.this.name
       }
     }
   }
@@ -115,20 +90,47 @@ resource "aws_cloudwatch_metric_alarm" "scalein" {
     aws_ecs_cluster.this,
     aws_ecs_service.this,
     aws_appautoscaling_target.this,
-    aws_appautoscaling_policy.scalein,
+    aws_appautoscaling_policy.scale_in,
   ]
 }
 
-resource "aws_cloudwatch_metric_alarm" "scaleout" {
-  alarm_actions       = [aws_appautoscaling_policy.scaleout.arn]
+resource "aws_appautoscaling_policy" "scale_out" {
+  name               = join("-", [module.label.id, "scale_out"])
+  policy_type        = "StepScaling"
+  resource_id        = aws_appautoscaling_target.this.resource_id
+  scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.this.service_namespace
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 300
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      metric_interval_lower_bound = 0
+      scaling_adjustment          = 1
+    }
+  }
+
+  depends_on = [
+    aws_ecs_cluster.this,
+    aws_ecs_service.this,
+    aws_appautoscaling_target.this,
+  ]
+}
+
+resource "aws_cloudwatch_metric_alarm" "scale_out" {
+  alarm_actions       = [aws_appautoscaling_policy.scale_out.arn]
   alarm_name          = join("-", ["CustomTracking", module.label.id, "AlarmHigh"])
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "5"
+  datapoints_to_alarm = 5
+  evaluation_periods  = 5
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = 60
   statistic           = "Average"
   threshold           = var.aas_policy_cpu.threshold_high
+  treat_missing_data  = "missing"
   unit                = "Percent"
 
   dimensions = {
@@ -140,7 +142,7 @@ resource "aws_cloudwatch_metric_alarm" "scaleout" {
     aws_ecs_cluster.this,
     aws_ecs_service.this,
     aws_appautoscaling_target.this,
-    aws_appautoscaling_policy.scalein,
+    aws_appautoscaling_policy.scale_out,
   ]
 }
 # resource "aws_appautoscaling_policy" "tgt_cpu" {
@@ -166,5 +168,3 @@ resource "aws_cloudwatch_metric_alarm" "scaleout" {
 #     aws_appautoscaling_target.this,
 #   ]
 # }
-
-#

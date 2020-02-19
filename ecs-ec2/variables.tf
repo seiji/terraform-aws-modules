@@ -10,10 +10,6 @@ variable asg_arn {
   type = string
 }
 
-variable asg_name {
-  type = string
-}
-
 variable load_balancers {
   type = list(object({
     container_name   = string

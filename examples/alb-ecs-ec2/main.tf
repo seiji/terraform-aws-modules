@@ -116,7 +116,6 @@ module ecs {
     threshold_low  = 30
   }
   asg_arn             = module.asg.arn
-  asg_name            = module.asg.name
   ecs_desired_count   = 2
   ecs_task_definition = "nginx-html"
   load_balancers = [{

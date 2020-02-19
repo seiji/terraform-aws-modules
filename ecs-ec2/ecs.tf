@@ -17,8 +17,9 @@ resource aws_ecs_cluster this {
 
   depends_on = [aws_ecs_capacity_provider.this]
   provisioner "local-exec" {
-    command = "sleep 60"
+    command = "sleep 180"
   }
+  tags = module.label.tags
 }
 
 resource aws_ecs_capacity_provider this {
@@ -34,6 +35,7 @@ resource aws_ecs_capacity_provider this {
       target_capacity           = 100
     }
   }
+  tags = module.label.tags
 }
 
 resource aws_ecs_service this {
@@ -86,7 +88,7 @@ resource aws_ecs_service this {
   }
 }
 
-resource "aws_service_discovery_service" "this" {
+resource aws_service_discovery_service this {
   name = module.label.id
 
   dns_config {

@@ -18,7 +18,7 @@ data terraform_remote_state vpc {
 }
 
 locals {
-  namespace = "alb-ecs-ec2-5"
+  namespace = "alb-ecs-ec2"
   stage     = "staging"
   vpc = {
     id                        = data.terraform_remote_state.vpc.outputs.id
@@ -58,7 +58,7 @@ module asg {
   namespace                                = local.namespace
   stage                                    = local.stage
   name                                     = module.launch.template_name
-  instance_types                           = ["t3.nano"]
+  instance_types                           = ["t3a.nano", "t3.nano"]
   max_size                                 = 10
   min_size                                 = 0
   desired_capacity                         = 0

@@ -1,9 +1,9 @@
 module "label" {
-  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 
-  additional_tag_map = {
+  add_tags = {
     propagate_at_launch = "true"
   }
 }
@@ -44,7 +44,8 @@ resource aws_autoscaling_group this {
       dynamic override {
         for_each = var.instance_types
         content {
-          instance_type = override.value
+          instance_type     = override.value
+          weighted_capacity = 1
         }
       }
     }
@@ -66,5 +67,5 @@ resource aws_autoscaling_group this {
     ignore_changes        = [desired_capacity]
   }
 
-  tags = module.label.tags_as_list_of_maps
+  tags = module.label.tags_list
 }

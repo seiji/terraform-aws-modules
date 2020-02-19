@@ -20,7 +20,7 @@ variable delimiter {
   default = "-"
 }
 
-variable tags {
+variable add_tags {
   type = map(string)
   default = {
   }

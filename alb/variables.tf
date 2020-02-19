@@ -37,7 +37,7 @@ variable tg_target_type {
 variable tg_health_check {
   type = object({
     enabled             = bool
-    health_threshold    = number
+    healthy_threshold   = number
     interval            = number
     path                = string
     timeout             = number
@@ -45,7 +45,7 @@ variable tg_health_check {
   })
   default = {
     enabled             = false
-    health_threshold    = 3
+    healthy_threshold   = 3
     interval            = 30
     path                = null
     timeout             = 5

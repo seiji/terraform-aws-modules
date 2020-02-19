@@ -67,7 +67,7 @@ resource "aws_alb_target_group" "this" {
       interval            = hc.interval
       path                = hc.path
       timeout             = hc.timeout
-      health_threshold    = hc.health_threshold
+      healthy_threshold   = hc.healthy_threshold
       unhealthy_threshold = hc.unhealthy_threshold
     }]
     content {
@@ -75,8 +75,8 @@ resource "aws_alb_target_group" "this" {
       interval            = health_check.value.interval
       path                = health_check.value.path
       timeout             = health_check.value.timeout
-      healthy_threshold   = health_check.value.threshold.healthy
-      unhealthy_threshold = health_check.value.threshold.unhealthy
+      healthy_threshold   = health_check.value.healthy_threshold
+      unhealthy_threshold = health_check.value.unhealthy_threshold
     }
   }
   dynamic stickiness {

@@ -7,23 +7,22 @@ resource "random_id" "this" {
 }
 
 resource aws_ecs_cluster this {
-  name = module.label.id
-
+  name               = module.label.id
   capacity_providers = [aws_ecs_capacity_provider.this.name]
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.this.name
     base              = 1
     weight            = 1
   }
-  provisioner "local-exec" {
-    command = "sleep 10"
-  }
+
   depends_on = [aws_ecs_capacity_provider.this]
+  provisioner "local-exec" {
+    command = "sleep 60"
+  }
 }
 
 resource aws_ecs_capacity_provider this {
-  name = "${module.label.id}-${random_id.this.hex}"
-
+  name = join("-", [module.label.id, random_id.this.hex])
   auto_scaling_group_provider {
     auto_scaling_group_arn         = var.autoscaling_group_arn
     managed_termination_protection = "ENABLED"
@@ -53,14 +52,14 @@ resource aws_ecs_service this {
     type = "ECS"
   }
   load_balancer {
-    container_name   = var.lb_container_name
-    container_port   = var.lb_container_port
-    target_group_arn = var.lb_target_group_arn
+    container_name   = var.load_balancer.container_name
+    container_port   = var.load_balancer.container_port
+    target_group_arn = var.load_balancer.target_group_arn
   }
   network_configuration {
-    subnets          = var.subnets
-    security_groups  = var.security_groups
-    assign_public_ip = var.assign_public_ip
+    subnets          = var.network_configuration.subnets
+    security_groups  = var.network_configuration.security_groups
+    assign_public_ip = var.network_configuration.assign_public_ip
   }
   ordered_placement_strategy {
     type  = "spread"

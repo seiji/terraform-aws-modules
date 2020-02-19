@@ -30,12 +30,12 @@ locals {
   cloud_map_namespace_id = data.terraform_remote_state.vpc.outputs.cloud_map_namespace_id
 }
 
-module iam_role_ecs {
-  source = "../../iam-role-ecs"
-}
-
 module ami {
   source = "git::https://github.com/seiji/terraform-aws-ecs-ami.git?ref=master"
+}
+
+module iam_role_ecs {
+  source = "../../iam-role-ecs"
 }
 
 module launch {
@@ -64,7 +64,7 @@ module asg {
   desired_capacity                         = 0
   health_check_type                        = "EC2"
   launch_template_id                       = module.launch.template_id
-  on_demand_base_capacity                  = 1
+  on_demand_base_capacity                  = 0
   on_demand_percentage_above_base_capacity = 0
   vpc_zone_identifier                      = local.vpc.private_subnet_ids
 }
@@ -83,11 +83,6 @@ data aws_acm_certificate this {
   most_recent = true
 }
 
-data aws_route53_zone this {
-  name         = "seiji.me."
-  private_zone = false
-}
-
 module alb {
   source          = "../../alb"
   namespace       = local.namespace
@@ -99,8 +94,8 @@ module alb {
   tg_port         = 80
   tg_protocol     = "HTTP"
   tg_health_check = {
-    enabled             = false
-    health_threshold    = 3
+    enabled             = true
+    healthy_threshold   = 3
     interval            = 30
     path                = "/"
     timeout             = 5
@@ -109,28 +104,38 @@ module alb {
   tg_target_type = "ip" # awsvpc
 }
 
+module ecs {
+  source                = "../../ecs-ec2"
+  namespace             = local.namespace
+  stage                 = local.stage
+  autoscaling_group_arn = module.asg.arn
+  ecs_desired_count     = 2
+  ecs_max_capacity      = 10
+  ecs_min_capacity      = 1
+  ecs_task_definition   = "nginx-html"
+  load_balancer = {
+    container_name   = "nginx"
+    container_port   = 80
+    target_group_arn = module.alb.tg_arn
+  }
+  network_configuration = {
+    subnets          = local.vpc.private_subnet_ids
+    security_groups  = [local.vpc.default_security_group_id]
+    assign_public_ip = false
+  }
+  service_discovery_namespace_id = local.cloud_map_namespace_id
+}
+
+data aws_route53_zone this {
+  name         = "seiji.me."
+  private_zone = false
+}
+
 module route53_record_alias {
   source        = "../../route53-record-alias"
   name          = "${local.namespace}.seiji.me"
   zone_id       = data.aws_route53_zone.this.zone_id
   alias_name    = module.alb.lb_dns_name
   alias_zone_id = module.alb.lb_zone_id
-}
-
-module ecs {
-  source                         = "../../ecs-ec2"
-  namespace                      = local.namespace
-  stage                          = local.stage
-  autoscaling_group_arn          = module.asg.arn
-  ecs_task_definition            = "nginx-html"
-  ecs_min_capacity               = 1
-  ecs_max_capacity               = 10
-  ecs_desired_count              = 2
-  subnets                        = local.vpc.private_subnet_ids
-  security_groups                = [local.vpc.default_security_group_id]
-  lb_container_name              = "nginx"
-  lb_container_port              = 80
-  lb_target_group_arn            = module.alb.tg_arn
-  service_discovery_namespace_id = local.cloud_map_namespace_id
 }
 

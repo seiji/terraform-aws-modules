@@ -1,16 +1,9 @@
 terraform {
   required_version = "~> 0.12.0"
-  backend "s3" {
-    bucket         = "terraform-aws-modules-tfstate"
-    region         = "ap-northeast-1"
-    key            = "alb-asg-lc.examples"
-    encrypt        = true
-    dynamodb_table = "terraform-aws-modules-tfstate-lock"
-  }
 }
 
 provider aws {
-  version = "~> 2.0"
+  version = ">= 2.48"
   region  = "ap-northeast-1"
 }
 
@@ -45,7 +38,7 @@ module iam_role_ec2 {
   stage     = local.stage
 }
 
-module lc {
+module launch {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
@@ -69,14 +62,31 @@ runcmd:
 EOF
 }
 
-module alb_tg {
-  source            = "../../alb-target-group"
-  namespace         = local.namespace
-  stage             = local.stage
-  vpc_id            = local.vpc.id
-  port              = 80
-  protocol          = "HTTP"
-  health_check_path = "/"
+data aws_acm_certificate this {
+  domain      = "*.seiji.me"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
+
+module alb {
+  source          = "../../alb"
+  namespace       = local.namespace
+  stage           = local.stage
+  vpc_id          = local.vpc.id
+  subnets         = local.vpc.public_subnet_ids
+  security_groups = [local.vpc.default_security_group_id, module.sg_https.id]
+  certificate_arn = data.aws_acm_certificate.this.arn
+  tg_port         = 80
+  tg_protocol     = "HTTP"
+  tg_health_check = {
+    enabled             = true
+    healthy_threshold   = 3
+    interval            = 30
+    path                = "/"
+    timeout             = 5
+    unhealthy_threshold = 3
+  }
+  tg_target_type = "ip" # awsvpc
 }
 
 module asg {
@@ -87,8 +97,8 @@ module asg {
   max_size             = 1
   min_size             = 1
   health_check_type    = "ELB"
-  target_group_arns    = [module.alb_tg.arn]
-  launch_configuration = module.lc.configuration_name
+  target_group_arns    = [module.alb.tg_arn]
+  launch_configuration = module.launch.configuration_name
   vpc_zone_identifier  = local.vpc.private_subnet_ids
 }
 
@@ -100,23 +110,6 @@ module sg_https {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-data aws_acm_certificate this {
-  domain      = "*.seiji.me"
-  types       = ["AMAZON_ISSUED"]
-  most_recent = true
-}
-
-module alb {
-  source           = "../../alb-https"
-  namespace        = local.namespace
-  stage            = local.stage
-  vpc_id           = local.vpc.id
-  security_groups  = [local.vpc.default_security_group_id, module.sg_https.id]
-  subnets          = local.vpc.public_subnet_ids
-  certificate_arn  = data.aws_acm_certificate.this.arn
-  target_group_arn = module.alb_tg.arn
-}
-
 data aws_route53_zone this {
   name         = "seiji.me."
   private_zone = false
@@ -126,6 +119,6 @@ module route53_record_alias {
   source        = "../../route53-record-alias"
   name          = "example.seiji.me"
   zone_id       = data.aws_route53_zone.this.zone_id
-  alias_name    = module.alb.dns_name
-  alias_zone_id = module.alb.zone_id
+  alias_name    = module.alb.lb_dns_name
+  alias_zone_id = module.alb.lb_zone_id
 }

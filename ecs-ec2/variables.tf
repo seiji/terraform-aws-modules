@@ -10,16 +10,20 @@ variable autoscaling_group_arn {
   type = string
 }
 
-variable lb_container_name {
-  type = string
+variable load_balancer {
+  type = object({
+    container_name   = string
+    container_port   = number
+    target_group_arn = string
+  })
 }
 
-variable lb_container_port {
-  type = number
-}
-
-variable lb_target_group_arn {
-  type = string
+variable network_configuration {
+  type = object({
+    subnets          = list(string)
+    security_groups  = list(string)
+    assign_public_ip = bool
+  })
 }
 
 variable ecs_desired_count {
@@ -44,18 +48,6 @@ variable ecs_deployment_minimum_healthy_percent {
 
 variable ecs_task_definition {
   type = string
-}
-
-variable subnets {
-  type = list(string)
-}
-
-variable security_groups {
-  type = list(string)
-}
-
-variable assign_public_ip {
-  default = false
 }
 
 variable "service_discovery_namespace_id" {

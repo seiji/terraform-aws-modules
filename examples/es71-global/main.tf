@@ -33,11 +33,6 @@ module es {
   namespace             = local.namespace
   stage                 = local.stage
   elasticsearch_version = "7.1"
-  # vpc_options = {
-  #   enabled          = true
-  #   subnet_ids            = [local.vpc.public_subnet_ids[0]]
-  #   security_group_ids    = [local.vpc.default_security_group_id]
-  # }
   cluster_config = {
     instance_type            = "t2.small.elasticsearch"
     instance_count           = 1
@@ -46,30 +41,3 @@ module es {
   }
   allowed_ips = ["124.155.111.68/32"]
 }
-
-# module ami {
-#   source = "../../ami-amzn2"
-# }
-#
-# module sg_ssh {
-#   source      = "../../vpc-sg"
-#   namespace   = local.namespace
-#   stage       = local.stage
-#   vpc_id      = local.vpc.id
-#   from_port   = 22
-#   to_port     = 22
-#   protocol    = "tcp"
-#   cidr_blocks = ["0.0.0.0/0"]
-# }
-#
-# resource aws_instance tunnel {
-#   ami           = module.ami.id
-#   instance_type = "t3.micro"
-#   subnet_id     = local.vpc.public_subnet_ids[0]
-#   vpc_security_group_ids = [
-#     local.vpc.default_security_group_id,
-#     module.sg_ssh.id,
-#   ]
-#   associate_public_ip_address = true
-#   key_name                    = "id_rsa"
-# }

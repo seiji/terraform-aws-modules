@@ -53,11 +53,18 @@ module es {
   namespace             = local.namespace
   stage                 = local.stage
   elasticsearch_version = "7.1"
-  subnet_ids            = local.vpc.private_subnet_ids
-  security_group_ids    = [local.vpc.default_security_group_id]
-  instance_type         = "t2.small.elasticsearch"
-  instance_count        = 2
-  cognito = {
+  vpc_options = {
+    enabled            = true
+    subnet_ids         = local.vpc.private_subnet_ids
+    security_group_ids = [local.vpc.default_security_group_id]
+  }
+  cluster_config = {
+    instance_type            = "t2.small.elasticsearch"
+    instance_count           = 2
+    dedicated_master_enabled = false
+    availability_zone_count  = 2
+  }
+  cognito_options = {
     enabled          = true
     user_pool_id     = local.cognito.user_pool.id
     identity_pool_id = local.cognito.identity_pool.id

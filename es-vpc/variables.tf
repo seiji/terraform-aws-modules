@@ -10,20 +10,26 @@ variable elasticsearch_version {
   type = string
 }
 
-variable subnet_ids {
-  type = list
+variable vpc_options {
+  type = object({
+    enabled            = bool
+    subnet_ids         = list(string)
+    security_group_ids = list(string)
+  })
+  default = {
+    enabled            = false
+    subnet_ids         = []
+    security_group_ids = []
+  }
 }
 
-variable security_group_ids {
-  default = []
-}
-
-variable instance_type {
-  default = "r5.large.elasticsearch"
-}
-
-variable instance_count {
-  type = number
+variable cluster_config {
+  type = object({
+    instance_type            = string
+    instance_count           = number
+    dedicated_master_enabled = bool
+    availability_zone_count  = number
+  })
 }
 
 variable volume_type {
@@ -50,7 +56,7 @@ variable automated_snapshot_start_hour {
   default = 23
 }
 
-variable cognito {
+variable cognito_options {
   type = object({
     enabled          = bool
     user_pool_id     = string
@@ -65,4 +71,21 @@ variable cognito {
     role_arn         = ""
     auth_role_name   = ""
   }
+}
+
+variable search_logs_enabled {
+  default = false
+}
+
+variable index_logs_enabled {
+  default = false
+}
+
+variable application_logs_enabled {
+  default = false
+}
+
+variable allowed_ips {
+  type    = list(string)
+  default = []
 }

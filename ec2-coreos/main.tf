@@ -41,7 +41,7 @@ resource "aws_instance" "this" {
   associate_public_ip_address = var.associate_public_ip_address
   key_name                    = var.key_name
 
-  iam_instance_profile = "${aws_iam_instance_profile.ec2.id}"
+  iam_instance_profile = aws_iam_instance_profile.ec2.id
   tags                 = module.label.tags
 
   user_data = data.template_file.cloud_init.rendered

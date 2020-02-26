@@ -1,16 +1,9 @@
 terraform {
   required_version = "~> 0.12.0"
-  backend "s3" {
-    bucket         = "terraform-aws-modules-tfstate"
-    region         = "ap-northeast-1"
-    key            = "log-groups.cloudwatch.examples"
-    encrypt        = true
-    dynamodb_table = "terraform-aws-modules-tfstate-lock"
-  }
 }
 
 provider aws {
-  version = "~> 2.36"
+  version = "~> 2.50"
   region  = local.region
 }
 

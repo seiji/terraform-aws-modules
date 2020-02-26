@@ -25,7 +25,7 @@ module iam_role_logs {
   source     = "../iam-role"
   name       = "${module.label.id}-logs"
   identifier = "logs.amazonaws.com"
-  policies = [
+  policy_json_list = [
     data.aws_iam_policy_document.firehose.json,
   ]
 }

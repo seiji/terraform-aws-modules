@@ -68,7 +68,7 @@ module iam_role_firehose {
   source     = "../iam-role"
   name       = "${module.label.id}-firehose"
   identifier = "firehose.amazonaws.com"
-  policies = [
+  policy_json_list = [
     data.aws_iam_policy_document.bucket.json,
     data.aws_iam_policy_document.glue.json,
     data.aws_iam_policy_document.logs.json,

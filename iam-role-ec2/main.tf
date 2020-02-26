@@ -9,7 +9,7 @@ module iam_role_ec2 {
   source     = "../iam-role"
   name       = module.label.id
   identifier = "ec2.amazonaws.com"
-  policies = [
+  policiy_json_list = [
     data.aws_iam_policy_document.ec2_for_ssm.json,
     data.aws_iam_policy_document.cwa_server.json,
   ]

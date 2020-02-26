@@ -6,8 +6,8 @@ module label {
 }
 
 module iam_role {
-  source     = "../iam-role"
-  name       = module.label.id
-  identifier = "export.rds.amazonaws.com"
-  policies   = concat([data.aws_iam_policy_document.rds.json], var.policies)
+  source            = "../iam-role"
+  name              = module.label.id
+  identifier        = "export.rds.amazonaws.com"
+  policiy_json_list = concat([data.aws_iam_policy_document.rds.json], var.policies)
 }

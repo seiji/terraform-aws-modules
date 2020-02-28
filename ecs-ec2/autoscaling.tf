@@ -52,7 +52,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_in" {
 
   metric_query {
     id          = "mq"
-    expression  = "ecs>1 AND cpu<${var.aas_policy_cpu.threshold_low}"
+    expression  = "ecs>${var.aas_min_capacity} AND cpu<${var.aas_policy_cpu.threshold_low}"
     label       = "ECS DesiredTaskCount and CPU Utilization for Scalein"
     return_data = "true"
   }

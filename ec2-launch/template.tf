@@ -30,8 +30,14 @@ resource aws_launch_template this {
     enabled = var.enable_monitoring
   }
 
-  user_data              = data.template_cloudinit_config.merged.rendered
-  vpc_security_group_ids = var.security_groups
+  network_interfaces {
+    associate_public_ip_address = var.associate_public_ip_address
+    delete_on_termination       = true
+    security_groups             = var.security_groups
+  }
+
+  user_data = data.template_cloudinit_config.merged.rendered
+  # vpc_security_group_ids = var.security_groups
 
   tag_specifications {
     resource_type = "instance"

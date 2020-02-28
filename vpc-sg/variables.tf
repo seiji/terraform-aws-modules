@@ -14,18 +14,11 @@ variable vpc_id {
   type = string
 }
 
-variable from_port {
-  type = number
-}
-
-variable to_port {
-  type = number
-}
-
-variable protocol {
-  type = string
-}
-
-variable cidr_blocks {
-  type = list
+variable rules {
+  type = list(object({
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
 }

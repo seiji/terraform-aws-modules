@@ -10,14 +10,18 @@ module "label" {
 
 locals {
   enabled_metrics = [
-    "GroupMinSize",
-    "GroupMaxSize",
     "GroupDesiredCapacity",
+    "GroupInServiceCapacity",
     "GroupInServiceInstances",
+    "GroupMaxSize",
+    "GroupMinSize",
     "GroupPendingInstances",
+    "GroupStandbyCapacity",
     "GroupStandbyInstances",
+    "GroupTerminatingCapacity",
     "GroupTerminatingInstances",
-    "GroupTotalInstances"
+    "GroupTotalCapacity",
+    "GroupTotalInstances",
   ]
 }
 

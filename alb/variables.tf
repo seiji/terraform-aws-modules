@@ -11,7 +11,7 @@ variable vpc_id {
 }
 
 variable subnets {
-  type = list
+  type = list(string)
 }
 
 variable security_groups {

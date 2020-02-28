@@ -91,8 +91,8 @@ data aws_iam_policy_document allow_mfa_device {
   statement {
     actions = [
       "iam:ListMFADevices",
-      "iam:ListVirtualMFADevices",
       "iam:ListUsers",
+      "iam:ListVirtualMFADevices",
     ]
     effect = "Allow"
     resources = [
@@ -110,12 +110,12 @@ resource aws_iam_policy allow_mfa_device {
 data aws_iam_policy_document allow_access_key {
   statement {
     actions = [
+      "iam:CreateAccessKey",
       "iam:DeleteAccessKey",
       "iam:GetAccessKeyLastUsed",
-      "iam:UpdateAccessKey",
       "iam:GetUser",
-      "iam:CreateAccessKey",
       "iam:ListAccessKeys",
+      "iam:UpdateAccessKey",
     ]
     condition {
       test     = "Bool"

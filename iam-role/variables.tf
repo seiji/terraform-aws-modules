@@ -2,10 +2,6 @@ variable name {
   type = string
 }
 
-variable identifier {
-  type = string
-}
-
 variable principals {
   type = object(
     {

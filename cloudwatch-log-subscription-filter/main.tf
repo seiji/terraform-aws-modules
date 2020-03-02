@@ -1,5 +1,5 @@
 module label {
-  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 }
@@ -24,7 +24,10 @@ data aws_iam_policy_document firehose {
 module iam_role_logs {
   source     = "../iam-role"
   name       = "${module.label.id}-logs"
-  identifier = "logs.amazonaws.com"
+  principals = {
+    type        = "Service"
+    identifiers = ["logs.amazonaws.com"]
+  }
   policy_json_list = [
     data.aws_iam_policy_document.firehose.json,
   ]

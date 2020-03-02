@@ -22,33 +22,12 @@ module iam_policy_custom {
   source = "../../iam-policy-custom"
 }
 
-module iam_users {
-  source = "../../iam-users"
-  users = {
-    admin : {
-      path = "/users/"
-    }
-    guest1 : {
-      path = "/users/"
-    }
-    guest2 : {
-      path = "/users/"
-    }
-    guest3 : {
-      path = "/users/"
-    }
-  }
-}
-
 module group_admin {
   source = "../../iam-group"
   name   = "admin"
   path   = "/users/"
   policies = [
     module.iam_policy_managed.administrator_access.arn
-  ]
-  users = [
-    module.iam_users.users.admin.name,
   ]
 }
 
@@ -61,9 +40,30 @@ module group_developers {
     module.iam_policy_custom.allow_change_password.arn,
     module.iam_policy_custom.allow_mfa_device.arn,
   ]
+}
+
+module users {
+  source = "../../iam-users"
   users = [
-    module.iam_users.users.guest1.name,
-    module.iam_users.users.guest2.name,
-    module.iam_users.users.guest3.name,
+    {
+      name   = "admin"
+      path   = "/users/"
+      groups = [module.group_admin.name]
+    },
+    {
+      name   = "guest1"
+      path   = "/users/"
+      groups = [module.group_developers.name]
+    },
+    {
+      name   = "guest2"
+      path   = "/users/"
+      groups = [module.group_developers.name]
+    },
+    {
+      name   = "guest3"
+      path   = "/users/"
+      groups = [module.group_developers.name]
+    },
   ]
 }

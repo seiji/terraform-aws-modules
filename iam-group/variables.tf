@@ -9,8 +9,3 @@ variable path {
 variable policies {
   type = list(string)
 }
-
-variable users {
-  type = list(string)
-}
-

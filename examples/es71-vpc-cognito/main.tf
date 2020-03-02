@@ -78,14 +78,16 @@ module ami {
 }
 
 module sg_ssh {
-  source      = "../../vpc-sg"
-  namespace   = local.namespace
-  stage       = local.stage
-  vpc_id      = local.vpc.id
-  from_port   = 22
-  to_port     = 22
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  source    = "../../vpc-sg"
+  namespace = local.namespace
+  stage     = local.stage
+  vpc_id    = local.vpc.id
+  rules = [{
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }]
 }
 
 resource aws_instance tunnel {

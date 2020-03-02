@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 0.12.0"
+  required_version = ">= 0.12.0"
   backend "s3" {
     bucket         = "terraform-aws-modules-tfstate"
     region         = "ap-northeast-1"
@@ -10,12 +10,8 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 2.50"
-  region  = local.region
-}
-
-locals {
-  region = "ap-northeast-1"
+  version = ">= 2.50"
+  region         = "ap-northeast-1"
 }
 
 module iam_policy_managed {

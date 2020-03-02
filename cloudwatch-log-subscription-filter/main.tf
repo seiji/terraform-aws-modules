@@ -22,8 +22,8 @@ data aws_iam_policy_document firehose {
 }
 
 module iam_role_logs {
-  source     = "../iam-role"
-  name       = "${module.label.id}-logs"
+  source = "../iam-role"
+  name   = "${module.label.id}-logs"
   principals = {
     type        = "Service"
     identifiers = ["logs.amazonaws.com"]

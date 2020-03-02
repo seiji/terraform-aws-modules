@@ -6,7 +6,7 @@ resource aws_iam_user this {
 
   force_destroy = true
   name          = each.value.name
-  path          = each.value.path
+  path          = "/"
 
   provisioner "local-exec" {
     when    = destroy

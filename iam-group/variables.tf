@@ -3,7 +3,8 @@ variable name {
 }
 
 variable path {
-  type = string
+  type    = string
+  default = "/"
 }
 
 variable policies {

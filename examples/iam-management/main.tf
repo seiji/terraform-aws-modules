@@ -33,6 +33,7 @@ module group_users {
     data.aws_iam_policy.iam_user_change_password.arn,
     module.iam_policy_custom.allow_access_key.arn,
     module.iam_policy_custom.allow_mfa_device.arn,
+    module.iam_policy_custom.allow_ssm_session.arn,
   ]
 }
 

@@ -62,15 +62,17 @@ EOF
 }
 
 module asg {
-  source              = "../../ec2-asg-lt"
-  namespace           = local.namespace
-  stage               = local.stage
-  name                = module.launch.template_name
-  instance_types      = ["t3a.micro"]
-  max_size            = 1
-  min_size            = 1
-  desired_capacity    = 1
-  health_check_type   = "EC2"
-  launch_template_id  = module.launch.template_id
-  vpc_zone_identifier = local.vpc.private_subnet_ids
+  source                                   = "../../ec2-asg-lt"
+  namespace                                = local.namespace
+  stage                                    = local.stage
+  name                                     = module.launch.template_name
+  instance_types                           = ["t3a.micro"]
+  max_size                                 = 1
+  min_size                                 = 1
+  desired_capacity                         = 1
+  health_check_type                        = "EC2"
+  launch_template_id                       = module.launch.template_id
+  on_demand_base_capacity                  = 0
+  on_demand_percentage_above_base_capacity = 0
+  vpc_zone_identifier                      = local.vpc.private_subnet_ids
 }

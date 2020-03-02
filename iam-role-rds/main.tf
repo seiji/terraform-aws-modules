@@ -1,13 +1,16 @@
 module label {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  source     = "../label"
   namespace  = var.namespace
   stage      = var.stage
   attributes = ["rds"]
 }
 
 module iam_role {
-  source           = "../iam-role"
-  name             = module.label.id
-  identifier       = "export.rds.amazonaws.com"
+  source = "../iam-role"
+  name   = module.label.id
+  principals = {
+    type        = "Service"
+    identifiers = ["export.rds.amazonaws.com"]
+  }
   policy_json_list = concat([data.aws_iam_policy_document.rds.json], var.policies)
 }

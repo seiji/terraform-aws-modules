@@ -1,14 +1,17 @@
 module label {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  source     = "../label"
   namespace  = var.namespace
   stage      = var.stage
   attributes = ["ec2"]
 }
 
 module iam_role_ec2 {
-  source     = "../iam-role"
-  name       = module.label.id
-  identifier = "ec2.amazonaws.com"
+  source = "../iam-role"
+  name   = module.label.id
+  principals = {
+    type        = "Service"
+    identifiers = ["ec2.amazonaws.com"]
+  }
   policy_json_list = [
     data.aws_iam_policy_document.ec2_for_ssm.json,
     data.aws_iam_policy_document.cwa_server.json,

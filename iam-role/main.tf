@@ -3,8 +3,8 @@ data aws_iam_policy_document this {
     actions = ["sts:AssumeRole"]
 
     principals {
-      type        = "Service"
-      identifiers = [var.identifier]
+      type        = var.principals.type
+      identifiers = var.principals.identifiers
     }
   }
 }

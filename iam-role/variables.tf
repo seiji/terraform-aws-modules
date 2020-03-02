@@ -6,6 +6,15 @@ variable identifier {
   type = string
 }
 
+variable principals {
+  type = object(
+    {
+      type        = string
+      identifiers = list(string)
+    },
+  )
+}
+
 variable policy_json_list {
   type        = list(string)
   description = "list of aws_iam_policy_document.json"

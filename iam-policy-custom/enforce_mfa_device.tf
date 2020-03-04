@@ -48,7 +48,7 @@ data aws_iam_policy_document enforce_mfa_device {
       "iam:ListUsers",
       "iam:ListVirtualMFADevices",
     ]
-    resources = [ "*" ]
+    resources = ["*"]
   }
   statement {
     effect = "Deny"

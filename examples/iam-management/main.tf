@@ -26,13 +26,17 @@ data aws_iam_policy iam_user_change_password {
   arn = "arn:aws:iam::aws:policy/IAMUserChangePassword"
 }
 
+data aws_iam_policy iam_user_ssh_keys {
+  arn = "arn:aws:iam::aws:policy/IAMUserSSHKeys"
+}
+
 module group_admin {
   source = "../../iam-group"
   name   = "admin"
   policies = [
     data.aws_iam_policy.iam_user_change_password.arn,
+    data.aws_iam_policy.iam_user_ssh_keys.arn,
     module.iam_policy_custom.allow_access_key.arn,
-    module.iam_policy_custom.allow_ssm_session.arn,
     module.iam_policy_custom.enforce_mfa_device.arn,
   ]
 }
@@ -42,6 +46,7 @@ module group_developers {
   name   = "developers"
   policies = [
     data.aws_iam_policy.iam_user_change_password.arn,
+    data.aws_iam_policy.iam_user_ssh_keys.arn,
     module.iam_policy_custom.allow_access_key.arn,
     module.iam_policy_custom.enforce_mfa_device.arn,
   ]
@@ -78,6 +83,33 @@ module assume_admin_role {
   name   = "assume-admin-role"
   policy_arns = [
     data.aws_iam_policy.administrator_access.arn,
+  ]
+  principals = {
+    type        = "AWS"
+    identifiers = [module.users.users["admin"].arn]
+  }
+}
+
+data aws_iam_policy iam_ro {
+  arn = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
+}
+
+data aws_iam_policy resource_group_ro {
+  arn = "arn:aws:iam::aws:policy/AWSResourceGroupsReadOnlyAccess"
+}
+
+data aws_iam_policy ssm_ro {
+  arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+}
+
+module assume_ssm_role {
+  source = "../../iam-role"
+  name   = "assume-ssm-role"
+  policy_arns = [
+    data.aws_iam_policy.iam_ro.arn,
+    data.aws_iam_policy.resource_group_ro.arn,
+    data.aws_iam_policy.ssm_ro.arn,
+    module.iam_policy_custom.allow_ssm_session.arn,
   ]
   principals = {
     type        = "AWS"

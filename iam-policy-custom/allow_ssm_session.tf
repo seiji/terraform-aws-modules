@@ -1,20 +1,22 @@
 data aws_iam_policy_document allow_ssm_session {
   statement {
+    effect = "Allow"
     actions = [
       "ssm:StartSession",
     ]
-    effect = "Allow"
     resources = [
       "arn:aws:ec2:*:*:instance/*",
       "arn:aws:ssm:*:*:document/AWS-StartSSHSession",
     ]
   }
   statement {
+    effect = "Allow"
     actions = [
-      "ec2:DescribeInstances",
+      "ssm:TerminateSession"
     ]
-    effect    = "Allow"
-    resources = ["*"]
+    resources = [
+      "arn:aws:ssm:*:*:session/&{aws:username}-*",
+    ]
   }
 }
 

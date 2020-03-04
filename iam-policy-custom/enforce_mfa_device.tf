@@ -53,24 +53,13 @@ data aws_iam_policy_document enforce_mfa_device {
   statement {
     effect = "Deny"
     not_actions = [
-      "iam:ListUsers",
-      "iam:GetAccountPasswordPolicy",
-      "iam:ListVirtualMFADevices",
-      "iam:ListMFADevices",
-    ]
-    condition {
-      test     = "BoolIfExists"
-      variable = "aws:MultiFactorAuthPresent"
-      values   = ["false"]
-    }
-    resources = ["*"]
-  }
-  statement {
-    effect = "Deny"
-    not_actions = [
       "iam:CreateVirtualMFADevice",
       "iam:DeleteVirtualMFADevice",
       "iam:EnableMFADevice",
+      "iam:GetAccountPasswordPolicy",
+      "iam:ListMFADevices",
+      "iam:ListUsers",
+      "iam:ListVirtualMFADevices",
       "iam:ResyncMFADevice",
     ]
     condition {
@@ -78,10 +67,7 @@ data aws_iam_policy_document enforce_mfa_device {
       variable = "aws:MultiFactorAuthPresent"
       values   = ["false"]
     }
-    not_resources = [
-      "arn:aws:iam::${local.account_id}:mfa/&{aws:username}",
-      "arn:aws:iam::${local.account_id}:user/&{aws:username}",
-    ]
+    resources = ["*"]
   }
 }
 

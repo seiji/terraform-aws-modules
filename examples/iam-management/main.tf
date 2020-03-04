@@ -56,7 +56,7 @@ module users {
   source = "../../iam-users"
   users = [
     {
-      name   = "admin"
+      name   = "seiji"
       groups = [module.group_admin.name]
     },
     {
@@ -85,8 +85,10 @@ module assume_admin_role {
     data.aws_iam_policy.administrator_access.arn,
   ]
   principals = {
-    type        = "AWS"
-    identifiers = [module.users.users["admin"].arn]
+    type = "AWS"
+    identifiers = [
+      module.users.users["seiji"].arn,
+    ]
   }
 }
 
@@ -112,7 +114,9 @@ module assume_ssm_role {
     module.iam_policy_custom.allow_ssm_session.arn,
   ]
   principals = {
-    type        = "AWS"
-    identifiers = [module.users.users["admin"].arn]
+    type = "AWS"
+    identifiers = [
+      module.users.users["seiji"].arn,
+    ]
   }
 }

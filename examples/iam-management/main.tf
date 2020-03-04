@@ -14,10 +14,6 @@ provider "aws" {
   region  = "ap-northeast-1"
 }
 
-module iam_policy_managed {
-  source = "../../iam-policy-managed"
-}
-
 module iam_policy_custom {
   source = "../../iam-policy-custom"
 }
@@ -30,10 +26,8 @@ data aws_iam_policy iam_user_ssh_keys {
   arn = "arn:aws:iam::aws:policy/IAMUserSSHKeys"
 }
 
-module group_admin {
-  source = "../../iam-group"
-  name   = "admin"
-  policies = [
+locals {
+  default_group_policies = [
     data.aws_iam_policy.iam_user_change_password.arn,
     data.aws_iam_policy.iam_user_ssh_keys.arn,
     module.iam_policy_custom.allow_access_key.arn,
@@ -41,15 +35,38 @@ module group_admin {
   ]
 }
 
+data aws_iam_policy support_user {
+  arn = "arn:aws:iam::aws:policy/job-function/SupportUser"
+}
+
+data aws_iam_policy view_only_access {
+  arn = "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+}
+
+data aws_iam_policy iam_access_analyzer_ro {
+  arn = "arn:aws:iam::aws:policy/IAMAccessAnalyzerReadOnlyAccess"
+}
+
+module group_admin {
+  source = "../../iam-group"
+  name   = "admin"
+  policies = concat(
+    local.default_group_policies,
+    [
+      data.aws_iam_policy.support_user.arn,
+      data.aws_iam_policy.view_only_access.arn,
+      data.aws_iam_policy.iam_access_analyzer_ro.arn,
+    ],
+  )
+}
+
 module group_developers {
   source = "../../iam-group"
   name   = "developers"
-  policies = [
-    data.aws_iam_policy.iam_user_change_password.arn,
-    data.aws_iam_policy.iam_user_ssh_keys.arn,
-    module.iam_policy_custom.allow_access_key.arn,
-    module.iam_policy_custom.enforce_mfa_device.arn,
-  ]
+  policies = concat(
+    local.default_group_policies,
+    [],
+  )
 }
 
 module users {

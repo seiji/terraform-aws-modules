@@ -18,45 +18,24 @@ module iam_policy_custom {
   source = "../../iam-policy-custom"
 }
 
-data aws_iam_policy iam_user_change_password {
-  arn = "arn:aws:iam::aws:policy/IAMUserChangePassword"
-}
-
-data aws_iam_policy iam_user_ssh_keys {
-  arn = "arn:aws:iam::aws:policy/IAMUserSSHKeys"
-}
-
 locals {
-  default_group_policies = [
-    data.aws_iam_policy.iam_user_change_password.arn,
-    data.aws_iam_policy.iam_user_ssh_keys.arn,
+  human_group_policies = [
+    "arn:aws:iam::aws:policy/IAMUserChangePassword",
+    "arn:aws:iam::aws:policy/IAMUserSSHKeys",
     module.iam_policy_custom.allow_access_key.arn,
     module.iam_policy_custom.enforce_mfa_device.arn,
-    module.iam_policy_custom.allow_sts_assume.arn,
   ]
-}
-
-data aws_iam_policy support_user {
-  arn = "arn:aws:iam::aws:policy/job-function/SupportUser"
-}
-
-data aws_iam_policy view_only_access {
-  arn = "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
-}
-
-data aws_iam_policy iam_access_analyzer_ro {
-  arn = "arn:aws:iam::aws:policy/IAMAccessAnalyzerReadOnlyAccess"
 }
 
 module group_admin {
   source = "../../iam-group"
   name   = "admin"
   policies = concat(
-    local.default_group_policies,
+    local.human_group_policies,
     [
-      data.aws_iam_policy.support_user.arn,
-      data.aws_iam_policy.view_only_access.arn,
-      data.aws_iam_policy.iam_access_analyzer_ro.arn,
+      "arn:aws:iam::aws:policy/job-function/SupportUser",
+      "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess",
+      "arn:aws:iam::aws:policy/IAMAccessAnalyzerReadOnlyAccess",
     ],
   )
 }
@@ -65,9 +44,15 @@ module group_developers {
   source = "../../iam-group"
   name   = "developers"
   policies = concat(
-    local.default_group_policies,
+    local.human_group_policies,
     [],
   )
+}
+
+module group_services {
+  source   = "../../iam-group"
+  name     = "services"
+  policies = []
 }
 
 module users {
@@ -89,53 +74,10 @@ module users {
       name   = "guest3"
       groups = [module.group_developers.name]
     },
+    {
+      name   = "github"
+      groups = [module.group_services.name]
+    },
   ]
-}
-
-data aws_iam_policy administrator_access {
-  arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-}
-
-module assume_admin_role {
-  source = "../../iam-role"
-  name   = "assume-admin-role"
-  policy_arns = [
-    data.aws_iam_policy.administrator_access.arn,
-  ]
-  principals = {
-    type = "AWS"
-    identifiers = [
-      module.users.users["seiji"].arn,
-    ]
-  }
-}
-
-data aws_iam_policy iam_ro {
-  arn = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
-}
-
-data aws_iam_policy resource_group_ro {
-  arn = "arn:aws:iam::aws:policy/AWSResourceGroupsReadOnlyAccess"
-}
-
-data aws_iam_policy ssm_ro {
-  arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
-}
-
-module assume_ssm_role {
-  source = "../../iam-role"
-  name   = "assume-ssm-role"
-  policy_arns = [
-    data.aws_iam_policy.iam_ro.arn,
-    data.aws_iam_policy.resource_group_ro.arn,
-    data.aws_iam_policy.ssm_ro.arn,
-    module.iam_policy_custom.allow_ssm_session.arn,
-  ]
-  principals = {
-    type = "AWS"
-    identifiers = [
-      module.users.users["seiji"].arn,
-    ]
-  }
 }
 

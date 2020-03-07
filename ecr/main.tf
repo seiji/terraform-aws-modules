@@ -16,7 +16,7 @@ resource aws_ecr_repository this {
   tags = module.label.tags
 }
 
-resource aws_ecr_lifecycle_policy foopolicy {
+resource aws_ecr_lifecycle_policy this {
   for_each   = { for r in var.repositories : r.name => r if r.lifecycle_policy_json != null }
   repository = each.value.name
 

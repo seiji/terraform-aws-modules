@@ -28,17 +28,26 @@ jobs:
           - vpc-natgw
           - vpc-nati
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Install tfenv
       run: |
         git clone https://github.com/tfutils/tfenv.git ~/.tfenv
         echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
         source ~/.bash_profile
         cd ./examples && tfenv install && terraform --version
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-1
+        role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
+        role-duration-seconds: 1200
     - name: Terraform validate
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # env:
+      #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         source ~/.bash_profile
         cd ./examples/${{matrix.examples}} && terraform --version && terraform init && terraform validate

@@ -18,7 +18,12 @@ jobs:
           - cloudwatch-log-groups
           - cognito4iam
           - ec2-instance-connect
+          - ecr-repos
+          - ecr-repos
+          - eks-ec2
+          - es71-global
           - es71-vpc-cognito
+          - glue-athena
           - iam-management
           - rds-aurora-mysql-snapshot
           - security
@@ -27,6 +32,7 @@ jobs:
           - ssm-cloudwatch-agent-config
           - vpc-natgw
           - vpc-nati
+          - vpc-pritunl
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -45,9 +51,6 @@ jobs:
         role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
         role-duration-seconds: 1200
     - name: Terraform validate
-      # env:
-      #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         source ~/.bash_profile
         cd ./examples/${{matrix.examples}} && terraform --version && terraform init && terraform validate

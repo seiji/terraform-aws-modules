@@ -2,8 +2,9 @@ data aws_iam_policy_document this {
   statement {
     actions = [
       "sts:AssumeRole",
-      "sts:TagSession",
+      "sts:TagSession"
     ]
+
     principals {
       type        = var.principals.type
       identifiers = var.principals.identifiers

@@ -32,6 +32,7 @@ locals {
     data.aws_iam_policy.iam_user_ssh_keys.arn,
     module.iam_policy_custom.allow_access_key.arn,
     module.iam_policy_custom.enforce_mfa_device.arn,
+    module.iam_policy_custom.allow_sts_assume.arn,
   ]
 }
 
@@ -137,3 +138,4 @@ module assume_ssm_role {
     ]
   }
 }
+

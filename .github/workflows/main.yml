@@ -11,7 +11,8 @@ jobs:
         examples:
           - alb-asg-lc
           - alb-ecs-ec2
-          - alb-ecs-fargate
+          - alb-ecs-fargate/common
+          - alb-ecs-fargate/staging
           - asg-lc
           - asg-lt
           - backend

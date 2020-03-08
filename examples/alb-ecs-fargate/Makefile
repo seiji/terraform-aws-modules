@@ -1,6 +1,5 @@
 SERVICE_NAME=alb-ecs-fargate-staging
-TASKDEF_NAME=nginx-html
-IMG_URI=752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/alb-ecs-ec2
+TASKDEF_NAME=alb-ecs-fargate-staging
 IMG_TAG=latest
 
 .PHONY: help create
@@ -9,6 +8,19 @@ IMG_TAG=latest
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST)  \
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+ecr_login: ## Login ecr
+	aws ecr get-login-password | docker login --username AWS --password-stdin ${IMG_URI}
+
+ecr_logout: ## Logout from ecr
+	docker logout ${IMG_URI}
+
+img_build:
+	docker-compose build
+
+img_push: img_build ## Push ecr
+	docker-compose push
+
 
 taskdef_create: ## Create an ECS task definition from your compose file.
 	$(call taskdef_create,${IMG_URI},${IMG_TAG},${TASKDEF_NAME},docker-compose.yml,ecs-params.yml)
@@ -23,10 +35,10 @@ deployment_list: ## List developments of a service
 
 local_create: ## Creates a Compose file from remote ECS task definition
 	ecs-cli local \
-    create \
+		create \
 		--task-def-remote ${TASKDEF_NAME} \
 
-local_up: ## Runs containers locally from an ECS Task Definitio
+local_up: ## Runs containers locally from an ECS Task Definition
 	@IMG_URI=${IMG_URI} \
 	IMG_TAG=${IMG_TAG} \
 	ecs-cli local \
@@ -37,9 +49,6 @@ local_down: ## Runs containers locally from an ECS Task Definitio
 
 local_ps: ## Lists locally running ECS task containers
 	@ecs-cli local ps -all
-
-img_push: ## Push ecr
-	ecs-cli push ${IMG_URI}
 
 define taskdef_create
 	@IMG_URI=$(1) \

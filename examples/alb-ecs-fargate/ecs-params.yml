@@ -4,21 +4,17 @@ task_definition:
   task_role_arn: ecsTaskExecutionRole
   task_execution_role: ecsTaskExecutionRole
   task_size:
-    cpu_limit: 256
-    mem_limit: 512
+    cpu_limit: 512
+    mem_limit: 1024
   services:
     nginx:
       essential: true
-      cpu_shares: 256
-      mem_reservation: 128MB
+      cpu_shares: 128
+      mem_limit: 768MB
+      mem_reservation: 512MB
     app:
       essential: true
-      cpu_shares: 256
-      mem_reservation: 128MB
-run_params:
-  task_placement:
-    strategy:
-      - type: spread
-        field: attribute:ecs.availability-zone
-      - type: spread
-        field: instanceId
+      cpu_shares: 384
+      mem_limit: 768MB
+      mem_reservation: 512MB
+      init_process_enabled: true

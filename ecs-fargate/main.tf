@@ -1,5 +1,5 @@
 module label {
-  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 }
@@ -12,20 +12,13 @@ resource aws_ecs_cluster this {
   name = module.label.id
 
   capacity_providers = ["FARGATE", "FARGATE_SPOT"]
-  # default_capacity_provider_strategy {
-  #   base              = 1
-  #   capacity_provider = "FARGATE"
-  #   weight            = 1
-  # }
   default_capacity_provider_strategy {
     base              = 1
     capacity_provider = "FARGATE_SPOT"
     weight            = 1
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
+  tags = module.label.tags
 }
 
 resource aws_ecs_service this {
@@ -41,23 +34,24 @@ resource aws_ecs_service this {
     type = "ECS"
   }
 
-  load_balancer {
-    container_name   = var.lb_container_name
-    container_port   = var.lb_container_port
-    target_group_arn = var.lb_target_group_arn
+  dynamic load_balancer {
+    for_each = var.load_balancers
+    content {
+      target_group_arn = load_balancer.value.target_group_arn
+      container_name   = load_balancer.value.container_name
+      container_port   = load_balancer.value.container_port
+    }
   }
-
   network_configuration {
-    subnets          = var.subnets
-    security_groups  = var.security_groups
-    assign_public_ip = var.assign_public_ip
+    subnets          = var.network_configuration.subnets
+    security_groups  = var.network_configuration.security_groups
+    assign_public_ip = var.network_configuration.assign_public_ip
   }
 
   depends_on = [
     aws_ecs_cluster.this,
     data.aws_ecs_task_definition.this,
   ]
-
   lifecycle {
     ignore_changes = [
       desired_count,

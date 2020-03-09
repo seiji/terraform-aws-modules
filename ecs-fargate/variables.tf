@@ -6,20 +6,45 @@ variable stage {
   type = string
 }
 
-variable lb_container_name {
-  type = string
+variable load_balancers {
+  type = list(object({
+    container_name   = string
+    container_port   = number
+    target_group_arn = string
+  }))
 }
 
-variable lb_container_port {
-  type = number
-}
-
-variable lb_target_group_arn {
-  type = string
+variable network_configuration {
+  type = object({
+    subnets          = list(string)
+    security_groups  = list(string)
+    assign_public_ip = bool
+  })
 }
 
 variable ecs_desired_count {
   default = 1
+}
+
+variable aas_min_capacity {
+  default = 1
+}
+
+variable aas_max_capacity {
+  default = 1
+}
+
+variable aas_policy_cpu {
+  type = object({
+    enabled        = bool
+    threshold_high = number
+    threshold_low  = number
+  })
+  default = {
+    enabled        = false
+    threshold_high = 60
+    threshold_low  = 30
+  }
 }
 
 variable ecs_deployment_maximum_percent {
@@ -32,16 +57,4 @@ variable ecs_deployment_minimum_healthy_percent {
 
 variable ecs_task_definition {
   type = string
-}
-
-variable subnets {
-  type = list
-}
-
-variable security_groups {
-  type = list
-}
-
-variable assign_public_ip {
-  default = false
 }

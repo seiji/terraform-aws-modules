@@ -11,9 +11,10 @@ task_definition:
       essential: true
       cpu_shares: 256
       mem_reservation: 128MB
-      # secrets:
-      #   - value_from: /test/prod/pass
-      #     name: DB_PASS
+    app:
+      essential: true
+      cpu_shares: 256
+      mem_reservation: 128MB
 run_params:
   task_placement:
     strategy:

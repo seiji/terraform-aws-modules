@@ -16,6 +16,10 @@ module ecr_repos {
       name                  = "alb-ecs-fargate-nginx"
       lifecycle_policy_json = null
     },
+    {
+      name                  = "alb-ecs-fargate-node"
+      lifecycle_policy_json = null
+    },
   ]
 }
 

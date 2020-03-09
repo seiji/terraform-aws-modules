@@ -4,9 +4,15 @@ services:
     image: ${IMG_URI}/alb-ecs-fargate-nginx
     build:
       context: ./nginx
+    command: >
+      /bin/sh -c
+      "envsubst '
+      $$UPSTREAM_SERVER
+      '< /etc/nginx/nginx.conf.template
+      > /etc/nginx/nginx.conf
+      && nginx -g 'daemon off;'"
     environment:
-      ENV: staging
-      TZ: Asia/Tokyo
+      UPSTREAM_SERVER: unix:/app/tmp/express.sock
     logging:
       driver: awslogs
       options:
@@ -15,4 +21,31 @@ services:
         awslogs-region: ap-northeast-1
         awslogs-stream-prefix: nginx
     ports:
-      - "80:80"
+      - "8080:8080"
+    networks:
+      - default
+    depends_on:
+      - app
+    volumes:
+      - "app-tmp:/app/tmp:ro"
+  app:
+    image: ${IMG_URI}/alb-ecs-fargate-node
+    build:
+      context: ./app
+    environment:
+      SOCKET_PATH: /app/tmp/express.sock
+    logging:
+      driver: awslogs
+      options:
+        awslogs-create-group: "true"
+        awslogs-group: /alb-ecs-fargate/staging
+        awslogs-region: ap-northeast-1
+        awslogs-stream-prefix: nginx
+    networks:
+      - default
+    volumes:
+      - "app-tmp:/app/tmp:rw"
+networks:
+  default:
+volumes:
+  app-tmp:

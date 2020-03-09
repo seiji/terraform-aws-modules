@@ -75,8 +75,11 @@ resource aws_ecs_service this {
     type  = "spread"
     field = "instanceId"
   }
-  service_registries {
-    registry_arn = aws_service_discovery_service.this.arn
+  dynamic "service_registries" {
+    for_each = var.service_discovery.enabled ? [var.service_discovery] : []
+    content {
+      registry_arn = aws_service_discovery_service.this[0].arn
+    }
   }
 
   depends_on = [
@@ -93,10 +96,11 @@ resource aws_ecs_service this {
 }
 
 resource aws_service_discovery_service this {
-  name = module.label.id
+  count = var.service_discovery.enabled ? 1 : 0
+  name  = module.label.id
 
   dns_config {
-    namespace_id = var.service_discovery_namespace_id
+    namespace_id = var.service_discovery.namespace_id
 
     dns_records {
       ttl  = 60

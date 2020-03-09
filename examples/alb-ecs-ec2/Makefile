@@ -1,5 +1,5 @@
-PROJ_NAME=alb-ecs-ec2-staging
-IMG_URI=752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/alb-ecs-ec2
+SERVICE_NAME=alb-ecs-ec2-staging
+TASKDEF_NAME=alb-ecs-ec2-staging
 IMG_TAG=latest
 
 .PHONY: help create
@@ -9,21 +9,33 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST)  \
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+ecr_login: ## Login ecr
+	aws ecr get-login-password | docker login --username AWS --password-stdin ${IMG_URI}
+
+ecr_logout: ## Logout from ecr
+	docker logout ${IMG_URI}
+
+img_build:
+	docker-compose build
+
+img_push: img_build ## Push ecr
+	docker-compose push
+
 taskdef_create: ## Create an ECS task definition from your compose file.
-	$(call taskdef_create,${IMG_URI},${IMG_TAG},${PROJ_NAME},docker-compose.ecs-local.yml,ecs-params.yml)
+	$(call taskdef_create,${IMG_URI},${IMG_TAG},${TASKDEF_NAME},docker-compose.yml,ecs-params.yml)
 
 service_update: ## Create a deployment
-	$(call service_update,${PROJ_NAME})
+	$(call service_update,${SERVICE_NAME})
 
 deploy: taskdef_create service_update ## Force deployment an ECS service
 
 deployment_list: ## List developments of a service
-	$(call service_deployment_list,${PROJ_NAME})
+	$(call service_deployment_list,${SERVICE_NAME})
 
 local_create: ## Creates a Compose file from remote ECS task definition
 	ecs-cli local \
-    create \
-		--task-def-remote ${PROJ_NAME} \
+		create \
+		--task-def-remote ${TASKDEF_NAME} \
 
 local_up: ## Runs containers locally from an ECS Task Definitio
 	@IMG_URI=${IMG_URI} \
@@ -36,9 +48,6 @@ local_down: ## Runs containers locally from an ECS Task Definitio
 
 local_ps: ## Lists locally running ECS task containers
 	@ecs-cli local ps -all
-
-img_push: ## Push ecr
-	ecs-cli push ${IMG_URI}
 
 define taskdef_create
 	@IMG_URI=$(1) \

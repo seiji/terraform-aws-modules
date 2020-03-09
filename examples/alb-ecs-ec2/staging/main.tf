@@ -17,25 +17,22 @@ locals {
     private_subnet_ids        = data.terraform_remote_state.vpc.outputs.private_subnet_ids
     public_subnet_ids         = data.terraform_remote_state.vpc.outputs.public_subnet_ids
   }
-  cluster_name           = join("-", [local.namespace, local.stage])
-  cloud_map_namespace_id = data.terraform_remote_state.vpc.outputs.cloud_map_namespace_id
+  cluster_name = join("-", [local.namespace, local.stage])
+  # cloud_map_namespace_id = data.terraform_remote_state.vpc.outputs.cloud_map_namespace_id
 }
 
 module ami {
   source = "git::https://github.com/seiji/terraform-aws-ecs-ami.git?ref=master"
 }
 
-module iam_role_ecs {
-  source = "../../iam-role-ecs"
-}
 
 module launch {
-  source                      = "../../ec2-launch"
+  source                      = "../../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
   ami_block_device_mappings   = module.ami.block_device_mappings
   associate_public_ip_address = false
-  iam_instance_profile        = module.iam_role_ecs.instance_profile_id
+  iam_instance_profile        = "ecsInstanceRole"
   image_id                    = module.ami.id
   image_name                  = "amzn2-ecs"
   key_name                    = "id_rsa"
@@ -45,7 +42,7 @@ module launch {
 }
 
 module asg {
-  source                                   = "../../ec2-asg-lt"
+  source                                   = "../../../ec2-asg-lt"
   namespace                                = local.namespace
   stage                                    = local.stage
   name                                     = module.launch.template_name
@@ -61,7 +58,7 @@ module asg {
 }
 
 module sg_https {
-  source      = "../../vpc-sg-https"
+  source      = "../../../vpc-sg-https"
   namespace   = local.namespace
   stage       = local.stage
   vpc_id      = local.vpc.id
@@ -75,7 +72,7 @@ data aws_acm_certificate this {
 }
 
 module alb {
-  source          = "../../alb"
+  source          = "../../../alb"
   namespace       = local.namespace
   stage           = local.stage
   vpc_id          = local.vpc.id
@@ -96,7 +93,7 @@ module alb {
 }
 
 module ecs {
-  source           = "../../ecs-ec2"
+  source           = "../../../ecs-ec2"
   namespace        = local.namespace
   stage            = local.stage
   aas_max_capacity = 10
@@ -108,10 +105,10 @@ module ecs {
   }
   asg_arn             = module.asg.arn
   ecs_desired_count   = 2
-  ecs_task_definition = "nginx-html"
+  ecs_task_definition = "alb-ecs-ec2-staging"
   load_balancers = [{
     container_name   = "nginx"
-    container_port   = 80
+    container_port   = 8080
     target_group_arn = module.alb.tg_arn
   }]
   network_configuration = {
@@ -119,7 +116,9 @@ module ecs {
     security_groups  = [local.vpc.default_security_group_id]
     assign_public_ip = false
   }
-  service_discovery_namespace_id = local.cloud_map_namespace_id
+  ecs_deployment_maximum_percent         = 100
+  ecs_deployment_minimum_healthy_percent = 50
+  # service_discovery_namespace_id = local.cloud_map_namespace_id
 }
 
 data aws_route53_zone this {
@@ -128,7 +127,7 @@ data aws_route53_zone this {
 }
 
 module route53_record_alias {
-  source        = "../../route53-record-alias"
+  source        = "../../../route53-record-alias"
   name          = "${local.namespace}.seiji.me"
   zone_id       = data.aws_route53_zone.this.zone_id
   alias_name    = module.alb.lb_dns_name

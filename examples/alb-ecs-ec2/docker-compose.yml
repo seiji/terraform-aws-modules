@@ -1,15 +1,51 @@
-version: "3.7"
+version: "3"
 services:
-  app:
-    image: 752096157676.dkr.ecr.ap-northeast-1.amazonaws.com/alb-ecs-ec2
+  nginx:
+    image: ${IMG_URI}/alb-ecs-ec2-nginx
     build:
-      context: .
+      context: ./nginx
+    command: >
+      /bin/sh -c
+      "envsubst '
+      $$UPSTREAM_SERVER
+      '< /etc/nginx/nginx.conf.template
+      > /etc/nginx/nginx.conf
+      && nginx -g 'daemon off;'"
     environment:
-      TZ: Asia/Tokyo
-    volumes:
-      - ./html:/usr/share/nginx/html
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+      UPSTREAM_SERVER: unix:/app/tmp/express.sock
+    logging:
+      driver: awslogs
+      options:
+        awslogs-create-group: "true"
+        awslogs-group: /alb-ecs-ec2/staging
+        awslogs-region: ap-northeast-1
+        awslogs-stream-prefix: nginx
+    ports:
+      - "8080:8080"
     networks:
       - default
+    depends_on:
+      - app
+    volumes:
+      - "app-tmp:/app/tmp:ro"
+  app:
+    image: ${IMG_URI}/alb-ecs-ec2-node
+    build:
+      context: ./app
+    environment:
+      SOCKET_PATH: /app/tmp/express.sock
+    logging:
+      driver: awslogs
+      options:
+        awslogs-create-group: "true"
+        awslogs-group: /alb-ecs-ec2/staging
+        awslogs-region: ap-northeast-1
+        awslogs-stream-prefix: app
+    networks:
+      - default
+    volumes:
+      - "app-tmp:/app/tmp:rw"
 networks:
   default:
+volumes:
+  app-tmp:

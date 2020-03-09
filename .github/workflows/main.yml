@@ -10,7 +10,8 @@ jobs:
       matrix:
         examples:
           - alb-asg-lc
-          - alb-ecs-ec2
+          - alb-ecs-ec2/common
+          - alb-ecs-ec2/staging
           - alb-ecs-fargate/common
           - alb-ecs-fargate/staging
           - asg-lc

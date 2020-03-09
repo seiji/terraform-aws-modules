@@ -1,20 +1,20 @@
 version: 1
 task_definition:
-  ecs_network_mode: bridge
+  ecs_network_mode: awsvpc
   task_role_arn: ecsTaskExecutionRole
   task_execution_role: ecsTaskExecutionRole
+  task_size:
+    cpu_limit: 512
+    mem_limit: 384
   services:
     nginx:
       essential: true
-      cpu_shares: 1024
+      cpu_shares: 128
+      mem_limit: 384MB
+      mem_reservation: 128MB
+    app:
+      essential: true
+      cpu_shares: 384
+      mem_limit: 384MB
       mem_reservation: 256MB
-      # secrets:
-      #   - value_from: /test/prod/pass
-      #     name: DB_PASS
-run_params:
-  task_placement:
-    strategy:
-      - type: spread
-        field: attribute:ecs.availability-zone
-      - type: spread
-        field: instanceId
+      init_process_enabled: true

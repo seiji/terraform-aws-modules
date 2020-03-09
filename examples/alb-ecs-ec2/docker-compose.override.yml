@@ -1,0 +1,27 @@
+version: "3"
+services:
+  nginx:
+    environment:
+      AWS_CONTAINER_CREDENTIALS_RELATIVE_URI: /creds
+      ECS_CONTAINER_METADATA_URI: http://169.254.170.2/v3
+    labels:
+      ecs-local.task-definition-input.type: remote
+      ecs-local.task-definition-input.value: alb-ecs-ec2-nginx
+    logging:
+      driver: json-file
+    networks:
+      ecs-local-network: null
+  app:
+    environment:
+      AWS_CONTAINER_CREDENTIALS_RELATIVE_URI: /creds
+      ECS_CONTAINER_METADATA_URI: http://169.254.170.2/v3
+    labels:
+      ecs-local.task-definition-input.type: remote
+      ecs-local.task-definition-input.value: alb-ecs-ec2-node
+    logging:
+      driver: json-file
+    networks:
+      ecs-local-network: null
+networks:
+  ecs-local-network:
+    external: true

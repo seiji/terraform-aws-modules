@@ -63,6 +63,13 @@ variable ecs_task_definition {
   type = string
 }
 
-variable "service_discovery_namespace_id" {
-  type = string
+variable service_discovery {
+  type = object({
+    enabled      = bool
+    namespace_id = string
+  })
+  default = {
+    enabled      = false
+    namespace_id = ""
+  }
 }

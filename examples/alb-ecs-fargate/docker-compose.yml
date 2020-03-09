@@ -27,7 +27,7 @@ services:
     depends_on:
       - app
     volumes:
-      - "app-tmp:/app/tmp:ro"
+      - "app-data:/app:ro"
   app:
     image: ${IMG_URI}/alb-ecs-fargate-node
     build:
@@ -44,8 +44,8 @@ services:
     networks:
       - default
     volumes:
-      - "app-tmp:/app/tmp:rw"
+      - "app-data:/app:rw"
 networks:
   default:
 volumes:
-  app-tmp:
+  app-data:

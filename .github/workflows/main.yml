@@ -17,6 +17,7 @@ jobs:
           - asg-lc
           - asg-lt
           - backend
+          - cloudfront-s3
           - cloudwatch-log-groups
           - cognito4iam
           - ec2-instance-connect

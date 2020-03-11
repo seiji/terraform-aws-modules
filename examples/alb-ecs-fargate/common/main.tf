@@ -23,7 +23,7 @@ data aws_iam_policy_document allow_s3 {
 
 module iam_role_ecs_tasks {
   source = "../../../iam-role"
-  name     = join("-", [local.namespace, local.stage, "ecs-tasks"])
+  name   = join("-", [local.namespace, local.stage, "ecs-tasks"])
 
   principals = {
     type        = "Service"

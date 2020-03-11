@@ -1,5 +1,5 @@
 module label {
-  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+  source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 }
@@ -23,18 +23,3 @@ resource aws_s3_bucket this {
   tags          = module.label.tags
 }
 
-data "aws_iam_policy_document" "this" {
-  statement {
-    actions = [
-      "s3:DeleteObject",
-      "s3:GetBucketLocation",
-      "s3:GetObject",
-      "s3:ListBucket",
-      "s3:PutObject",
-    ]
-    resources = [
-      "arn:aws:s3:::${aws_s3_bucket.this.id}",
-      "arn:aws:s3:::${aws_s3_bucket.this.id}/*",
-    ]
-  }
-}

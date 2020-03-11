@@ -55,11 +55,27 @@ module "export_s3" {
   stage     = local.stage
 }
 
+data aws_iam_policy_document export_s3 {
+  statement {
+    actions = [
+      "s3:DeleteObject",
+      "s3:GetBucketLocation",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:PutObject",
+    ]
+    resources = [
+      module.export_s3.arn,
+      "${module.export_s3.arn}/*",
+    ]
+  }
+}
+
 module "iam_role_export" {
   source    = "../../iam-role-rds"
   namespace = local.namespace
   stage     = local.stage
-  policies  = [module.export_s3.policy_document.json]
+  policies  = [data.aws_iam_policy_document.export_s3.json]
 }
 
 module "export_kms" {

@@ -27,8 +27,8 @@ resource aws_ecs_service this {
   deployment_minimum_healthy_percent = var.ecs_deployment_minimum_healthy_percent
   desired_count                      = var.ecs_desired_count
   # launch_type                        = "FARGATE"
-  name                               = module.label.id
-  task_definition                    = "${data.aws_ecs_task_definition.this.family}:${data.aws_ecs_task_definition.this.revision}"
+  name            = module.label.id
+  task_definition = "${data.aws_ecs_task_definition.this.family}:${data.aws_ecs_task_definition.this.revision}"
 
   deployment_controller {
     type = "ECS"

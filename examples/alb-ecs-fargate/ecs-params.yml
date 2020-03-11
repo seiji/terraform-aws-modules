@@ -1,20 +1,20 @@
 version: 1
 task_definition:
   ecs_network_mode: awsvpc
-  task_role_arn: ecsTaskExecutionRole
+  task_role_arn: alb-ecs-fargate-common-ecs-tasks
   task_execution_role: ecsTaskExecutionRole
   task_size:
-    cpu_limit: 512
-    mem_limit: 1024
+    cpu_limit: 256
+    mem_limit: 512
   services:
     nginx:
       essential: true
       cpu_shares: 128
-      mem_limit: 768MB
-      mem_reservation: 512MB
+      mem_limit: 256MB
+      mem_reservation: 256MB
     app:
       essential: true
-      cpu_shares: 384
-      mem_limit: 768MB
-      mem_reservation: 512MB
+      cpu_shares: 128
+      mem_limit: 256MB
+      mem_reservation: 256MB
       init_process_enabled: true

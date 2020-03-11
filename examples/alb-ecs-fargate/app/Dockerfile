@@ -4,10 +4,9 @@ ENV LANG C.UTF-8
 WORKDIR /app
 ADD . /app
 
-VOLUME /app/tmp
 RUN chown -R node:node /app
 
+USER node
 RUN npm install --production
 CMD node app.js
 
-USER node

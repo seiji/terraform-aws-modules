@@ -33,7 +33,11 @@ services:
     build:
       context: ./app
     environment:
-      SOCKET_PATH: /app/tmp/express.sock
+      - SOCKET_PATH=/app/tmp/express.sock
+      - AWS_REGION
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
     logging:
       driver: awslogs
       options:

@@ -13,8 +13,8 @@ resource aws_ecs_cluster this {
 
   capacity_providers = ["FARGATE", "FARGATE_SPOT"]
   default_capacity_provider_strategy {
-    base              = 1
     capacity_provider = "FARGATE_SPOT"
+    base              = 1
     weight            = 1
   }
 
@@ -26,12 +26,18 @@ resource aws_ecs_service this {
   deployment_maximum_percent         = var.ecs_deployment_maximum_percent
   deployment_minimum_healthy_percent = var.ecs_deployment_minimum_healthy_percent
   desired_count                      = var.ecs_desired_count
-  launch_type                        = "FARGATE"
+  # launch_type                        = "FARGATE"
   name                               = module.label.id
   task_definition                    = "${data.aws_ecs_task_definition.this.family}:${data.aws_ecs_task_definition.this.revision}"
 
   deployment_controller {
     type = "ECS"
+  }
+
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE_SPOT"
+    base              = 1
+    weight            = 1
   }
 
   dynamic load_balancer {

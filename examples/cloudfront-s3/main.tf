@@ -1,23 +1,7 @@
-data terraform_remote_state vpc {
-  backend = "s3"
-
-  config = {
-    bucket = "terraform-aws-modules-tfstate"
-    region = "ap-northeast-1"
-    key    = "vpc-nati.examples"
-  }
-}
-
 locals {
   namespace = "cloudfront-s3"
   stage     = "staging"
-  vpc = {
-    id                        = data.terraform_remote_state.vpc.outputs.id
-    default_security_group_id = data.terraform_remote_state.vpc.outputs.default_security_group_id
-    private_subnet_ids        = data.terraform_remote_state.vpc.outputs.private_subnet_ids
-    public_subnet_ids         = data.terraform_remote_state.vpc.outputs.public_subnet_ids
-  }
-  alias = "${join("-", [local.namespace, local.stage])}.seiji.me"
+  alias     = "${join("-", [local.namespace, local.stage])}.seiji.me"
 }
 
 module s3_backend {

@@ -41,18 +41,33 @@ module alb {
   vpc_id          = local.vpc.id
   subnets         = local.vpc.public_subnet_ids
   security_groups = [local.vpc.default_security_group_id, module.sg_https.id]
-  certificate_arn = data.aws_acm_certificate.this.arn
-  tg_port         = 80
-  tg_protocol     = "HTTP"
-  tg_health_check = {
-    enabled             = true
-    healthy_threshold   = 3
-    interval            = 30
-    path                = "/"
-    timeout             = 5
-    unhealthy_threshold = 3
+  listener = {
+    certificate_arn = data.aws_acm_certificate.this.arn
+    default_action = {
+      type           = "forward"
+      fixed_response = null
+    }
+    rules = []
   }
-  tg_target_type = "ip" # awsvpc
+  target_group = {
+    deregistration_delay = 300
+    health_check = {
+      enabled             = true
+      healthy_threshold   = 2
+      interval            = 30
+      path                = "/"
+      port                = "traffic-port"
+      timeout             = 5
+      unhealthy_threshold = 3
+    }
+    port = 80
+    stickiness = {
+      cookie_duration = null
+      enabled         = false
+      type            = null
+    }
+    target_type = "ip" # awsvpc
+  }
 }
 
 module ecs {

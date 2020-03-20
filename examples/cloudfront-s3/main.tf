@@ -58,11 +58,23 @@ module cloudfront {
       response_page_path    = "/503.html"
     },
   ]
+  default_cache_behavior = {
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "s3-cloudfront-s3-staging-backend"
+    forwarded_values = {
+      headers      = [],
+      query_string = false
+      cookies      = { forward = "none" }
+    }
+  }
+  logging_config = null
   origin = {
     domain_name          = module.s3_backend.bucket_domain_name
     origin_id            = "s3-cloudfront-s3-staging-backend"
     origin_path          = "/public"
     custom_origin_config = null
+    custom_header        = null
     s3_origin            = true
   }
   viewer_certificate = {

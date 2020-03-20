@@ -35,14 +35,44 @@ variable custom_error_response {
   default = []
 }
 
+variable default_cache_behavior {
+  type = object({
+    allowed_methods  = list(string)
+    cached_methods   = list(string)
+    target_origin_id = string
+    forwarded_values = object({
+      headers      = list(string)
+      query_string = bool
+      cookies = object({
+        forward = string
+      })
+    })
+  })
+}
+
+variable logging_config {
+  type = object({
+    bucket = string
+    prefix = string
+  })
+}
+
 variable origin {
   type = object({
     domain_name = string
     origin_id   = string
     origin_path = string
+    custom_header = list(object({
+      name  = string
+      value = string
+    }))
     custom_origin_config = object({
-      http_port  = number
-      https_port = number
+      http_port                = number
+      https_port               = number
+      origin_keepalive_timeout = number
+      origin_protocol_policy   = string
+      origin_read_timeout      = number
+      origin_ssl_protocols     = list(string)
     })
     s3_origin = bool
   })

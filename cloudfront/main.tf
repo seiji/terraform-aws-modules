@@ -27,17 +27,25 @@ resource aws_cloudfront_distribution this {
     }
   }
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = var.origin.origin_id
+    allowed_methods  = var.default_cache_behavior.allowed_methods
+    cached_methods   = var.default_cache_behavior.cached_methods
+    target_origin_id = var.default_cache_behavior.target_origin_id
 
     forwarded_values {
-      query_string = false
+      headers      = var.default_cache_behavior.forwarded_values.headers
+      query_string = var.default_cache_behavior.forwarded_values.query_string
       cookies {
-        forward = "none"
+        forward = var.default_cache_behavior.forwarded_values.cookies.forward
       }
     }
     viewer_protocol_policy = "redirect-to-https"
+  }
+  dynamic logging_config {
+    for_each = [for l in var.logging_config != null ? [var.logging_config] : [] : l]
+    content {
+      bucket = logging_config.value.bucket
+      prefix = logging_config.value.prefix
+    }
   }
   dynamic origin {
     for_each = [for o in var.origin != null ? [var.origin] : [] : o]
@@ -46,6 +54,24 @@ resource aws_cloudfront_distribution this {
       origin_id   = origin.value.origin_id
       origin_path = origin.value.origin_path
 
+      dynamic custom_header {
+        for_each = [for c in origin.value.custom_header : c]
+        content {
+          name  = custom_header.value.name
+          value = custom_header.value.value
+        }
+      }
+      dynamic custom_origin_config {
+        for_each = [for c in origin.value.s3_origin ? [] : [true] : c]
+        content {
+          http_port                = var.origin.custom_origin_config.http_port
+          https_port               = var.origin.custom_origin_config.https_port
+          origin_keepalive_timeout = var.origin.custom_origin_config.origin_keepalive_timeout
+          origin_protocol_policy   = var.origin.custom_origin_config.origin_protocol_policy
+          origin_read_timeout      = var.origin.custom_origin_config.origin_read_timeout
+          origin_ssl_protocols     = var.origin.custom_origin_config.origin_ssl_protocols
+        }
+      }
       dynamic s3_origin_config {
         for_each = [for c in origin.value.s3_origin ? [true] : [] : c]
         content {

@@ -19,6 +19,9 @@ resource aws_lambda_function this {
   source_code_hash = var.function.source_code_hash
   layers           = [aws_lambda_layer_version.this.arn]
 
+  depends_on = [
+    aws_lambda_layer_version.this,
+  ]
   tags = module.label.tags
 }
 

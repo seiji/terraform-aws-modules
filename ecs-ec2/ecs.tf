@@ -2,7 +2,7 @@ data aws_ecs_task_definition this {
   task_definition = var.ecs_task_definition
 }
 
-resource "random_id" "this" {
+resource random_id this {
   byte_length = 1
 }
 
@@ -16,10 +16,7 @@ resource aws_ecs_cluster this {
   }
 
   depends_on = [aws_ecs_capacity_provider.this]
-  provisioner "local-exec" {
-    command = "sleep 180"
-  }
-  tags = module.label.tags
+  tags       = module.label.tags
 }
 
 resource aws_ecs_capacity_provider this {
@@ -29,7 +26,7 @@ resource aws_ecs_capacity_provider this {
     managed_termination_protection = "ENABLED"
 
     managed_scaling {
-      maximum_scaling_step_size = 2
+      maximum_scaling_step_size = 1
       minimum_scaling_step_size = 1
       status                    = "ENABLED"
       target_capacity           = 100
@@ -69,11 +66,11 @@ resource aws_ecs_service this {
   }
   ordered_placement_strategy {
     type  = "spread"
-    field = "attribute:ecs.availability-zone"
+    field = "instanceId"
   }
   ordered_placement_strategy {
-    type  = "spread"
-    field = "instanceId"
+    field = "memory"
+    type  = "binpack"
   }
   dynamic "service_registries" {
     for_each = var.service_discovery.enabled ? [var.service_discovery] : []

@@ -5,16 +5,16 @@ task_definition:
   task_execution_role: ecsTaskExecutionRole
   task_size:
     cpu_limit: 512
-    mem_limit: 384
+    mem_limit: 900
   services:
     nginx:
       essential: true
       cpu_shares: 128
-      mem_limit: 384MB
-      mem_reservation: 128MB
+      mem_limit: 64MB
+      mem_reservation: 64MB
     app:
       essential: true
       cpu_shares: 384
-      mem_limit: 384MB
-      mem_reservation: 256MB
+      mem_limit: 128MB
+      mem_reservation: 128MB
       init_process_enabled: true

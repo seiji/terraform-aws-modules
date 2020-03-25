@@ -7,8 +7,15 @@ module label {
 
 resource aws_s3_bucket this {
   bucket = module.label.id
-  acl    = "private"
-
+  acl    = length(var.grants) == 0 ? "private" : null
+  dynamic grant {
+    for_each = [for g in var.grants : g]
+    content {
+      id          = grant.value.id
+      permissions = grant.value.permissions
+      type        = grant.value.type
+    }
+  }
   dynamic lifecycle_rule {
     for_each = [for r in var.lifecycle_rule.enabled ? [var.lifecycle_rule] : [] : r]
     content {

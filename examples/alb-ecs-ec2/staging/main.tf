@@ -25,7 +25,6 @@ module ami {
   source = "git::https://github.com/seiji/terraform-aws-ecs-ami.git?ref=master"
 }
 
-
 module launch {
   source                      = "../../../ec2-launch"
   namespace                   = local.namespace
@@ -46,9 +45,9 @@ module asg {
   namespace                                = local.namespace
   stage                                    = local.stage
   name                                     = module.launch.template_name
-  instance_types                           = ["t3a.nano", "t3.nano"]
-  max_size                                 = 10
-  min_size                                 = 0
+  instance_types                           = ["t3a.small", "t3.small"]
+  max_size                                 = 4
+  min_size                                 = 2
   desired_capacity                         = 0
   health_check_type                        = "EC2"
   launch_template_id                       = module.launch.template_id
@@ -87,7 +86,7 @@ module alb {
     rules = []
   }
   target_group = {
-    deregistration_delay = 300
+    deregistration_delay = 60
     health_check = {
       enabled             = true
       healthy_threshold   = 2
@@ -131,8 +130,8 @@ module ecs {
     security_groups  = [local.vpc.default_security_group_id]
     assign_public_ip = false
   }
-  ecs_deployment_maximum_percent         = 100
-  ecs_deployment_minimum_healthy_percent = 50
+  ecs_deployment_maximum_percent         = 150
+  ecs_deployment_minimum_healthy_percent = 100
   # service_discovery_namespace_id = local.cloud_map_namespace_id
 }
 

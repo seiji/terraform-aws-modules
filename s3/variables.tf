@@ -10,6 +10,15 @@ variable attributes {
   default = []
 }
 
+variable grants {
+  type = list(object({
+    id          = string
+    permissions = list(string)
+    type        = string
+  }))
+  default = []
+}
+
 variable lifecycle_rule {
   type = object({
     enabled                                = bool

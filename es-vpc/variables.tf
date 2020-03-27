@@ -32,12 +32,17 @@ variable cluster_config {
   })
 }
 
-variable volume_type {
-  default = "gp2"
-}
-
-variable volume_size {
-  default = 10
+variable ebs_options {
+  type = object({
+    ebs_enabled = bool
+    volume_type = string
+    volume_size = number
+  })
+  default = {
+    ebs_enabled = true
+    volume_type = "gp2"
+    volume_size = 10
+  }
 }
 
 variable encrypt_at_rest {
@@ -88,4 +93,17 @@ variable application_logs_enabled {
 variable allowed_ips {
   type    = list(string)
   default = []
+}
+
+variable alarm_options {
+  type = object({
+    enabled       = bool
+    alarm_actions = list(string)
+    ok_actions    = list(string)
+  })
+  default = {
+    enabled       = false
+    alarm_actions = []
+    ok_actions    = []
+  }
 }

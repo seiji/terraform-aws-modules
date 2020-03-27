@@ -28,23 +28,26 @@ resource aws_elasticsearch_domain this {
       security_group_ids = vpc_options.value.security_group_ids
     }
   }
-  cluster_config {
-    instance_type            = var.cluster_config.instance_type
-    instance_count           = var.cluster_config.instance_count
-    dedicated_master_enabled = var.cluster_config.dedicated_master_enabled
-    zone_awareness_enabled   = var.cluster_config.availability_zone_count > 1 ? true : false
+  dynamic cluster_config {
+    for_each = [var.cluster_config]
+    content {
+      instance_type            = cluster_config.value.instance_type
+      instance_count           = cluster_config.value.instance_count
+      dedicated_master_enabled = cluster_config.value.dedicated_master_enabled
+      zone_awareness_enabled   = cluster_config.value.availability_zone_count > 1 ? true : false
 
-    dynamic zone_awareness_config {
-      for_each = [for op in var.cluster_config.availability_zone_count > 1 ? [true] : [] : op]
-      content {
-        availability_zone_count = var.cluster_config.availability_zone_count
+      dynamic zone_awareness_config {
+        for_each = cluster_config.value.availability_zone_count > 1 ? [true] : []
+        content {
+          availability_zone_count = cluster_config.value.availability_zone_count
+        }
       }
     }
   }
   ebs_options {
-    ebs_enabled = true
-    volume_type = var.volume_type
-    volume_size = var.volume_size
+    ebs_enabled = var.ebs_options.ebs_enabled
+    volume_type = var.ebs_options.volume_type
+    volume_size = var.ebs_options.volume_size
   }
   encrypt_at_rest {
     enabled    = var.encrypt_at_rest
@@ -69,11 +72,13 @@ resource aws_elasticsearch_domain this {
     "rest.action.multi.allow_explicit_index" = "true"
   }
 
-  tags = module.label.tags
-
   depends_on = [
     aws_iam_service_linked_role.this,
   ]
+  lifecycle {
+    ignore_changes = [log_publishing_options]
+  }
+  tags = module.label.tags
 }
 
 resource aws_elasticsearch_domain_policy cognito {

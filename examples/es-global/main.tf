@@ -24,4 +24,9 @@ module es {
     availability_zone_count  = 1
   }
   allowed_ips = ["118.243.74.112/32"]
+  alarm_options = {
+    enabled       = true
+    alarm_actions = []
+    ok_actions    = []
+  }
 }

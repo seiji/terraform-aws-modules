@@ -53,13 +53,11 @@ data aws_iam_policy_document glue {
 data aws_iam_policy_document logs {
   statement {
     effect = "Allow"
-
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
-
     resources = ["*"]
   }
 }

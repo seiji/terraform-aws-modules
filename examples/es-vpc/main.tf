@@ -28,7 +28,7 @@ data terraform_remote_state cognito {
 }
 
 locals {
-  namespace = "es71-cognito"
+  namespace = "es-vpc"
   stage     = "staging"
   vpc = {
     id                        = data.terraform_remote_state.vpc.outputs.id
@@ -49,7 +49,7 @@ module iam_role_es_cognito {
 }
 
 module es {
-  source                = "../../es-vpc"
+  source                = "../../es"
   namespace             = local.namespace
   stage                 = local.stage
   elasticsearch_version = "7.1"

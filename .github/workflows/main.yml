@@ -23,8 +23,8 @@ jobs:
           - ec2-instance-connect
           - ecr-repos
           - ecr-repos
-          - es71-global
-          - es71-vpc-cognito
+          - es-global
+          - es-vpc
           - glue-athena
           - iam-management
           - rds-aurora-mysql-snapshot

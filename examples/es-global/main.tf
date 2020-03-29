@@ -2,7 +2,7 @@ terraform {
   required_version = "~> 0.12.0"
 }
 
-provider "aws" {
+provider aws {
   version = "~> 2.44"
   region  = "ap-northeast-1"
 }
@@ -10,6 +10,13 @@ provider "aws" {
 locals {
   namespace = "es-vpc"
   stage     = "staging"
+}
+
+module sns_es {
+  source     = "../../sns"
+  namespace  = local.namespace
+  stage      = local.stage
+  attributes = ["es"]
 }
 
 module es {
@@ -26,7 +33,7 @@ module es {
   allowed_ips = ["118.243.74.112/32"]
   alarm_options = {
     enabled       = true
-    alarm_actions = []
-    ok_actions    = []
+    alarm_actions = [module.sns_es.arn]
+    ok_actions    = [module.sns_es.arn]
   }
 }

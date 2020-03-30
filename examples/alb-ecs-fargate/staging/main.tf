@@ -93,11 +93,13 @@ data aws_route53_zone this {
   private_zone = false
 }
 
-module route53_record_alias {
-  source        = "../../../route53-record-alias"
-  name          = "${local.namespace}.seiji.me"
-  zone_id       = data.aws_route53_zone.this.zone_id
-  alias_name    = module.alb.lb_dns_name
-  alias_zone_id = module.alb.lb_zone_id
+module route53_record {
+  source  = "../../../route53-record"
+  name    = "${local.namespace}.seiji.me"
+  zone_id = data.aws_route53_zone.this.zone_id
+  alias = {
+    name    = module.alb.lb_dns_name
+    zone_id = module.alb.lb_zone_id
+  }
 }
 

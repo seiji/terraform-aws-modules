@@ -67,13 +67,7 @@ module sg_pritunl {
       to_port     = 19999
       protocol    = "udp"
       cidr_blocks = local.cidr_blocks
-    },
-    {
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = local.cidr_blocks
-    },
+    }
   ]
 }
 
@@ -88,9 +82,8 @@ module launch {
   image_name                  = "oracle"
   key_name                    = "id_rsa"
   security_groups             = [local.vpc.default_security_group_id, module.sg_pritunl.id]
-  root_block_device_size      = 15 # >= 15GB
-  # userdata_part_shellscript   = data.local_file.init.content
-  userdata_part_cloud_config = data.local_file.cloud_init.content
+  root_block_device_size      = 15
+  userdata_part_cloud_config  = data.local_file.cloud_init.content
 }
 
 module asg {
@@ -109,66 +102,3 @@ module asg {
   on_demand_percentage_above_base_capacity = 0
 }
 
-#
-# module nlb {
-#   source          = "../../nlb"
-#   namespace       = local.namespace
-#   stage           = local.stage
-#   vpc_id          = local.vpc.id
-#   subnets         = local.vpc.public_subnet_ids
-#   certificate_arn = data.aws_acm_certificate.this.arn
-#   target_group = [
-#     {
-#       health_check = {
-#         healthy_threshold   = 3
-#         interval            = 30
-#         port                = 80
-#         protocol            = "TCP"
-#         unhealthy_threshold = 3
-#       }
-#       port        = 80
-#       protocol    = "TCP"
-#     },
-#     {
-#       health_check = {
-#         healthy_threshold   = 3
-#         interval            = 30
-#         port                = 443
-#         protocol            = "TCP"
-#         unhealthy_threshold = 3
-#       }
-#       port        = 443
-#       protocol    = "TCP"
-#     },
-#   ]
-# }
-#
-# module asg {
-#   source                                   = "../../ec2-asg-lt"
-#   namespace                                = local.namespace
-#   stage                                    = local.stage
-#   name                                     = module.launch.template_name
-#   instance_types                           = ["t3a.nano", "t3.nano"]
-#   max_size                                 = 2
-#   min_size                                 = 0
-#   desired_capacity                         = 1
-#   health_check_type                        = "ELB"
-#   launch_template_id                       = module.launch.template_id
-#   target_group_arns                        = module.nlb.tg_arns
-#   on_demand_base_capacity                  = 0
-#   on_demand_percentage_above_base_capacity = 0
-#   vpc_zone_identifier                      = local.vpc.private_subnet_ids
-# }
-#
-# data aws_route53_zone this {
-#   name         = "seiji.me."
-#   private_zone = false
-# }
-#
-# module route53_record_alias {
-#   source        = "../../route53-record-alias"
-#   name          = "pritunl.seiji.me"
-#   zone_id       = data.aws_route53_zone.this.zone_id
-#   alias_name    = module.nlb.dns_name
-#   alias_zone_id = module.nlb.zone_id
-# }

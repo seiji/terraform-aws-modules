@@ -32,5 +32,8 @@ runcmd:
   - systemctl enable mongod pritunl
   - systemctl start mongod pritunl
   - sleep 60
-  - pritunl setup-key
+  # - pritunl setup-key
+  - pritunl set-mongodb mongodb://localhost:27017/0
+  - systemctl restart pritunl
+
 

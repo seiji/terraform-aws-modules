@@ -51,8 +51,8 @@ module iam_role_ec2 {
   stage     = local.stage
 }
 
-data local_file init {
-  filename = "init.sh"
+data local_file cloud_init {
+  filename = "./templates/cloud-init.yml"
 }
 
 module sg_pritunl {
@@ -89,7 +89,8 @@ module launch {
   key_name                    = "id_rsa"
   security_groups             = [local.vpc.default_security_group_id, module.sg_pritunl.id]
   root_block_device_size      = 15 # >= 15GB
-  userdata_part_shellscript   = data.local_file.init.content
+  # userdata_part_shellscript   = data.local_file.init.content
+  userdata_part_cloud_config = data.local_file.cloud_init.content
 }
 
 module asg {
@@ -107,6 +108,7 @@ module asg {
   on_demand_base_capacity                  = 0
   on_demand_percentage_above_base_capacity = 0
 }
+
 #
 # module nlb {
 #   source          = "../../nlb"

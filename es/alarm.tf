@@ -1,5 +1,5 @@
 locals {
-  free_storage_space_threshold = var.ebs_options.volume_size * var.cluster_config.instance_count * 1024 * 0.25
+  free_storage_space_threshold = var.ebs_options.volume_size * 1024 * 0.25
   nodes_threshold              = var.cluster_config.instance_count
 }
 

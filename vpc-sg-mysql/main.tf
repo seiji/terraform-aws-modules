@@ -5,10 +5,12 @@ module vpc_sg {
   attributes = ["mysql"]
   vpc_id     = var.vpc_id
   rules = [{
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = var.cidr_blocks
+    from_port                = 3306
+    to_port                  = 3306
+    protocol                 = "tcp"
+    cidr_blocks              = var.cidr_blocks
+    source_security_group_id = null
+    self                     = null
   }]
 }
 

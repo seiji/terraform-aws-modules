@@ -63,10 +63,12 @@ module sg_pritunl {
   vpc_id     = local.vpc.id
   rules = [
     {
-      from_port   = 10000
-      to_port     = 19999
-      protocol    = "udp"
-      cidr_blocks = local.cidr_blocks
+      from_port                = 10000
+      to_port                  = 19999
+      protocol                 = "udp"
+      cidr_blocks              = local.cidr_blocks
+      source_security_group_id = null
+      self                     = null
     }
   ]
 }

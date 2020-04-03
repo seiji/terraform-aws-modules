@@ -38,10 +38,12 @@ module sg_ssh {
   stage     = local.stage
   vpc_id    = local.vpc.id
   rules = [{
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # use ip of your network and aws range
+    from_port                = 22
+    to_port                  = 22
+    protocol                 = "tcp"
+    cidr_blocks              = ["0.0.0.0/0"] # use ip of your network and aws range
+    source_security_group_id = null
+    self                     = null
   }]
 }
 

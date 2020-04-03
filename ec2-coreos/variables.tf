@@ -1,12 +1,8 @@
-variable "region" {
-  description = "region"
-  type        = string
-  default     = "ap-northeast-1"
+variable "namespace" {}
+variable "stage" {}
+variable "attributes" {
+  default = []
 }
-
-variable "service" {}
-variable "env" {}
-variable "name" {}
 
 variable "instance_type" {}
 variable "associate_public_ip_address" {

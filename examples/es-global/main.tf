@@ -37,3 +37,4 @@ module es {
     ok_actions    = [module.sns_es.arn]
   }
 }
+

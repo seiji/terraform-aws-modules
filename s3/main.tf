@@ -9,7 +9,7 @@ resource aws_s3_bucket this {
   bucket = module.label.id
   acl    = length(var.grants) == 0 ? "private" : null
   dynamic grant {
-    for_each = [for g in var.grants : g]
+    for_each = var.grants
     content {
       id          = grant.value.id
       permissions = grant.value.permissions

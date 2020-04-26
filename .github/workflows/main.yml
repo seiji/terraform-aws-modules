@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         examples:
+          - account
           - alb-asg-lc
           - alb-ecs-ec2/common
           - alb-ecs-ec2/staging

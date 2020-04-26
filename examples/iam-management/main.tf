@@ -12,7 +12,7 @@ locals {
 }
 
 module group_admin {
-  source = "../../iam-group"
+  source = "../../iam/group"
   name   = "admin"
   policies = concat(
     local.human_group_policies,
@@ -25,7 +25,7 @@ module group_admin {
 }
 
 module group_developers {
-  source = "../../iam-group"
+  source = "../../iam/group"
   name   = "developers"
   policies = concat(
     local.human_group_policies,
@@ -34,13 +34,13 @@ module group_developers {
 }
 
 module group_services {
-  source   = "../../iam-group"
+  source   = "../../iam/group"
   name     = "services"
   policies = []
 }
 
 module users {
-  source = "../../iam-users"
+  source = "../../iam/users"
   users = [
     {
       name   = "seiji"

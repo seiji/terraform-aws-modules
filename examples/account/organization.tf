@@ -1,7 +1,3 @@
-output accounts {
-  value = module.organization_accounts.ids
-
-}
 module organization {
   source = "../../organizations/organization"
   aws_service_access_principals = [

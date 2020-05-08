@@ -2,8 +2,8 @@ locals {
   instance_type = "t3.nano"
 }
 
-module "label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=master"
+module label {
+  source     = "../label"
   namespace  = var.namespace
   stage      = var.stage
   attributes = ["nat"]
@@ -53,7 +53,7 @@ resource aws_spot_instance_request this {
   vpc_security_group_ids = [module.vpc.default_security_group_id]
   source_dest_check      = false
 
-  spot_price           = "0.02"
+  spot_price           = "0.002"
   spot_type            = "one-time"
   wait_for_fulfillment = true
   tags                 = module.label.tags
@@ -73,4 +73,5 @@ resource aws_route this {
   route_table_id         = module.vpc.default_route_table_private_id
   destination_cidr_block = "0.0.0.0/0"
   instance_id            = aws_spot_instance_request.this.spot_instance_id
+  depends_on             = [aws_spot_instance_request.this]
 }

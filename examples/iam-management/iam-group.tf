@@ -29,10 +29,10 @@ module iam_groups {
     services = []
   }
   users = {
-    seiji  = ["admin"]
-    guest1 = ["developers"]
-    guest2 = ["developers"]
-    guest3 = ["developers"]
-    github = ["services"]
+    "seiji"  = ["admin"]
+    "guest1" = ["developers"]
+    "guest2" = ["developers"]
+    "guest3" = ["developers"]
+    "github" = ["services"]
   }
 }

@@ -1,12 +1,3 @@
-terraform {
-  required_version = "~> 0.12.0"
-}
-
-provider aws {
-  version = ">= 2.50"
-  region  = "ap-northeast-1"
-}
-
 data terraform_remote_state vpc {
   backend = "s3"
 

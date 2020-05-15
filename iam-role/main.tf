@@ -20,9 +20,8 @@ resource aws_iam_role this {
 
 resource aws_iam_role_policy inline {
   count      = length(var.policy_json_list)
-  name       = module.label.id
   role       = aws_iam_role.this.id
-  policy     = var.policy_json[count.index]
+  policy     = var.policy_json_list[count.index]
   depends_on = [aws_iam_role.this]
 }
 

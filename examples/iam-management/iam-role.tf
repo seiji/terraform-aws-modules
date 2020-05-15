@@ -7,7 +7,7 @@ module assume_admin_role {
   principals = {
     type = "AWS"
     identifiers = [
-      module.users.users["seiji"].arn,
+      module.iam_groups.user_arns["seiji"],
     ]
   }
 }
@@ -21,7 +21,7 @@ module assume_power_role {
   principals = {
     type = "AWS"
     identifiers = [
-      module.users.users["github"].arn,
+      module.iam_groups.user_arns["github"]
     ]
   }
 }
@@ -38,7 +38,7 @@ module assume_ssm_role {
   principals = {
     type = "AWS"
     identifiers = [
-      module.users.users["seiji"].arn,
+      module.iam_groups.user_arns["seiji"],
     ]
   }
 }

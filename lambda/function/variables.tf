@@ -27,8 +27,11 @@ variable layers {
   type = list(string)
 }
 
-variable role_policy_jsons {
-  type = list(string)
+variable role_policy {
+  type = object({
+    policy_jsons = list(string)
+    policy_arns  = list(string)
+  })
 }
 
 variable vpc_config {

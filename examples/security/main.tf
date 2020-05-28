@@ -10,35 +10,30 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 2.36"
-  region  = local.region
+  version = "~> 2.62"
+  region  = "ap-northeast-1"
 }
 
 locals {
-  region    = "ap-northeast-1"
   namespace = "default"
   stage     = ""
 }
 
 module "cloudtrail" {
-  source                 = "../../cloudtrail"
-  namespace              = local.namespace
-  stage                  = ""
-  bucket_name            = "trail.seiji.me"
-  logging_s3_bucket_arns = ["arn:aws:s3:::terraform-aws-modules-tfstate/"]
+  source         = "../../cloudtrail"
+  namespace      = local.namespace
+  stage          = local.stage
+  kms_key_id     = null
+  s3_bucket_name = "trail.seiji.me"
 }
 
-module "guard_duty" {
-  source = "../../guard-duty"
-}
-
+# module "guard_duty" {
+#   source = "../../guard-duty"
+# }
+#
 module "sns_event_guard_duty" {
   source = "../../sns-event"
   name   = "event-guard-duty"
-}
-
-module "security_hub" {
-  source = "../../security-hub"
 }
 
 module "cloudwatch_event_rule_ssm" {

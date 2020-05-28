@@ -10,6 +10,21 @@ variable attributes {
   default = []
 }
 
+variable name {
+  type    = string
+  default = ""
+}
+
+variable bucket_prefix {
+  type    = string
+  default = null
+}
+
+variable acl {
+  type    = string
+  default = "private"
+}
+
 variable grants {
   type = list(object({
     id          = string
@@ -20,8 +35,8 @@ variable grants {
 }
 
 variable lifecycle_rule {
-  type = object({
-    enabled                                = bool
+  type = map(object({
+    prefix                                 = string
     abort_incomplete_multipart_upload_days = number
     expiration = object({
       days                         = number
@@ -34,23 +49,12 @@ variable lifecycle_rule {
       days          = number
       storage_class = string
     }))
-  })
-  default = {
-    enabled                                = true
-    abort_incomplete_multipart_upload_days = null
-    expiration                             = null
-    noncurrent_version_expiration          = null
-    transitions = [
-      {
-        days          = 0
-        storage_class = "INTELLIGENT_TIERING"
-      },
-      {
-        days          = 100
-        storage_class = "GLACIER"
-      },
-    ]
-  }
+    noncurrent_version_transitions = list(object({
+      days          = number
+      storage_class = string
+    }))
+  }))
+  default = {}
 }
 
 variable versioning {
@@ -62,4 +66,19 @@ variable versioning {
     enabled    = false
     mfa_delete = false
   }
+}
+
+variable force_destroy {
+  type    = bool
+  default = false
+}
+
+variable bucket_policy {
+  type    = string
+  default = null
+}
+
+variable access_block_enabled {
+  type    = bool
+  default = true
 }

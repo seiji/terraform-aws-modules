@@ -6,8 +6,9 @@ module label {
 }
 
 resource aws_s3_bucket this {
-  bucket = module.label.id
-  acl    = length(var.grants) == 0 ? "private" : null
+  bucket        = var.bucket_prefix == null ? module.label.id : null
+  bucket_prefix = var.bucket_prefix != null ? var.bucket_prefix : null
+  acl           = var.acl
   dynamic grant {
     for_each = var.grants
     content {
@@ -51,7 +52,28 @@ resource aws_s3_bucket this {
       mfa_delete = versioning.value.mfa_delete
     }
   }
-  force_destroy = true
+  force_destroy = var.force_destroy
   tags          = module.label.tags
 }
 
+resource aws_s3_bucket_public_access_block this {
+  count                   = var.access_block_enabled ? 1 : 0
+  bucket                  = aws_s3_bucket.this.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+  depends_on = [
+    aws_s3_bucket.this,
+    aws_s3_bucket_policy.this,
+  ]
+}
+
+resource aws_s3_bucket_policy this {
+  count  = var.bucket_policy == null ? 0 : 1
+  bucket = aws_s3_bucket.this.id
+  policy = var.bucket_policy
+  depends_on = [
+    aws_s3_bucket.this,
+  ]
+}

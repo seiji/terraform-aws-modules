@@ -28,7 +28,6 @@ jobs:
           - glue-athena
           - iam-management
           - rds-aurora-mysql-snapshot
-          - security
           - sns-budgets
           - sns-event
           - ssm-cloudwatch-agent-config

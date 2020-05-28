@@ -12,6 +12,7 @@ variable name {
 }
 
 variable attributes {
+  type    = list(string)
   default = []
 }
 
@@ -30,7 +31,7 @@ variable cloudwatch_logs_role_arn {
   default = null
 }
 
-variable bucket_name {
+variable s3_bucket_name {
   type = string
 }
 
@@ -46,7 +47,13 @@ variable cloudwatch_metric_alarm {
 }
 
 variable is_organization_trail {
-  default = true
+  type    = bool
+  default = false
+}
+
+variable kms_key_id {
+  type    = string
+  default = null
 }
 
 variable logging_s3_bucket_arns {

@@ -10,25 +10,28 @@ module s3_backend {
   stage      = local.stage
   attributes = ["backend"]
   lifecycle_rule = {
-    enabled                                = true
-    abort_incomplete_multipart_upload_days = 7
-    expiration = {
-      days                         = 365
-      expired_object_delete_marker = false
+    RetantionRule = {
+      prefix                                 = null
+      abort_incomplete_multipart_upload_days = 7
+      expiration = {
+        days                         = 365
+        expired_object_delete_marker = false
+      }
+      noncurrent_version_expiration = {
+        days = 365
+      }
+      transitions = [
+        {
+          days          = 0
+          storage_class = "INTELLIGENT_TIERING"
+        },
+        {
+          days          = 100
+          storage_class = "GLACIER"
+        },
+      ]
+      noncurrent_version_transitions = null
     }
-    noncurrent_version_expiration = {
-      days = 365
-    }
-    transitions = [
-      {
-        days          = 0
-        storage_class = "INTELLIGENT_TIERING"
-      },
-      {
-        days          = 100
-        storage_class = "GLACIER"
-      },
-    ]
   }
 }
 

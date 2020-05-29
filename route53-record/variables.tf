@@ -16,7 +16,7 @@ variable alias {
 
 variable ttl {
   type    = number
-  default = 300
+  default = null
 }
 
 variable records {

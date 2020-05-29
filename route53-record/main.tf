@@ -11,7 +11,6 @@ resource aws_route53_record this {
       evaluate_target_health = false
     }
   }
-
   ttl     = var.ttl
   records = var.records
 }

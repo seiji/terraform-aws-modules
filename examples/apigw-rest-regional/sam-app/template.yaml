@@ -28,9 +28,9 @@ Resources:
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: example-apigw-rest
+      Name: example-apigw-rest-regional
       EndpointConfiguration: REGIONAL
-      StageName: prod
+      StageName: default
       TracingEnabled: true
       Auth:
         ResourcePolicy:
@@ -69,11 +69,6 @@ Resources:
       DeploymentPreference:
         Enabled: true
         Type: Linear10PercentEvery10Minutes
-      Tags:
-        Namespace:
-          Ref: Namespace
-        Stage:
-          Ref: Stage
       Events:
         HelloWorld:
           Type: Api
@@ -81,6 +76,11 @@ Resources:
             Path: /hello
             Method: get
             RestApiId: !Ref ApiGatewayApi
+      Tags:
+        Namespace:
+          Ref: Namespace
+        Stage:
+          Ref: Stage
 
 Outputs:
   ApiGatewayApi:

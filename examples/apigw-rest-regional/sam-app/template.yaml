@@ -9,20 +9,22 @@ Globals:
   Function:
     Timeout: 3
   Api:
+    Auth:
+      ResourcePolicy:
+        IpRangeWhitelist: ['1.2.3.4']
     OpenApiVersion: 3.0.2
-
 Parameters:
   Namespace:
     Type: String
   Stage:
     Type: String
     Default: stg
-  VpcId:
-    Type: AWS::EC2::VPC::Id
-  VpcSecurityGroupId:
-    Type: AWS::EC2::SecurityGroup::Id
-  VpcSubnetIds:
-    Type: List<AWS::EC2::Subnet::Id>
+  # VpcId:
+  #   Type: AWS::EC2::VPC::Id
+  # VpcSecurityGroupId:
+  #   Type: AWS::EC2::SecurityGroup::Id
+  # VpcSubnetIds:
+  #   Type: List<AWS::EC2::Subnet::Id>
 
 Resources:
   ApiGatewayApi:
@@ -32,14 +34,6 @@ Resources:
       EndpointConfiguration: REGIONAL
       StageName: default
       TracingEnabled: true
-      Auth:
-        ResourcePolicy:
-          CustomStatements: {
-            Effect: 'Allow',
-            Action: 'execute-api:Invoke',
-            Resource: ['execute-api:/*/*/*'],
-            Principal: '*'
-          }
       MethodSettings:
       - HttpMethod: '*'
         ResourcePath: /*
@@ -56,19 +50,18 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: example-apigw-rest
+      FunctionName: example-apigw-rest-regional
       CodeUri: hello_world/
       Handler: app.lambda_handler
       Runtime: python3.8
-      VpcConfig:
-        SecurityGroupIds:
-          - !Ref VpcSecurityGroupId
-        SubnetIds: !Ref VpcSubnetIds
-
-      AutoPublishAlias: live
-      DeploymentPreference:
-        Enabled: true
-        Type: Linear10PercentEvery10Minutes
+      # VpcConfig:
+      #   SecurityGroupIds:
+      #     - !Ref VpcSecurityGroupId
+      #   SubnetIds: !Ref VpcSubnetIds
+      # AutoPublishAlias: live
+      # DeploymentPreference:
+      #   Enabled: true
+      #   Type: Linear10PercentEvery10Minutes
       Events:
         HelloWorld:
           Type: Api
@@ -76,6 +69,11 @@ Resources:
             Path: /hello
             Method: get
             RestApiId: !Ref ApiGatewayApi
+          Tags:
+            Namespace:
+              Ref: Namespace
+            Stage:
+              Ref: Stage
       Tags:
         Namespace:
           Ref: Namespace

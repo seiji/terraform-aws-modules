@@ -12,5 +12,8 @@ invoke: build
 clean:
 	@rm -Rf .aws-sam
 
-deploy: clean build
+deploy: build
 	@sam deploy
+
+destroy:
+	@aws cloudformation delete-stack --stack-name example-apigw-rest-regional

@@ -9,6 +9,10 @@ data aws_route53_zone this {
   private_zone = false
 }
 
+data aws_apigatewayv2_api this {
+  api_id = "12e5y1mfi2"
+}
+
 module apigatewayv2_custom_domain {
   source      = "../../apigatewayv2/custom-domain"
   namespace   = local.namespace
@@ -36,4 +40,8 @@ module route53_record {
     name    = module.apigatewayv2_custom_domain.target_domain_name
     zone_id = module.apigatewayv2_custom_domain.hosted_zone_id
   }
+}
+
+output out {
+  value = data.aws_apigatewayv2_api.this
 }

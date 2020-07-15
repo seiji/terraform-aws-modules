@@ -13,6 +13,7 @@ Globals:
       ResourcePolicy:
         IpRangeWhitelist: ['1.2.3.4']
     OpenApiVersion: 3.0.2
+
 Parameters:
   Namespace:
     Type: String
@@ -30,7 +31,8 @@ Resources:
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: example-apigw-rest-regional
+      Name:
+        Fn::Join: ["-", [Ref: Namespace, Ref: Stage]]
       EndpointConfiguration: REGIONAL
       StageName: default
       TracingEnabled: true
@@ -39,7 +41,7 @@ Resources:
         ResourcePath: /*
         DataTraceEnabled: true
         LoggingLevel: ERROR
-        MetricsEnabled: true
+        MetricsEnabled: false
         ThrottlingBurstLimit: 10
         ThrottlingRateLimit: 20
       Tags:

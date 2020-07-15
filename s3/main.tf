@@ -3,6 +3,7 @@ module label {
   namespace  = var.namespace
   stage      = var.stage
   attributes = var.attributes
+  name       = var.name
 }
 
 resource aws_s3_bucket this {
@@ -18,9 +19,11 @@ resource aws_s3_bucket this {
     }
   }
   dynamic lifecycle_rule {
-    for_each = [for r in var.lifecycle_rule.enabled ? [var.lifecycle_rule] : [] : r]
+    for_each = var.lifecycle_rule
     content {
-      enabled                                = lifecycle_rule.value.enabled
+      id                                     = lifecycle_rule.key
+      prefix                                 = lifecycle_rule.value.prefix
+      enabled                                = true
       abort_incomplete_multipart_upload_days = lifecycle_rule.value.abort_incomplete_multipart_upload_days
       dynamic expiration {
         for_each = [for e in lifecycle_rule.value.expiration != null ? [lifecycle_rule.value.expiration] : [] : e]
@@ -40,6 +43,24 @@ resource aws_s3_bucket this {
         content {
           days          = transition.value.days
           storage_class = transition.value.storage_class
+        }
+      }
+      dynamic noncurrent_version_transition {
+        for_each = { for t in lifecycle_rule.value.noncurrent_version_transitions : t.storage_class => t }
+        content {
+          days          = noncurrent_version_transition.value.days
+          storage_class = noncurrent_version_transition.value.storage_class
+        }
+      }
+    }
+  }
+  dynamic server_side_encryption_configuration {
+    for_each = [for v in var.server_side_encryption.enabled ? [var.server_side_encryption] : [] : v]
+    content {
+      rule {
+        apply_server_side_encryption_by_default {
+          kms_master_key_id = server_side_encryption_configuration.value.kms_master_key_id
+          sse_algorithm     = server_side_encryption_configuration.value.sse_algorithm
         }
       }
     }

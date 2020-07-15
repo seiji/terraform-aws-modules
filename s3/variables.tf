@@ -57,6 +57,19 @@ variable lifecycle_rule {
   default = {}
 }
 
+variable server_side_encryption {
+  type = object({
+    enabled           = bool
+    sse_algorithm     = string
+    kms_master_key_id = string
+  })
+  default = {
+    enabled           = false
+    sse_algorithm     = "AES256"
+    kms_master_key_id = null
+  }
+}
+
 variable versioning {
   type = object({
     enabled    = bool

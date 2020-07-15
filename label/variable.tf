@@ -17,7 +17,13 @@ variable attributes {
 }
 
 variable delimiter {
+  type    = string
   default = "-"
+}
+
+variable prefix {
+  type    = string
+  default = ""
 }
 
 variable add_tags {

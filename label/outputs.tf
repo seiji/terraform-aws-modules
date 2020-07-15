@@ -1,9 +1,9 @@
 output id {
-  value = local.id
+  value = local.name
 }
 
 output delimiter {
-  value = local.delimiter
+  value = var.delimiter
 }
 
 output tags {

@@ -9,31 +9,31 @@ jobs:
     strategy:
       matrix:
         examples:
-          - alb-asg-lc
-          - alb-ecs-ec2/common
-          - alb-ecs-ec2/staging
-          - alb-ecs-fargate/common
-          - alb-ecs-fargate/staging
-          - asg-lc
-          - asg-lt
+          # - alb-asg-lc
+          # - alb-ecs-ec2/common
+          # - alb-ecs-ec2/staging
+          # - alb-ecs-fargate/common
+          # - alb-ecs-fargate/staging
+          # - asg-lc
+          # - asg-lt
           - backend
-          - cloudfront-s3
-          - cloudwatch-log-groups
-          - cognito4iam
-          - ec2-instance-connect
-          - ecr-repos
-          - ecr-repos
-          - es-global
-          - es-vpc
-          - glue-athena
-          - iam-management
-          - rds-aurora-mysql-snapshot
-          - sns-budgets
-          - sns-event
-          - ssm-cloudwatch-agent-config
-          - vpc-natgw
-          - vpc-nati
-          - vpn-pritunl
+          # - cloudfront-s3
+          # - cloudwatch-log-groups
+          # - cognito4iam
+          # - ec2-instance-connect
+          # - ecr-repos
+          # - ecr-repos
+          # - es-global
+          # - es-vpc
+          # - glue-athena
+          # - iam-management
+          # - rds-aurora-mysql-snapshot
+          # - sns-budgets
+          # - sns-event
+          # - ssm-cloudwatch-agent-config
+          # - vpc-natgw
+          # - vpc-nati
+          # - vpn-pritunl
     steps:
     - name: Checkout
       uses: actions/checkout@v2

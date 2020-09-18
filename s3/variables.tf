@@ -1,8 +1,8 @@
-variable namespace {
+variable service {
   type = string
 }
 
-variable stage {
+variable env {
   type = string
 }
 

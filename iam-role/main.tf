@@ -1,3 +1,12 @@
+module label {
+  source     = "../label"
+  service    = var.service
+  env        = var.env
+  attributes = var.attributes
+  name       = var.name
+  add_tags   = var.add_tags
+}
+
 data aws_iam_policy_document this {
   statement {
     actions = [
@@ -13,7 +22,7 @@ data aws_iam_policy_document this {
 }
 
 resource aws_iam_role this {
-  name               = var.name
+  name               = module.label.id
   assume_role_policy = data.aws_iam_policy_document.this.json
   depends_on         = [data.aws_iam_policy_document.this]
 }

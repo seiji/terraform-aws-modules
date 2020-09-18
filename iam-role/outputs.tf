@@ -9,7 +9,3 @@ output arn {
 output name {
   value = aws_iam_role.this.name
 }
-
-output role {
-  value = aws_iam_role.this
-}

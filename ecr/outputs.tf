@@ -1,7 +1,7 @@
-output arns {
-  value = { for name, value in aws_ecr_repository.this : name => value.arn }
+output arn {
+  value = aws_ecr_repository.this.arn
 }
 
-output repository_urls {
-  value = { for name, value in aws_ecr_repository.this : name => value.repository_url }
+output repository_url {
+  value = aws_ecr_repository.this.repository_url
 }

@@ -1,8 +1,8 @@
-variable namespace {
+variable service {
   type = string
 }
 
-variable stage {
+variable env {
   type = string
 }
 
@@ -27,7 +27,6 @@ variable prefix {
 }
 
 variable add_tags {
-  type = map(string)
-  default = {
-  }
+  type    = map(string)
+  default = {}
 }

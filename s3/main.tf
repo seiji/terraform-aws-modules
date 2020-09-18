@@ -1,7 +1,7 @@
 module label {
   source     = "../label"
-  namespace  = var.namespace
-  stage      = var.stage
+  service    = var.service
+  env        = var.env
   attributes = var.attributes
   name       = var.name
 }

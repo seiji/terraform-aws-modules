@@ -1,5 +1,5 @@
 module label {
-  source     = "../label"
+  source     = "../../label"
   service    = var.service
   env        = var.env
   attributes = var.attributes

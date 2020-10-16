@@ -30,3 +30,8 @@ resource aws_internet_gateway this {
   tags   = merge(module.label.tags, { Name = join("-", [var.name, "igw"]) })
 }
 
+resource aws_default_security_group this {
+  vpc_id = local.vpc.id
+  tags   = module.label.tags
+}
+

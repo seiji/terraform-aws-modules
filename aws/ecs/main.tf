@@ -31,15 +31,15 @@ resource aws_ecs_service this {
   }
   cluster = aws_ecs_cluster.this.id
   deployment_controller {
-    type = var.deployment_contoller_type
+    type = var.deployment_controller_type
   }
   deployment_maximum_percent         = var.deployment_maximum_percent
   deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
   desired_count                      = var.desired_count
   enable_ecs_managed_tags            = true
   # launch_type                        = "FARGATE"
-  dynamic load_balancers {
-    for_each = var.load_balancer
+  dynamic load_balancer {
+    for_each = var.load_balancers
     content {
       target_group_arn = load_balancer.value.target_group_arn
       container_name   = load_balancer.value.container_name
@@ -52,10 +52,9 @@ resource aws_ecs_service this {
     assign_public_ip = var.network_configuration.assign_public_ip
   }
   task_definition = "${data.aws_ecs_task_definition.this.family}:${data.aws_ecs_task_definition.this.revision}"
-  tags            = module.tags
+  tags            = module.label.tags
   depends_on = [
     aws_ecs_cluster.this,
-    aws_iam_role.this,
     data.aws_ecs_task_definition.this,
   ]
   lifecycle {
@@ -64,30 +63,3 @@ resource aws_ecs_service this {
     ]
   }
 }
-
-# resource aws_iam_role this {
-#   name            = module.label.id
-#   path                  = var.iam_path
-#   force_detach_policies = true
-#   assume_role_policy    = <<EOF
-# {
-#   "Version": "2008-10-17",
-#   "Statement": [
-#     {
-#       "Sid": "",
-#       "Effect": "Allow",
-#       "Principal": {
-#         "Service": "ecs.amazonaws.com"
-#       },
-#       "Action": "sts:AssumeRole"
-#     }
-#   ]
-# }
-# EOF
-# }
-#
-# resource aws_iam_role_policy" "ecs_service" {
-#   name   = "${var.name}-ecs-service-policy"
-#   role   = aws_iam_role.ecs_service[0].name
-#   policy = var.iam_role_inline_policy
-# }

@@ -5,7 +5,6 @@ module label {
   name       = var.name
   attributes = var.attributes
   add_tags   = var.add_tags
-  delimiter  = "/"
 }
 
 resource aws_budgets_budget this {

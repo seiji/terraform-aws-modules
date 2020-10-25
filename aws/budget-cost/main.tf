@@ -32,7 +32,7 @@ resource aws_budgets_budget this {
     content {
       comparison_operator        = notification.value.comparison_operator
       notification_type          = notification.value.notification_type
-      subscriber_email_addresses = notification.value.subscriber_sns_topic_arns
+      subscriber_email_addresses = notification.value.subscriber_email_addresses
       subscriber_sns_topic_arns  = notification.value.subscriber_sns_topic_arns
       threshold                  = notification.value.threshold
       threshold_type             = notification.value.threshold_type

@@ -10,10 +10,10 @@ module label {
 resource aws_codebuild_project this {
   name           = module.label.id
   badge_enabled  = false
-  build_timeout  = 5
+  build_timeout  = var.build_timeout
   queued_timeout = 480
   service_role   = var.service_role
-  source_version = null
+  source_version = var.source_version
   dynamic artifacts {
     for_each = var.artifacts
     content {

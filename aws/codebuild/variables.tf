@@ -21,8 +21,18 @@ variable add_tags {
   default = {}
 }
 
+variable build_timeout {
+  type    = number
+  default = 5
+}
+
 variable service_role {
   type = string
+}
+
+variable source_version {
+  type    = string
+  default = null
 }
 
 variable artifacts {

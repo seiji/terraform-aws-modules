@@ -19,6 +19,7 @@ output target_groups {
     for name, tg in aws_alb_target_group.this :
     name => {
       arn  = tg.arn
+      name = tg.name
       port = tg.port
     }
   }

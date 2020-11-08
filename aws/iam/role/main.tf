@@ -1,5 +1,5 @@
 module label {
-  source     = "../../label"
+  source     = "../../../label"
   service    = var.service
   env        = var.env
   attributes = var.attributes
@@ -13,7 +13,6 @@ data aws_iam_policy_document this {
       "sts:AssumeRole",
       "sts:TagSession"
     ]
-
     principals {
       type        = var.principals.type
       identifiers = var.principals.identifiers
@@ -23,6 +22,7 @@ data aws_iam_policy_document this {
 
 resource aws_iam_role this {
   name               = module.label.id
+  path               = var.path
   assume_role_policy = data.aws_iam_policy_document.this.json
   depends_on         = [data.aws_iam_policy_document.this]
 }
@@ -35,8 +35,8 @@ resource aws_iam_role_policy inline {
 }
 
 resource aws_iam_role_policy_attachment arn {
-  count      = length(var.policy_arns)
+  count      = length(var.policy_arn_list)
   role       = aws_iam_role.this.id
-  policy_arn = var.policy_arns[count.index]
+  policy_arn = var.policy_arn_list[count.index]
   depends_on = [aws_iam_role.this]
 }

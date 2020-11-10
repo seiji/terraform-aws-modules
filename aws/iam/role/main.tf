@@ -11,7 +11,7 @@ data aws_iam_policy_document this {
   statement {
     actions = [
       "sts:AssumeRole",
-      "sts:TagSession"
+      # "sts:TagSession"
     ]
     principals {
       type        = var.principals.type
@@ -38,5 +38,12 @@ resource aws_iam_role_policy_attachment arn {
   count      = length(var.policy_arn_list)
   role       = aws_iam_role.this.id
   policy_arn = var.policy_arn_list[count.index]
+  depends_on = [aws_iam_role.this]
+}
+
+resource aws_iam_instance_profile this {
+  count      = var.instance_profile ? 1 : 0
+  name       = module.label.id
+  role       = aws_iam_role.this.name
   depends_on = [aws_iam_role.this]
 }

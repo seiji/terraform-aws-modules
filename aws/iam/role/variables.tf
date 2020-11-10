@@ -42,3 +42,8 @@ variable policy_arn_list {
   type    = list(string)
   default = []
 }
+
+variable instance_profile {
+  type    = bool
+  default = false
+}

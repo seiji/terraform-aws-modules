@@ -9,7 +9,6 @@ module label {
 
 resource aws_launch_template this {
   name = module.label.id
-
   dynamic block_device_mappings {
     for_each = var.block_device_mappings
     content {
@@ -36,11 +35,12 @@ resource aws_launch_template this {
   image_id                             = var.image_id
   instance_initiated_shutdown_behavior = "terminate"
   key_name                             = var.key_name
-
   monitoring {
     enabled = var.enable_monitoring
   }
-
+  network_interfaces {
+    associate_public_ip_address = var.associate_public_ip_address
+  }
   user_data              = var.userdata
   vpc_security_group_ids = var.sg_ids
 
@@ -48,16 +48,13 @@ resource aws_launch_template this {
     resource_type = "instance"
     tags          = module.label.tags
   }
-
   tag_specifications {
     resource_type = "volume"
     tags          = module.label.tags
   }
-
   lifecycle {
     create_before_destroy = true
   }
-
   tags = module.label.tags
 }
 

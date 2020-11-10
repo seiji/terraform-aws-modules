@@ -4,9 +4,7 @@ module label {
   env        = var.env
   attributes = var.attributes
   name       = var.name
-  add_tags = merge({
-    propagate_at_launch = "true"
-  }, var.add_tags)
+  add_tags   = var.add_tags
 }
 
 locals {
@@ -69,5 +67,13 @@ resource aws_autoscaling_group this {
   timeouts {
     delete = "15m"
   }
-  tags = module.label.tags_list
+
+  dynamic tag {
+    for_each = module.label.tags_list
+    content {
+      key                 = tag.value.key
+      value               = tag.value.value
+      propagate_at_launch = true
+    }
+  }
 }

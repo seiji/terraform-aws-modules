@@ -38,11 +38,16 @@ resource aws_launch_template this {
   monitoring {
     enabled = var.enable_monitoring
   }
-  network_interfaces {
-    associate_public_ip_address = var.associate_public_ip_address
+
+  dynamic network_interfaces {
+    for_each = var.associate_public_ip_address ? [var.associate_public_ip_address] : []
+    content {
+      associate_public_ip_address = network_interfaces.value
+      security_groups             = var.sg_ids
+    }
   }
   user_data              = var.userdata
-  vpc_security_group_ids = var.sg_ids
+  vpc_security_group_ids = var.associate_public_ip_address ? null : var.sg_ids
 
   tag_specifications {
     resource_type = "instance"

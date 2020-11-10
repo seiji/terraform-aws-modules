@@ -51,7 +51,8 @@ variable iam_instance_profile {
 }
 
 variable key_name {
-  type = string
+  type    = string
+  default = null
 }
 
 variable sg_ids {

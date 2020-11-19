@@ -30,7 +30,13 @@ variable subject_alternative_names {
   default = null
 }
 
+variable validate {
+  type = bool
+  default = false
+}
+
 variable zone_id {
   type = string
+  default = null
 }
 

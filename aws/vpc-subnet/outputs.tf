@@ -1,3 +1,3 @@
-output id {
+output "id" {
   value = local.subnet.id
 }

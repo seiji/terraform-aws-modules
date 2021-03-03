@@ -1,4 +1,4 @@
-resource aws_cloudwatch_metric_alarm group_in_service_instances {
+resource "aws_cloudwatch_metric_alarm" "group_in_service_instances" {
   count               = var.alarm_options.enabled ? 1 : 0
   alarm_name          = join("-", [module.label.id, "AWS/AutoScaling/GroupInServiceInstances"])
   comparison_operator = "LessThanThreshold"

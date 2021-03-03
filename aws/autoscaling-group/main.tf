@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -20,7 +20,7 @@ locals {
   ]
 }
 
-resource aws_autoscaling_group this {
+resource "aws_autoscaling_group" "this" {
   name                      = module.label.id
   desired_capacity          = var.desired_capacity
   enabled_metrics           = local.enabled_metrics
@@ -33,7 +33,7 @@ resource aws_autoscaling_group this {
   termination_policies      = ["OldestInstance"]
   vpc_zone_identifier       = var.vpc_zone_identifier
 
-  dynamic mixed_instances_policy {
+  dynamic "mixed_instances_policy" {
     for_each = [true]
     content {
       launch_template {
@@ -41,7 +41,7 @@ resource aws_autoscaling_group this {
           launch_template_id = var.launch_template_id
           version            = "$Latest"
         }
-        dynamic override {
+        dynamic "override" {
           for_each = var.instance_types
           content {
             instance_type     = override.value
@@ -68,7 +68,7 @@ resource aws_autoscaling_group this {
     delete = "15m"
   }
 
-  dynamic tag {
+  dynamic "tag" {
     for_each = module.label.tags_list
     content {
       key                 = tag.value.key

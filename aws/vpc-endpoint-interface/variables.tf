@@ -1,38 +1,38 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable endpoint_service {
+variable "endpoint_service" {
   type = string
 }
 
-variable vpc_id {
+variable "vpc_id" {
   type = string
 }
 
-variable security_group_ids {
+variable "security_group_ids" {
   type = list(string)
 }
 
-variable subnet_ids {
+variable "subnet_ids" {
   type = list(string)
 }
 
-variable private_dns_enabled {
+variable "private_dns_enabled" {
   type    = bool
   default = false
 }

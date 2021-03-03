@@ -1,36 +1,31 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable default {
-  type    = bool
-  default = false
-}
-
-variable description {
+variable "description" {
   type    = string
   default = null
 }
 
-variable vpc_id {
+variable "vpc_id" {
   type = string
 }
 
-variable rules {
+variable "rules" {
   type = list(object({
     description              = string
     from_port                = number
@@ -40,15 +35,4 @@ variable rules {
     source_security_group_id = string
     self                     = bool
   }))
-  default = [
-    {
-      description              = null
-      from_port                = -1
-      to_port                  = -1
-      protocol                 = "all"
-      cidr_blocks              = null
-      source_security_group_id = null
-      self                     = true
-    },
-  ]
 }

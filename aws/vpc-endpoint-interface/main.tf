@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -6,11 +6,12 @@ module label {
   name       = var.name
 }
 
-data aws_vpc_endpoint_service this {
-  service = var.endpoint_service
+data "aws_vpc_endpoint_service" "this" {
+  service      = var.endpoint_service
+  service_type = "Interface"
 }
 
-resource aws_vpc_endpoint this {
+resource "aws_vpc_endpoint" "this" {
   vpc_id              = var.vpc_id
   service_name        = data.aws_vpc_endpoint_service.this.service_name
   vpc_endpoint_type   = "Interface"

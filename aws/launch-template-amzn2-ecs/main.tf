@@ -7,17 +7,19 @@ module "label" {
   add_tags   = var.add_tags
 }
 
+data "aws_ssm_parameter" "ecs_optimized_amzn2" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
+}
+
 resource "aws_launch_template" "this" {
   name = module.label.id
-  dynamic "block_device_mappings" {
-    for_each = var.block_device_mappings
-    content {
-      device_name = block_device_mappings.value.device_name
-      ebs {
-        volume_size           = block_device_mappings.value.ebs.volume_size
-        volume_type           = block_device_mappings.value.ebs.volume_type
-        delete_on_termination = block_device_mappings.value.ebs.delete_on_termination
-      }
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size           = var.root_block_device_size
+      volume_type           = "gp2"
+      delete_on_termination = true
     }
   }
 
@@ -32,34 +34,31 @@ resource "aws_launch_template" "this" {
     name = var.iam_instance_profile
   }
 
-  image_id                             = var.image_id
+  image_id                             = jsondecode(data.aws_ssm_parameter.ecs_optimized_amzn2.value)["image_id"]
   instance_initiated_shutdown_behavior = "terminate"
   key_name                             = var.key_name
+
   monitoring {
     enabled = var.enable_monitoring
   }
 
-  dynamic "network_interfaces" {
-    for_each = var.associate_public_ip_address ? [var.associate_public_ip_address] : []
-    content {
-      associate_public_ip_address = network_interfaces.value
-      security_groups             = var.sg_ids
-    }
-  }
-  user_data              = var.userdata
-  vpc_security_group_ids = var.associate_public_ip_address ? null : var.sg_ids
+  user_data              = data.template_cloudinit_config.merged.rendered
+  vpc_security_group_ids = var.sg_ids
 
   tag_specifications {
     resource_type = "instance"
     tags          = module.label.tags
   }
+
   tag_specifications {
     resource_type = "volume"
     tags          = module.label.tags
   }
+
   lifecycle {
     create_before_destroy = true
   }
+
   tags = module.label.tags
 }
 

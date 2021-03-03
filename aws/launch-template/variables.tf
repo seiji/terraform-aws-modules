@@ -1,66 +1,66 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable add_tags {
+variable "add_tags" {
   type    = map(string)
   default = {}
 }
 
-variable associate_public_ip_address {
+variable "associate_public_ip_address" {
   type    = bool
   default = false
 }
 
-variable disable_api_termination {
+variable "disable_api_termination" {
   type    = bool
   default = false
 }
 
-variable ebs_optimized {
+variable "ebs_optimized" {
   type    = bool
   default = false
 }
 
-variable enable_monitoring {
+variable "enable_monitoring" {
   type    = bool
   default = false
 }
 
-variable image_id {
+variable "image_id" {
   type = string
 }
 
-variable iam_instance_profile {
+variable "iam_instance_profile" {
   type    = string
   default = null
 }
 
-variable key_name {
+variable "key_name" {
   type    = string
   default = null
 }
 
-variable sg_ids {
+variable "sg_ids" {
   type    = list(string)
   default = []
 }
 
-variable block_device_mappings {
+variable "block_device_mappings" {
   type = list(object({
     device_name = string
     ebs = object({
@@ -81,7 +81,7 @@ variable block_device_mappings {
   ]
 }
 
-variable userdata {
+variable "userdata" {
   type    = string
   default = null
 }

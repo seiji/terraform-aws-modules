@@ -1,37 +1,37 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable add_tags {
+variable "add_tags" {
   type    = map(string)
   default = {}
 }
 
-variable internal {
+variable "internal" {
   type    = bool
   default = false
 }
 
-variable load_balancer_type {
+variable "load_balancer_type" {
   type    = string
   default = "application"
 }
 
-variable access_logs {
+variable "access_logs" {
   type = object({
     bucket  = string
     enabled = bool
@@ -44,29 +44,29 @@ variable access_logs {
   }
 }
 
-variable subnets {
+variable "subnets" {
   type = list(string)
 }
 
-variable security_groups {
+variable "security_groups" {
   default = []
 }
 
-variable idle_timeout {
+variable "idle_timeout" {
   type    = number
   default = 60
 }
 
-variable vpc_id {
+variable "vpc_id" {
   type = string
 }
 
-variable ssl_policy {
+variable "ssl_policy" {
   type    = string
   default = "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
 }
 
-variable listener {
+variable "listener" {
   type = object({
     certificate_arn = string
     default_action = object({
@@ -94,6 +94,9 @@ variable listener {
           http_header_name = string
           values           = list(string)
         })
+        host_header = object({
+          values = list(string)
+        })
         path_pattern = object({
           values = list(string)
         })
@@ -105,7 +108,7 @@ variable listener {
   })
 }
 
-variable target_group {
+variable "target_group" {
   type = map(object({
     deregistration_delay = number
     health_check = object({

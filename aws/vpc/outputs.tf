@@ -2,6 +2,10 @@ output id {
   value = local.vpc.id
 }
 
+output cidr_block {
+  value = local.vpc.cidr_block
+}
+
 output default_route_table_id {
   value = local.vpc.default_route_table_id
 }

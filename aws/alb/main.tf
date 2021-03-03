@@ -8,7 +8,7 @@ locals {
   }
 }
 
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -17,13 +17,12 @@ module label {
   add_tags   = var.add_tags
 }
 
-
-resource aws_alb this {
+resource "aws_alb" "this" {
   name            = module.label.id
   internal        = var.internal
   security_groups = var.security_groups
   subnets         = var.subnets
-  dynamic access_logs {
+  dynamic "access_logs" {
     for_each = var.access_logs != null ? [var.access_logs] : []
     content {
       bucket  = access_logs.value.bucket
@@ -35,19 +34,19 @@ resource aws_alb this {
   tags         = module.label.tags
 }
 
-resource aws_alb_listener https {
+resource "aws_alb_listener" "https" {
   load_balancer_arn = aws_alb.this.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = var.ssl_policy
   certificate_arn   = var.listener.certificate_arn
 
-  dynamic default_action {
+  dynamic "default_action" {
     for_each = [var.listener.default_action]
     content {
       type             = default_action.value.type
       target_group_arn = default_action.value.type == local.action_type.forward ? aws_alb_target_group.this[default_action.value.name].arn : null
-      dynamic fixed_response {
+      dynamic "fixed_response" {
         for_each = default_action.value.fixed_response != null ? [default_action.value.fixed_response] : []
         content {
           content_type = fixed_response.value.content_type
@@ -60,17 +59,17 @@ resource aws_alb_listener https {
   depends_on = [aws_alb.this, ]
 }
 
-resource aws_alb_listener_rule https {
+resource "aws_alb_listener_rule" "https" {
   for_each     = { for r in var.listener.rules : r.priority => r }
   listener_arn = aws_alb_listener.https.arn
   priority     = each.value.priority
 
-  dynamic action {
+  dynamic "action" {
     for_each = [each.value.action]
     content {
       type             = action.value.type
       target_group_arn = action.value.type == local.action_type.forward ? aws_alb_target_group.this[action.value.name].arn : null
-      dynamic fixed_response {
+      dynamic "fixed_response" {
         for_each = action.value.fixed_response != null ? [action.value.fixed_response] : []
         content {
           content_type = fixed_response.value.content_type
@@ -80,23 +79,29 @@ resource aws_alb_listener_rule https {
       }
     }
   }
-  dynamic condition {
+  dynamic "condition" {
     for_each = each.value.condition != null ? [each.value.condition] : []
     content {
-      dynamic http_header {
+      dynamic "http_header" {
         for_each = condition.value.http_header != null ? [condition.value.http_header] : []
         content {
           http_header_name = http_header.value.http_header_name
           values           = http_header.value.values
         }
       }
-      dynamic path_pattern {
+      dynamic "host_header" {
+        for_each = condition.value.host_header != null ? [condition.value.host_header] : []
+        content {
+          values = host_header.value.values
+        }
+      }
+      dynamic "path_pattern" {
         for_each = condition.value.path_pattern != null ? [condition.value.path_pattern] : []
         content {
           values = path_pattern.value.values
         }
       }
-      dynamic source_ip {
+      dynamic "source_ip" {
         for_each = condition.value.source_ip != null ? [condition.value.source_ip] : []
         content {
           values = source_ip.value.values
@@ -108,7 +113,7 @@ resource aws_alb_listener_rule https {
   depends_on = [aws_alb_listener.https, ]
 }
 
-resource aws_alb_listener http {
+resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_alb.this.arn
   port              = "80"
   protocol          = "HTTP"
@@ -126,7 +131,7 @@ resource aws_alb_listener http {
   depends_on = [aws_alb.this, ]
 }
 
-resource aws_alb_target_group this {
+resource "aws_alb_target_group" "this" {
   for_each             = var.target_group
   name                 = each.key == "default" ? module.label.id : join(module.label.delimiter, [module.label.id, each.key])
   deregistration_delay = each.value.deregistration_delay
@@ -135,7 +140,7 @@ resource aws_alb_target_group this {
   target_type          = each.value.target_type
   vpc_id               = var.vpc_id
 
-  dynamic health_check {
+  dynamic "health_check" {
     for_each = [for hc in each.value.health_check.enabled ? [each.value.health_check] : [] : {
       interval            = hc.interval
       path                = hc.path

@@ -24,3 +24,12 @@ output "target_groups" {
     }
   }
 }
+
+output "listeners" {
+  value = {
+    for port, ln in aws_alb_listener.this :
+    port => {
+      arn = ln.arn
+    }
+  }
+}

@@ -34,15 +34,16 @@ resource "aws_alb" "this" {
   tags         = module.label.tags
 }
 
-resource "aws_alb_listener" "https" {
+resource "aws_alb_listener" "this" {
+  for_each          = var.listeners
   load_balancer_arn = aws_alb.this.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = var.ssl_policy
-  certificate_arn   = var.listener.certificate_arn
+  port              = each.key
+  protocol          = each.key == "443" ? "HTTPS" : "HTTP"
+  ssl_policy        = each.key == "443" ? var.ssl_policy : null
+  certificate_arn   = each.value.certificate_arn
 
   dynamic "default_action" {
-    for_each = [var.listener.default_action]
+    for_each = [each.value.default_action]
     content {
       type             = default_action.value.type
       target_group_arn = default_action.value.type == local.action_type.forward ? aws_alb_target_group.this[default_action.value.name].arn : null
@@ -56,16 +57,33 @@ resource "aws_alb_listener" "https" {
       }
     }
   }
+  lifecycle {
+    ignore_changes = [
+      default_action[0].target_group_arn,
+    ]
+  }
   depends_on = [aws_alb.this, ]
 }
 
-resource "aws_alb_listener_rule" "https" {
-  for_each     = { for r in var.listener.rules : r.priority => r }
-  listener_arn = aws_alb_listener.https.arn
-  priority     = each.value.priority
+resource "aws_alb_listener_rule" "this" {
+  for_each = { for item in flatten([
+    for port, listener in var.listeners : [
+      for rule in listener.rules : {
+        "${listener.port}.${rule.priority}" = {
+          port = port
+          rule = rule
+        }
+      }
+    ]
+    ]) :
+    keys(item)[0] => values(item)[0]
+  }
+  # for_each     = { for r in var.listener.rules : r.priority => r }
+  listener_arn = aws_alb_listener.this[each.value.port].arn
+  priority     = each.value.rule.priority
 
   dynamic "action" {
-    for_each = [each.value.action]
+    for_each = [each.value.rule.action]
     content {
       type             = action.value.type
       target_group_arn = action.value.type == local.action_type.forward ? aws_alb_target_group.this[action.value.name].arn : null
@@ -110,7 +128,12 @@ resource "aws_alb_listener_rule" "https" {
     }
   }
 
-  depends_on = [aws_alb_listener.https, ]
+  depends_on = [aws_alb_listener.this, ]
+  lifecycle {
+    ignore_changes = [
+      action[0].target_group_arn,
+    ]
+  }
 }
 
 resource "aws_alb_listener" "http" {

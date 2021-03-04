@@ -66,8 +66,8 @@ variable "ssl_policy" {
   default = "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
 }
 
-variable "listener" {
-  type = object({
+variable "listeners" {
+  type = map(object({
     certificate_arn = string
     default_action = object({
       type = string
@@ -105,7 +105,7 @@ variable "listener" {
         })
       })
     }))
-  })
+  }))
 }
 
 variable "target_group" {

@@ -8,7 +8,7 @@ module "label" {
 }
 
 resource "aws_codedeploy_app" "this" {
-  compute_platform = "ECS"
+  compute_platform = var.compute_platform
   name             = module.label.id
 }
 

@@ -21,13 +21,14 @@ variable "add_tags" {
   default = {}
 }
 
+variable "compute_platform" {
+  type    = string
+  default = "ECS"
+}
+
 variable "deployment_config_name" {
   type    = string
   default = "CodeDeployDefault.ECSAllAtOnce"
-}
-
-variable "service_role_arn" {
-  type = string
 }
 
 variable "ecs_service" {
@@ -48,4 +49,8 @@ variable "load_balancer_info" {
       test_listener_arns = list(string)
     })
   })
+}
+
+variable "service_role_arn" {
+  type = string
 }

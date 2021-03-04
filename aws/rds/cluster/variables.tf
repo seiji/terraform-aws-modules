@@ -1,86 +1,86 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable add_tags {
+variable "add_tags" {
   type    = map(string)
   default = {}
 }
 
-variable availability_zones {
+variable "availability_zones" {
   type = list(string)
 }
 
-variable auto_minor_version_upgrade {
+variable "auto_minor_version_upgrade" {
   type    = bool
   default = true
 }
 
-variable backup_retention_period {
+variable "backup_retention_period" {
   type = number
 }
 
-variable copy_tags_to_snapshot {
+variable "copy_tags_to_snapshot" {
   type    = bool
   default = true
 }
 
-variable database_name {
+variable "database_name" {
   type    = string
   default = null
 }
 
-variable db_cluster_parameter_group_name {
+variable "db_cluster_parameter_group_name" {
   type = string
 }
 
-variable db_subnet_group_name {
+variable "db_subnet_group_name" {
   type = string
 }
 
-variable deletion_protection {
+variable "deletion_protection" {
   type    = bool
   default = true
 }
 
-variable enabled_cloudwatch_logs_exports {
+variable "enabled_cloudwatch_logs_exports" {
   type    = list(string)
   default = []
 }
 
-variable engine {
+variable "engine" {
   type = string
 }
 
-variable engine_version {
+variable "engine_version" {
   type = string
 }
 
-variable iam_database_authentication_enabled {
+variable "iam_database_authentication_enabled" {
   type    = bool
   default = null
 }
 
-variable iam_roles {
+variable "iam_roles" {
   type    = list(string)
   default = []
 }
 
-variable instances {
+variable "instances" {
   type = list(object({
     class                        = string
     db_parameter_group_name      = string
@@ -95,33 +95,33 @@ variable instances {
   }))
 }
 
-variable preferred_backup_window {
+variable "preferred_backup_window" {
   type = string
 }
 
-variable preferred_maintenance_window {
+variable "preferred_maintenance_window" {
   type = string
 }
 
-variable master_password {
+variable "master_password" {
   type = string
 }
 
-variable master_username {
+variable "master_username" {
   type = string
 }
 
-variable skip_final_snapshot {
+variable "skip_final_snapshot" {
   type    = bool
   default = false
 }
 
-variable storage_type {
+variable "storage_type" {
   type    = string
   default = "gp2"
 }
 
-variable vpc_security_group_ids {
+variable "vpc_security_group_ids" {
   type    = list(string)
   default = []
 }

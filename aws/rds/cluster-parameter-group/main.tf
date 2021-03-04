@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../../label"
   service    = var.service
   env        = var.env
@@ -7,11 +7,11 @@ module label {
   add_tags   = var.add_tags
 }
 
-resource aws_rds_cluster_parameter_group this {
+resource "aws_rds_cluster_parameter_group" "this" {
   name        = module.label.id
   family      = var.family
   description = var.description
-  dynamic parameter {
+  dynamic "parameter" {
     for_each = var.parameters
     content {
       name         = parameter.value.name

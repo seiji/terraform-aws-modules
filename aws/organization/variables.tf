@@ -1,17 +1,17 @@
-variable aws_service_access_principals {
+variable "aws_service_access_principals" {
   type = list(string)
 }
 
-variable enabled_policy_types {
+variable "enabled_policy_types" {
   type = list(string)
 }
 
-variable feature_set {
+variable "feature_set" {
   type    = string
   default = "ALL"
 }
 
-variable service_control_policies {
+variable "service_control_policies" {
   type = map(object({
     content     = string
     description = string
@@ -19,12 +19,12 @@ variable service_control_policies {
   default = {}
 }
 
-variable root_units {
+variable "root_units" {
   type    = map(list(string))
   default = {}
 }
 
-variable accounts {
+variable "accounts" {
   type = map(object({
     email            = string
     parent_unit_name = string

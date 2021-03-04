@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../../label"
   service    = var.service
   env        = var.env
@@ -7,7 +7,7 @@ module label {
   add_tags   = var.add_tags
 }
 
-resource aws_rds_cluster this {
+resource "aws_rds_cluster" "this" {
   availability_zones                  = var.availability_zones
   backup_retention_period             = var.backup_retention_period
   cluster_identifier                  = module.label.id
@@ -36,7 +36,7 @@ resource aws_rds_cluster this {
 }
 
 
-resource aws_rds_cluster_instance this {
+resource "aws_rds_cluster_instance" "this" {
   count                        = length(var.instances)
   auto_minor_version_upgrade   = var.auto_minor_version_upgrade
   cluster_identifier           = aws_rds_cluster.this.id

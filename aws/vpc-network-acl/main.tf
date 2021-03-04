@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -6,24 +6,24 @@ module label {
   name       = var.name
 }
 
-resource aws_default_network_acl this {
+resource "aws_default_network_acl" "this" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
   tags       = module.label.tags
 }
 
-resource aws_network_acl this {
+resource "aws_network_acl" "this" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
   tags       = module.label.tags
 }
-resource aws_network_acl this {
+resource "aws_network_acl" "this" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
   tags       = module.label.tags
 }
 
-resource aws_network_acl_rule igress {
+resource "aws_network_acl_rule" "igress" {
   for_each       = { for r in var.igress : r.rule_number => r }
   network_acl_id = aws_network_acl.this.id
   egress         = false
@@ -36,7 +36,7 @@ resource aws_network_acl_rule igress {
   depends_on     = [aws_network_acl.this]
 }
 
-resource aws_network_acl_rule egress {
+resource "aws_network_acl_rule" "egress" {
   for_each       = { for r in var.egress : r.rule_number => r }
   network_acl_id = aws_network_acl.this.id
   egress         = true

@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -7,7 +7,7 @@ module label {
   add_tags   = var.add_tags
 }
 
-resource aws_budgets_budget this {
+resource "aws_budgets_budget" "this" {
   budget_type       = "COST"
   limit_amount      = var.limit_amount
   limit_unit        = "USD"
@@ -27,7 +27,7 @@ resource aws_budgets_budget this {
     use_amortized              = false
     use_blended                = false
   }
-  dynamic notification {
+  dynamic "notification" {
     for_each = var.notifications
     content {
       comparison_operator        = notification.value.comparison_operator

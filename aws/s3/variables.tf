@@ -1,31 +1,31 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable bucket_prefix {
+variable "bucket_prefix" {
   type    = string
   default = null
 }
 
-variable acl {
+variable "acl" {
   type    = string
   default = "private"
 }
 
-variable cors_rules {
+variable "cors_rules" {
   type = list(object({
     allowed_headers = list(string)
     allowed_methods = list(string)
@@ -36,7 +36,7 @@ variable cors_rules {
   default = []
 }
 
-variable grants {
+variable "grants" {
   type = list(object({
     id          = string
     permissions = list(string)
@@ -46,7 +46,7 @@ variable grants {
   default = []
 }
 
-variable lifecycle_rule {
+variable "lifecycle_rule" {
   type = map(object({
     prefix                                 = string
     abort_incomplete_multipart_upload_days = number
@@ -69,7 +69,7 @@ variable lifecycle_rule {
   default = {}
 }
 
-variable server_side_encryption {
+variable "server_side_encryption" {
   type = object({
     enabled           = bool
     sse_algorithm     = string
@@ -82,7 +82,7 @@ variable server_side_encryption {
   }
 }
 
-variable versioning {
+variable "versioning" {
   type = object({
     enabled    = bool
     mfa_delete = bool
@@ -93,17 +93,17 @@ variable versioning {
   }
 }
 
-variable force_destroy {
+variable "force_destroy" {
   type    = bool
   default = false
 }
 
-variable bucket_policy {
+variable "bucket_policy" {
   type    = string
   default = null
 }
 
-variable access_block_enabled {
+variable "access_block_enabled" {
   type    = bool
   default = true
 }

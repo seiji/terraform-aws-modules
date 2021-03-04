@@ -1,11 +1,11 @@
-output id {
+output "id" {
   value = aws_rds_cluster_parameter_group.this.id
 }
 
-output name {
+output "name" {
   value = aws_rds_cluster_parameter_group.this.id
 }
 
-output arn {
+output "arn" {
   value = aws_rds_cluster_parameter_group.this.arn
 }

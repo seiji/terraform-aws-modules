@@ -1,36 +1,36 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable vpc_id {
+variable "vpc_id" {
   type = string
 }
 
-variable default {
+variable "default" {
   type    = bool
   default = false
 }
 
-variable propagating_vgws {
+variable "propagating_vgws" {
   type    = list(string)
   default = null
 }
 
-variable routes {
+variable "routes" {
   type = list(object({
     cidr_block                = string
     egress_only_gateway_id    = string

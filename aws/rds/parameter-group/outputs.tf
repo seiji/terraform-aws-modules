@@ -1,11 +1,11 @@
-output id {
+output "id" {
   value = aws_db_parameter_group.this.id
 }
 
-output name {
+output "name" {
   value = aws_db_parameter_group.this.id
 }
 
-output arn {
+output "arn" {
   value = aws_db_parameter_group.this.arn
 }

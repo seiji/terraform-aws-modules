@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -8,13 +8,13 @@ module label {
   delimiter  = "."
 }
 
-resource aws_route53_zone this {
+resource "aws_route53_zone" "this" {
   name          = module.label.id
   force_destroy = var.force_destroy
   tags          = module.label.tags
 }
 
-resource aws_route53_record ns {
+resource "aws_route53_record" "ns" {
   zone_id    = aws_route53_zone.this.zone_id
   name       = module.label.id
   type       = "NS"

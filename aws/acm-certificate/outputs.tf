@@ -1,7 +1,7 @@
-output id {
+output "id" {
   value = aws_acm_certificate.this.id
 }
 
-output arn {
+output "arn" {
   value = aws_acm_certificate.this.arn
 }

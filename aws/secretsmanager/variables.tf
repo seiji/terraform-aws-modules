@@ -1,37 +1,37 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable add_tags {
+variable "add_tags" {
   type    = map(string)
   default = {}
 }
 
-variable description {
+variable "description" {
   type    = string
   default = null
 }
 
-variable kms_key_id {
+variable "kms_key_id" {
   type    = string
   default = null
 }
 
-variable recovery_window_in_days {
+variable "recovery_window_in_days" {
   type    = number
   default = null
 }

@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -7,11 +7,11 @@ module label {
   add_tags   = var.add_tags
 }
 
-resource aws_codepipeline this {
+resource "aws_codepipeline" "this" {
   name     = module.label.id
   role_arn = var.role_arn
 
-  dynamic artifact_store {
+  dynamic "artifact_store" {
     for_each = var.artifact_store
     content {
       location = artifact_store.value.location
@@ -19,11 +19,11 @@ resource aws_codepipeline this {
     }
   }
 
-  dynamic stage {
+  dynamic "stage" {
     for_each = var.stage
     content {
       name = stage.value.name
-      dynamic action {
+      dynamic "action" {
         for_each = [stage.value.action]
         content {
           category         = action.value.category

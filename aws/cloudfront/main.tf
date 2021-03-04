@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -6,19 +6,19 @@ module label {
   attributes = var.attributes
 }
 
-resource aws_cloudfront_origin_access_identity this {
+resource "aws_cloudfront_origin_access_identity" "this" {
   count   = var.origin.s3_origin ? 1 : 0
   comment = "access-identity-${var.origin.domain_name}"
 }
 
-resource aws_cloudfront_distribution this {
+resource "aws_cloudfront_distribution" "this" {
   aliases             = var.aliases
   comment             = var.comment
   default_root_object = var.default_root_object
   enabled             = true
   is_ipv6_enabled     = true
 
-  dynamic custom_error_response {
+  dynamic "custom_error_response" {
     for_each = var.custom_error_response
     content {
       error_caching_min_ttl = custom_error_response.value.error_caching_min_ttl
@@ -44,7 +44,7 @@ resource aws_cloudfront_distribution this {
     }
     viewer_protocol_policy = "redirect-to-https"
   }
-  dynamic ordered_cache_behavior {
+  dynamic "ordered_cache_behavior" {
     for_each = var.ordered_cache_behaviors != null ? var.ordered_cache_behaviors : []
     content {
       allowed_methods  = ordered_cache_behavior.value.allowed_methods
@@ -65,28 +65,28 @@ resource aws_cloudfront_distribution this {
       viewer_protocol_policy = "redirect-to-https"
     }
   }
-  dynamic logging_config {
+  dynamic "logging_config" {
     for_each = var.logging_config != null ? [var.logging_config] : []
     content {
       bucket = logging_config.value.bucket
       prefix = logging_config.value.prefix
     }
   }
-  dynamic origin {
+  dynamic "origin" {
     for_each = var.origin != null ? [var.origin] : []
     content {
       domain_name = origin.value.domain_name
       origin_id   = origin.value.origin_id
       origin_path = origin.value.origin_path
 
-      dynamic custom_header {
+      dynamic "custom_header" {
         for_each = origin.value.custom_header != null ? [origin.value.custom_header] : []
         content {
           name  = custom_header.value.name
           value = custom_header.value.value
         }
       }
-      dynamic custom_origin_config {
+      dynamic "custom_origin_config" {
         for_each = origin.value.custom_origin_config != null ? [origin.value.custom_origin_config] : []
         content {
           http_port                = custom_origin_config.value.http_port
@@ -97,7 +97,7 @@ resource aws_cloudfront_distribution this {
           origin_ssl_protocols     = custom_origin_config.value.origin_ssl_protocols
         }
       }
-      dynamic s3_origin_config {
+      dynamic "s3_origin_config" {
         for_each = origin.value.s3_origin ? [true] : []
         content {
           origin_access_identity = aws_cloudfront_origin_access_identity.this[0].cloudfront_access_identity_path

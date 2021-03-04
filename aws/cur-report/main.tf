@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -7,7 +7,7 @@ module label {
   add_tags   = var.add_tags
 }
 
-resource aws_cur_report_definition this {
+resource "aws_cur_report_definition" "this" {
   report_name                = module.label.id
   time_unit                  = var.time_unit
   format                     = var.format

@@ -1,26 +1,26 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable default {
+variable "default" {
   type    = bool
   default = false
 }
 
-variable cidr_block {
+variable "cidr_block" {
   type = string
 }

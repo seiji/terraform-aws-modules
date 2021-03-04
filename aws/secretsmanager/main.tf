@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -8,7 +8,7 @@ module label {
   delimiter  = "/"
 }
 
-resource aws_secretsmanager_secret this {
+resource "aws_secretsmanager_secret" "this" {
   name                    = module.label.id
   description             = var.description
   kms_key_id              = var.kms_key_id

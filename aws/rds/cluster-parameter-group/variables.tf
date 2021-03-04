@@ -1,36 +1,36 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable add_tags {
+variable "add_tags" {
   type    = map(string)
   default = {}
 }
 
-variable family {
+variable "family" {
   type = string
 }
 
-variable description {
+variable "description" {
   type    = string
   default = null
 }
 
-variable parameters {
+variable "parameters" {
   type = list(object({
     name         = string
     value        = string

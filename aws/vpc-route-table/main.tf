@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -6,15 +6,15 @@ module label {
   name       = var.name
 }
 
-data aws_vpc this {
+data "aws_vpc" "this" {
   id = var.vpc_id
 }
 
-resource aws_default_route_table this {
+resource "aws_default_route_table" "this" {
   count                  = var.default ? 1 : 0
   default_route_table_id = data.aws_vpc.this.main_route_table_id
   propagating_vgws       = var.propagating_vgws
-  dynamic route {
+  dynamic "route" {
     for_each = var.routes
     content {
       cidr_block                = route.value.cidr_block
@@ -32,10 +32,10 @@ resource aws_default_route_table this {
   depends_on = [data.aws_vpc.this]
 }
 
-resource aws_route_table this {
+resource "aws_route_table" "this" {
   count  = var.default ? 0 : 1
   vpc_id = var.vpc_id
-  dynamic route {
+  dynamic "route" {
     for_each = var.routes
     content {
       cidr_block                = route.value.cidr_block

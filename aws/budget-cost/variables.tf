@@ -1,36 +1,36 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable add_tags {
+variable "add_tags" {
   type    = map(string)
   default = {}
 }
 
-variable limit_amount {
+variable "limit_amount" {
   type = string
 }
 
-variable time_unit {
+variable "time_unit" {
   type    = string
   default = "MONTHLY"
 }
 
-variable notifications {
+variable "notifications" {
   type = list(object({
     comparison_operator        = string
     notification_type          = string

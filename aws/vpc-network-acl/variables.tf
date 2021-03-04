@@ -1,36 +1,36 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable default {
+variable "default" {
   type    = bool
   default = false
 }
 
-variable vpc_id {
+variable "vpc_id" {
   type = string
 }
 
-variable subnet_ids {
+variable "subnet_ids" {
   type    = list(string)
   default = []
 }
 
-variable igress {
+variable "igress" {
   type = list(object({
     rule_number = number
     protocol    = string
@@ -41,7 +41,7 @@ variable igress {
   default = []
 }
 
-variable egress {
+variable "egress" {
   type = list(object({
     rule_number = number
     protocol    = string

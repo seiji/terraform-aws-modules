@@ -2,7 +2,7 @@ locals {
   description = "Managed by Terraform"
 }
 
-module label {
+module "label" {
   source     = "../../../label"
   service    = var.service
   env        = var.env
@@ -10,7 +10,7 @@ module label {
   name       = var.name
 }
 
-resource aws_db_subnet_group this {
+resource "aws_db_subnet_group" "this" {
   name        = module.label.id
   description = var.description != null ? var.description : local.description
   subnet_ids  = var.subnet_ids

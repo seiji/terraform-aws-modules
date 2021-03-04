@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -7,12 +7,12 @@ module label {
   add_tags   = var.add_tags
 }
 
-resource aws_route53_record this {
+resource "aws_route53_record" "this" {
   zone_id = var.zone_id
   name    = module.label.id
   type    = var.type
 
-  dynamic alias {
+  dynamic "alias" {
     for_each = var.alias != null ? [var.alias] : []
     content {
       name                   = alias.value.name

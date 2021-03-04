@@ -1,31 +1,31 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable add_tags {
+variable "add_tags" {
   type    = map(string)
   default = {}
 }
 
-variable role_arn {
+variable "role_arn" {
   type = string
 }
 
-variable artifact_store {
+variable "artifact_store" {
   type = list(object({
     location       = string
     type           = string
@@ -34,7 +34,7 @@ variable artifact_store {
   }))
 }
 
-variable stage {
+variable "stage" {
   type = list(object({
     name = string
     action = object({

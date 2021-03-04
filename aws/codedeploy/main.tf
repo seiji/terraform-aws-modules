@@ -1,43 +1,57 @@
-module "label" {
+module "label_app" {
   source     = "../../label"
   service    = var.service
   env        = var.env
-  attributes = var.attributes
+  attributes = concat(var.attributes, ["app"])
+  name       = var.name
+  add_tags   = var.add_tags
+}
+
+module "label_deployment_group" {
+  source     = "../../label"
+  service    = var.service
+  env        = var.env
+  attributes = concat(var.attributes, ["deployment-group"])
   name       = var.name
   add_tags   = var.add_tags
 }
 
 resource "aws_codedeploy_app" "this" {
   compute_platform = var.compute_platform
-  name             = module.label.id
+  name             = module.label_app.id
 }
 
 resource "aws_codedeploy_deployment_group" "this" {
   app_name               = aws_codedeploy_app.this.name
   deployment_config_name = var.deployment_config_name
-  deployment_group_name  = module.label.id
+  deployment_group_name  = module.label_deployment_group.id
   service_role_arn       = var.service_role_arn
 
-  # auto_rollback_configuration {
-  #   enabled = false
-  #   events  = ["DEPLOYMENT_FAILURE"]
-  # }
-  #
-  blue_green_deployment_config {
-    deployment_ready_option {
-      action_on_timeout    = "STOP_DEPLOYMENT"
-      wait_time_in_minutes = 60
-    }
+  auto_rollback_configuration {
+    enabled = var.auto_rollback_configuration.enabled
+    events  = var.auto_rollback_configuration.events
+  }
 
-    terminate_blue_instances_on_deployment_success {
-      action                           = "TERMINATE"
-      termination_wait_time_in_minutes = 60
+  dynamic "blue_green_deployment_config" {
+    for_each = var.blue_green_deployment_config != null ? [var.blue_green_deployment_config] : []
+    content {
+      deployment_ready_option {
+        action_on_timeout    = blue_green_deployment_config.value.deployment_ready_option.action_on_timeout
+        wait_time_in_minutes = blue_green_deployment_config.value.deployment_ready_option.wait_time_in_minutes
+      }
+      terminate_blue_instances_on_deployment_success {
+        action                           = blue_green_deployment_config.value.terminate_blue_instances_on_deployment_success.action
+        termination_wait_time_in_minutes = blue_green_deployment_config.value.terminate_blue_instances_on_deployment_success.termination_wait_time_in_minutes
+      }
     }
   }
 
-  deployment_style {
-    deployment_option = "WITH_TRAFFIC_CONTROL"
-    deployment_type   = "BLUE_GREEN"
+  dynamic "deployment_style" {
+    for_each = var.deployment_style != null ? [var.deployment_style] : []
+    content {
+      deployment_option = deployment_style.value.deployment_option
+      deployment_type   = deployment_style.value.deployment_type
+    }
   }
 
   ecs_service {
@@ -54,7 +68,6 @@ resource "aws_codedeploy_deployment_group" "this" {
           name = target_group_info.value.name
         }
       }
-
       dynamic "target_group_pair_info" {
         for_each = load_balancer_info.value.target_group_pair_info != null ? [load_balancer_info.value.target_group_pair_info] : []
         content {

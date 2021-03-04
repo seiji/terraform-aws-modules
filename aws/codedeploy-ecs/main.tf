@@ -26,10 +26,11 @@ resource aws_codedeploy_deployment_group this {
   blue_green_deployment_config {
     deployment_ready_option {
       action_on_timeout = "CONTINUE_DEPLOYMENT"
+      wait_time_in_minutes = 0
     }
     terminate_blue_instances_on_deployment_success {
       action                           = "TERMINATE"
-      termination_wait_time_in_minutes = 5
+      termination_wait_time_in_minutes = 60
     }
   }
 
@@ -52,20 +53,28 @@ resource aws_codedeploy_deployment_group this {
           name = target_group_info.value.name
         }
       }
+
+      dynamic target_group_pair_info {
+        for_each = load_balancer_info.value.target_group_pair_info != null ? [load_balancer_info.value.target_group_pair_info] : []
+        content {
+          prod_traffic_route {
+            listener_arns = target_group_pair_info.value.prod_listener_arns
+          }
+          dynamic target_group {
+            for_each = target_group_pair_info.value.target_group_names
+            content {
+              name = target_group.value
+            }
+          }
+          dynamic test_traffic_route {
+            for_each = target_group_pair_info.value.test_listener_arns
+            content {
+              listener_arns = target_group_pair_info.value.test_listener_arns
+            }
+          }
+        }
+      }
     }
-    # target_group_pair_info {
-    #   prod_traffic_route {
-    #     listener_arns = [aws_lb_listener.example.arn]
-    #   }
-    #
-    #   target_group {
-    #     name = aws_lb_target_group.blue.name
-    #   }
-    #
-    #   target_group {
-    #     name = aws_lb_target_group.green.name
-    #   }
-    # }
   }
   depends_on = [aws_codedeploy_app.this]
 }

@@ -42,5 +42,10 @@ variable load_balancer_info {
     target_group_info = object({
       name = string
     })
+    target_group_pair_info = object({
+      prod_listener_arns = list(string)
+      target_group_names = list(string)
+      test_listener_arns = list(string)
+    })
   })
 }

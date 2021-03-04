@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   service    = var.service
   env        = var.env
@@ -7,14 +7,15 @@ module label {
   add_tags   = var.add_tags
 }
 
-resource aws_codebuild_project this {
+resource "aws_codebuild_project" "this" {
   name           = module.label.id
-  badge_enabled  = false
+  badge_enabled  = var.badge_enabled
   build_timeout  = var.build_timeout
+  description    = var.description
   queued_timeout = 480
   service_role   = var.service_role
   source_version = var.source_version
-  dynamic artifacts {
+  dynamic "artifacts" {
     for_each = var.artifacts
     content {
       type                   = artifacts.value.type
@@ -29,7 +30,7 @@ resource aws_codebuild_project this {
     }
   }
 
-  dynamic cache {
+  dynamic "cache" {
     for_each = var.cache != null ? [var.cache] : []
     content {
       type     = cache.value.type
@@ -38,12 +39,12 @@ resource aws_codebuild_project this {
     }
   }
 
-  dynamic environment {
+  dynamic "environment" {
     for_each = [var.environment]
     content {
       certificate  = environment.value.certificate
       compute_type = environment.value.compute_type
-      dynamic environment_variable {
+      dynamic "environment_variable" {
         for_each = environment.value.environment_variable
         content {
           name  = environment_variable.value.name
@@ -54,7 +55,7 @@ resource aws_codebuild_project this {
       image                       = environment.value.image
       image_pull_credentials_type = environment.value.image_pull_credentials_type
       privileged_mode             = environment.value.privileged_mode
-      dynamic registry_credential {
+      dynamic "registry_credential" {
         for_each = environment.value.registry_credential != null ? [environment.value.registry_credential] : []
         content {
           credential          = registry_credential.value.credential
@@ -65,10 +66,10 @@ resource aws_codebuild_project this {
     }
   }
 
-  dynamic logs_config {
+  dynamic "logs_config" {
     for_each = var.logs_config != null ? [var.logs_config] : []
     content {
-      dynamic cloudwatch_logs {
+      dynamic "cloudwatch_logs" {
         for_each = logs_config.value.cloudwatch_logs != null ? [logs_config.value.cloudwatch_logs] : []
         content {
           status      = cloudwatch_logs.value.status
@@ -76,7 +77,7 @@ resource aws_codebuild_project this {
           stream_name = cloudwatch_logs.value.stream_name
         }
       }
-      dynamic s3_logs {
+      dynamic "s3_logs" {
         for_each = logs_config.value.s3_logs != null ? [logs_config.value.s3_logs] : []
         content {
           status   = s3_logs.value.status
@@ -86,11 +87,11 @@ resource aws_codebuild_project this {
     }
   }
 
-  dynamic source {
+  dynamic "source" {
     for_each = var.sources
     content {
       type = source.value.type
-      dynamic auth {
+      dynamic "auth" {
         for_each = source.value.auth != null ? [source.value.auth] : []
         content {
           type     = auth.value.type
@@ -100,7 +101,7 @@ resource aws_codebuild_project this {
       buildspec       = source.value.buildspec
       git_clone_depth = source.value.git_clone_depth
 
-      dynamic git_submodules_config {
+      dynamic "git_submodules_config" {
         for_each = source.value.git_submodules_config != null ? [source.value.git_submodules_config] : []
         content {
           fetch_submodules = git_submodules_config.value.fetch_submodules
@@ -115,13 +116,13 @@ resource aws_codebuild_project this {
   tags = module.label.tags
 }
 
-resource aws_codebuild_webhook this {
+resource "aws_codebuild_webhook" "this" {
   count        = var.webhook != null ? 1 : 0
   project_name = aws_codebuild_project.this.name
-  dynamic filter_group {
+  dynamic "filter_group" {
     for_each = var.webhook.filter_group != null ? var.webhook.filter_group : []
     content {
-      dynamic filter {
+      dynamic "filter" {
         for_each = filter_group.value.filter
         content {
           type    = filter.value.type

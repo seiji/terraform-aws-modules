@@ -1,41 +1,51 @@
-variable service {
+variable "service" {
   type = string
 }
 
-variable env {
+variable "env" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   type    = list(string)
   default = []
 }
 
-variable name {
+variable "name" {
   type    = string
   default = ""
 }
 
-variable add_tags {
+variable "add_tags" {
   type    = map(string)
   default = {}
 }
 
-variable build_timeout {
+variable "badge_enabled" {
+  type    = bool
+  default = null
+}
+
+variable "build_timeout" {
   type    = number
   default = 5
 }
 
-variable service_role {
+variable "description" {
+  type    = string
+  default = "Managed by Terraform"
+}
+
+variable "service_role" {
   type = string
 }
 
-variable source_version {
+variable "source_version" {
   type    = string
   default = null
 }
 
-variable artifacts {
+variable "artifacts" {
   type = list(object({
     type                   = string
     artifact_identifier    = string
@@ -49,7 +59,7 @@ variable artifacts {
   }))
 }
 
-variable cache {
+variable "cache" {
   type = object({
     type     = string
     location = string
@@ -58,7 +68,7 @@ variable cache {
   default = null
 }
 
-variable environment {
+variable "environment" {
   type = object({
     certificate  = string
     compute_type = string
@@ -78,7 +88,7 @@ variable environment {
   })
 }
 
-variable logs_config {
+variable "logs_config" {
   type = object({
     cloudwatch_logs = object({
       status      = string
@@ -94,7 +104,7 @@ variable logs_config {
   default = null
 }
 
-variable sources {
+variable "sources" {
   type = list(object({
     type = string
     auth = object({
@@ -112,7 +122,7 @@ variable sources {
   }))
 }
 
-variable webhook {
+variable "webhook" {
   type = object({
     filter_group = list(object({
       filter = list(object({

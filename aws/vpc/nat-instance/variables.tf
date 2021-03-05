@@ -21,11 +21,20 @@ variable "add_tags" {
   default = {}
 }
 
-variable "default" {
-  type    = bool
-  default = false
+variable "instance_type" {
+  type    = string
+  default = "t3.nano"
 }
 
-variable "cidr_block" {
+variable "security_group_ids" {
+  type = list(string)
+}
+
+variable "spot_price" {
+  type    = string
+  default = "0.002"
+}
+
+variable "subnet_id" {
   type = string
 }

@@ -4,6 +4,7 @@ module "label" {
   env        = var.env
   attributes = var.attributes
   name       = var.name
+  add_tags   = var.add_tags
 }
 
 resource "aws_default_vpc" "this" {

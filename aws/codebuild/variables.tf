@@ -122,6 +122,15 @@ variable "sources" {
   }))
 }
 
+variable "vpc_config" {
+  type = object({
+    security_group_ids = list(string)
+    subnets            = list(string)
+    vpc_id             = string
+  })
+  default = null
+}
+
 variable "webhook" {
   type = object({
     filter_group = list(object({

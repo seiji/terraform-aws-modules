@@ -22,5 +22,11 @@ variable "add_tags" {
 }
 
 variable "access_policy" {
-  type = string
+  type    = string
+  default = null
+}
+
+variable "account_id" {
+  type    = string
+  default = null
 }

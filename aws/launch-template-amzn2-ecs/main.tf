@@ -7,8 +7,8 @@ module "label" {
   add_tags   = var.add_tags
 }
 
-data "aws_ssm_parameter" "ecs_optimized_amzn2" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
+data "aws_ssm_parameter" "ecs_optimized_amzn2_image_id" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
 }
 
 resource "aws_launch_template" "this" {
@@ -34,7 +34,7 @@ resource "aws_launch_template" "this" {
     name = var.iam_instance_profile
   }
 
-  image_id                             = jsondecode(data.aws_ssm_parameter.ecs_optimized_amzn2.value)["image_id"]
+  image_id                             = data.aws_ssm_parameter.ecs_optimized_amzn2_image_id.value
   instance_initiated_shutdown_behavior = "terminate"
   key_name                             = var.key_name
 

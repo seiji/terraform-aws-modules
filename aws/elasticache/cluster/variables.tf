@@ -26,9 +26,41 @@ variable "description" {
   default = "Managed by Terraform"
 }
 
+variable "at_rest_encryption_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "auth_token" {
+  type    = string
+  default = null
+}
+
 variable "automatic_failover_enabled" {
   type    = bool
   default = false
+}
+
+variable "cluster_mode" {
+  type = object({
+    replicas_per_node_group = number
+    num_node_groups         = number
+  })
+  default = null
+}
+
+variable "engine_version" {
+  type = string
+}
+
+variable "kms_key_id" {
+  type    = string
+  default = null
+}
+
+variable "maintenance_window" {
+  type    = string
+  default = null
 }
 
 variable "number_cache_clusters" {
@@ -39,28 +71,9 @@ variable "node_type" {
   type = string
 }
 
-variable "at_rest_encryption_enabled" {
-  type    = bool
-  default = false
-}
-
-variable "transit_encryption_enabled" {
-  type    = bool
-  default = false
-}
-
-variable "auth_token" {
+variable "notification_topic_arn" {
   type    = string
   default = null
-}
-
-variable "kms_key_id" {
-  type    = string
-  default = null
-}
-
-variable "engine_version" {
-  type = string
 }
 
 variable "port" {
@@ -68,17 +81,12 @@ variable "port" {
   default = 6379
 }
 
-variable "subnet_group_name" {
-  type = string
-}
-
 variable "security_group_ids" {
   type = list(string)
 }
 
-variable "maintenance_window" {
-  type    = string
-  default = null
+variable "subnet_group_name" {
+  type = string
 }
 
 variable "snapshot_window" {
@@ -91,12 +99,9 @@ variable "snapshot_retention_limit" {
   default = 0
 }
 
-variable "cluster_mode" {
-  type = object({
-    replicas_per_node_group = number
-    num_node_groups         = number
-  })
-  default = null
+variable "transit_encryption_enabled" {
+  type    = bool
+  default = false
 }
 
 variable "parameter_group_name" {

@@ -20,8 +20,15 @@ variable "add_tags" {
   type    = map(string)
   default = {}
 }
-variable "associate_public_ip_address" {
-  default = false
+
+variable "network_interfaces" {
+  type = object({
+    security_groups             = list(string)
+    associate_public_ip_address = bool
+    subnet_id                   = string
+    delete_on_termination       = bool
+  })
+  default = null
 }
 
 variable "disable_api_termination" {

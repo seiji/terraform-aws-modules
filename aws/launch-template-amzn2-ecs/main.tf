@@ -34,12 +34,22 @@ resource "aws_launch_template" "this" {
     name = var.iam_instance_profile
   }
 
-  image_id                             = data.aws_ssm_parameter.ecs_optimized_amzn2_image_id.value
+  image_id                             = nonsensitive(data.aws_ssm_parameter.ecs_optimized_amzn2_image_id.value)
   instance_initiated_shutdown_behavior = "terminate"
   key_name                             = var.key_name
 
   monitoring {
     enabled = var.enable_monitoring
+  }
+
+  dynamic "network_interfaces" {
+    for_each = var.network_interfaces != null ? [var.network_interfaces] : []
+    content {
+      associate_public_ip_address = network_interface.value.associate_public_ip_address
+      security_groups             = netowork_interface.value.associate_public_ip_address
+      subnet_id                   = network_interface.value.subnet_id
+      delete_on_termination       = network_interface.value.delete_on_termination
+    }
   }
 
   user_data              = data.template_cloudinit_config.merged.rendered

@@ -1,15 +1,15 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable name {
+variable "name" {
   type = string
 }
 
-variable retention_in_days {
+variable "retention_in_days" {
   default = 0
 }

@@ -42,8 +42,8 @@ data "template_cloudinit_config" "merged" {
 
   part {
     filename     = "userdata_part_caller.cfg"
-    content      = "${var.userdata_part_content}"
-    content_type = "${var.userdata_part_content_type}"
-    merge_type   = "${var.userdata_part_merge_type}"
+    content      = var.userdata_part_content
+    content_type = var.userdata_part_content_type
+    merge_type   = var.userdata_part_merge_type
   }
 }

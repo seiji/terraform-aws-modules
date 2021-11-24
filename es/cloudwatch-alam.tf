@@ -3,7 +3,7 @@ locals {
   nodes_threshold              = var.cluster_config.instance_count
 }
 
-resource aws_cloudwatch_metric_alarm cluster_status_red {
+resource "aws_cloudwatch_metric_alarm" "cluster_status_red" {
   count               = var.alarm_options.enabled ? 1 : 0
   alarm_name          = join("-", [module.label.id, "es-ClusterStatusRed"])
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -26,7 +26,7 @@ resource aws_cloudwatch_metric_alarm cluster_status_red {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm cluster_status_yellow {
+resource "aws_cloudwatch_metric_alarm" "cluster_status_yellow" {
   count               = var.alarm_options.enabled ? 1 : 0
   alarm_name          = join("-", [module.label.id, "es-ClusterStatusYellow"])
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -49,7 +49,7 @@ resource aws_cloudwatch_metric_alarm cluster_status_yellow {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm free_storage_space {
+resource "aws_cloudwatch_metric_alarm" "free_storage_space" {
   count               = var.alarm_options.enabled ? 1 : 0
   alarm_name          = join("-", [module.label.id, "es-FreeStorageSpace"])
   comparison_operator = "LessThanOrEqualToThreshold"
@@ -72,7 +72,7 @@ resource aws_cloudwatch_metric_alarm free_storage_space {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm cluster_index_writes_blocked {
+resource "aws_cloudwatch_metric_alarm" "cluster_index_writes_blocked" {
   count               = var.alarm_options.enabled ? 1 : 0
   alarm_name          = join("-", [module.label.id, "es-ClusterIndexWritesBlocked"])
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -95,7 +95,7 @@ resource aws_cloudwatch_metric_alarm cluster_index_writes_blocked {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm nodes {
+resource "aws_cloudwatch_metric_alarm" "nodes" {
   count               = var.alarm_options.enabled ? 1 : 0
   alarm_name          = join("-", [module.label.id, "es-Nodes"])
   comparison_operator = "LessThanThreshold"
@@ -118,7 +118,7 @@ resource aws_cloudwatch_metric_alarm nodes {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm automated_snapshot_failure {
+resource "aws_cloudwatch_metric_alarm" "automated_snapshot_failure" {
   count               = var.alarm_options.enabled ? 1 : 0
   alarm_name          = join("-", [module.label.id, "es-AutomatedSnapshotFailure"])
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -141,7 +141,7 @@ resource aws_cloudwatch_metric_alarm automated_snapshot_failure {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm cpu_utilization {
+resource "aws_cloudwatch_metric_alarm" "cpu_utilization" {
   count               = var.alarm_options.enabled ? 1 : 0
   alarm_name          = join("-", [module.label.id, "es-CPUUtilization"])
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -164,7 +164,7 @@ resource aws_cloudwatch_metric_alarm cpu_utilization {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm jvm_memory_pressure {
+resource "aws_cloudwatch_metric_alarm" "jvm_memory_pressure" {
   count               = var.alarm_options.enabled ? 1 : 0
   alarm_name          = join("-", [module.label.id, "es-JVMMemoryPressure"])
   comparison_operator = "GreaterThanOrEqualToThreshold"

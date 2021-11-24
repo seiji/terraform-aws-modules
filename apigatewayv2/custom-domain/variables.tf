@@ -1,20 +1,20 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   default = []
 }
 
-variable domain_name {
+variable "domain_name" {
   type = string
 }
 
-variable domain_name_configuration {
+variable "domain_name_configuration" {
   type = object({
     certificate_arn = string
     endpoint_type   = string
@@ -22,7 +22,7 @@ variable domain_name_configuration {
   })
 }
 
-variable api_mapping {
+variable "api_mapping" {
   type = list(object({
     api_id          = string
     stage           = string

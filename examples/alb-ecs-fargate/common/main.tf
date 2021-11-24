@@ -3,11 +3,11 @@ locals {
   stage     = "common"
 }
 
-module iam_role_ecs {
+module "iam_role_ecs" {
   source = "../../../iam-role-ecs"
 }
 
-data aws_iam_policy_document allow_s3 {
+data "aws_iam_policy_document" "allow_s3" {
   statement {
     effect = "Allow"
     actions = [
@@ -21,7 +21,7 @@ data aws_iam_policy_document allow_s3 {
   }
 }
 
-module iam_role_ecs_tasks {
+module "iam_role_ecs_tasks" {
   source = "../../../iam-role"
   name   = join("-", [local.namespace, local.stage, "ecs-tasks"])
 
@@ -32,7 +32,7 @@ module iam_role_ecs_tasks {
   policy_json_list = [data.aws_iam_policy_document.allow_s3.json]
 }
 
-module ecr_repos {
+module "ecr_repos" {
   source    = "../../../ecr"
   namespace = local.namespace
   stage     = local.stage

@@ -2,7 +2,7 @@ terraform {
   required_version = "~> 0.12.0"
 }
 
-provider aws {
+provider "aws" {
   version = "~> 2.43"
   region  = "ap-northeast-1"
 }
@@ -12,7 +12,7 @@ locals {
   stage     = "staging"
 }
 
-module vpc {
+module "vpc" {
   source          = "../../vpc-natgw"
   namespace       = local.namespace
   stage           = local.stage

@@ -1,31 +1,31 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   default = []
 }
 
-variable aliases {
+variable "aliases" {
   type    = list(string)
   default = []
 }
 
-variable comment {
+variable "comment" {
   type    = string
   default = null
 }
 
-variable default_root_object {
+variable "default_root_object" {
   type    = string
   default = null
 }
 
-variable custom_error_response {
+variable "custom_error_response" {
   type = list(object({
     error_caching_min_ttl = number
     error_code            = number
@@ -35,7 +35,7 @@ variable custom_error_response {
   default = []
 }
 
-variable default_cache_behavior {
+variable "default_cache_behavior" {
   type = object({
     allowed_methods  = list(string)
     cached_methods   = list(string)
@@ -50,14 +50,14 @@ variable default_cache_behavior {
   })
 }
 
-variable logging_config {
+variable "logging_config" {
   type = object({
     bucket = string
     prefix = string
   })
 }
 
-variable origin {
+variable "origin" {
   type = object({
     domain_name = string
     origin_id   = string
@@ -78,7 +78,7 @@ variable origin {
   })
 }
 
-variable viewer_certificate {
+variable "viewer_certificate" {
   type = object({
     acm_certificate_arn            = string
     cloudfront_default_certificate = bool

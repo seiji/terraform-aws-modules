@@ -1,11 +1,11 @@
-module label {
+module "label" {
   source     = "../label"
   namespace  = var.namespace
   stage      = var.stage
   attributes = ["rds"]
 }
 
-module iam_role {
+module "iam_role" {
   source = "../iam-role"
   name   = module.label.id
   principals = {

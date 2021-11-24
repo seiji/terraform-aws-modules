@@ -14,6 +14,15 @@ data "aws_ecs_task_definition" "this" {
 resource "aws_ecs_cluster" "this" {
   name               = module.label.id
   capacity_providers = var.cluster.capacity_providers
+  configuration {
+    execute_command_configuration {
+      logging = "OVERRIDE"
+
+      log_configuration {
+        cloud_watch_log_group_name = "/aws/ecsexec/logging"
+      }
+    }
+  }
   default_capacity_provider_strategy {
     capacity_provider = var.cluster.default_capacity_provider
     base              = 1
@@ -24,10 +33,13 @@ resource "aws_ecs_cluster" "this" {
 
 resource "aws_ecs_service" "this" {
   name = module.label.id
-  capacity_provider_strategy {
-    capacity_provider = var.capacity_provider
-    base              = 1
-    weight            = 1
+  dynamic "capacity_provider_strategy" {
+    for_each = var.capacity_provider != null ? [true] : []
+    content {
+      capacity_provider = var.capacity_provider
+      base              = 1
+      weight            = 1
+    }
   }
   cluster = aws_ecs_cluster.this.id
   deployment_controller {
@@ -37,9 +49,10 @@ resource "aws_ecs_service" "this" {
   deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
   desired_count                      = var.desired_count
   enable_ecs_managed_tags            = true
-  # launch_type                        = "FARGATE"
-  health_check_grace_period_seconds = var.health_check_grace_period_seconds
-  platform_version                  = var.platform_version
+  enable_execute_command             = true
+  launch_type                        = var.launch_type
+  health_check_grace_period_seconds  = var.health_check_grace_period_seconds
+  platform_version                   = var.platform_version
   dynamic "load_balancer" {
     for_each = var.load_balancers
     content {

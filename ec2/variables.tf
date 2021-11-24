@@ -17,19 +17,19 @@ variable "associate_public_ip_address" {
 
 variable "vpc_id" {}
 variable "subnet_private_id_list" {
-  type = list
+  type = list(any)
 }
 
 variable "subnet_public_id_list" {
-  type = list
+  type = list(any)
 }
 
 variable "alb_security_id_list" {
-  type = list
+  type = list(any)
 }
 
 variable "ec2_security_id_list" {
-  type = list
+  type = list(any)
 }
 
 variable "key_name" {}

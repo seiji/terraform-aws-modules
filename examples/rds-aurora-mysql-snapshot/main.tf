@@ -7,7 +7,7 @@ provider "aws" {
   region  = "ap-northeast-1"
 }
 
-data terraform_remote_state vpc {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -55,7 +55,7 @@ module "export_s3" {
   stage     = local.stage
 }
 
-data aws_iam_policy_document export_s3 {
+data "aws_iam_policy_document" "export_s3" {
   statement {
     actions = [
       "s3:DeleteObject",

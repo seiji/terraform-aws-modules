@@ -21,8 +21,8 @@ resource "aws_transfer_server" "this" {
   dynamic "endpoint_details" {
     for_each = var.endpoint_details != null ? [var.endpoint_details] : []
     content {
-      subnet_ids = endpoint_details.value.subnet_ids
-      vpc_id     = endpoint_details.value.vpc_id
+      subnet_ids         = endpoint_details.value.subnet_ids
+      vpc_id             = endpoint_details.value.vpc_id
       security_group_ids = endpoint_details.value.security_group_ids
     }
   }
@@ -35,15 +35,15 @@ resource "aws_transfer_user" "this" {
   user_name           = each.value.name
   role                = each.value.role
   home_directory_type = "LOGICAL"
-  dynamic home_directory_mappings {
+  dynamic "home_directory_mappings" {
     for_each = [true]
     content {
       entry  = each.value.entry
       target = each.value.target
     }
   }
-  dynamic posix_profile {
-    for_each = each.value.posix_profile != null ? [each.value.posix_profile]:[]
+  dynamic "posix_profile" {
+    for_each = each.value.posix_profile != null ? [each.value.posix_profile] : []
     content {
       gid            = posix_profile.value.gid
       secondary_gids = posix_profile.value.secondary_gids

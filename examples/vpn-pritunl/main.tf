@@ -7,7 +7,7 @@ provider "aws" {
   region  = "ap-northeast-1"
 }
 
-data terraform_remote_state vpc {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -29,7 +29,7 @@ locals {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-data aws_ami this {
+data "aws_ami" "this" {
   most_recent = true
 
   filter {
@@ -45,17 +45,17 @@ data aws_ami this {
   owners = ["131827586825"]
 }
 
-module iam_role_ec2 {
+module "iam_role_ec2" {
   source    = "../../iam-role-ec2"
   namespace = local.namespace
   stage     = local.stage
 }
 
-data local_file cloud_init {
+data "local_file" "cloud_init" {
   filename = "./templates/cloud-init.yml"
 }
 
-module sg_pritunl {
+module "sg_pritunl" {
   source     = "../../vpc-sg"
   namespace  = local.namespace
   stage      = local.stage
@@ -73,7 +73,7 @@ module sg_pritunl {
   ]
 }
 
-module launch {
+module "launch" {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
@@ -88,7 +88,7 @@ module launch {
   userdata_part_cloud_config  = data.local_file.cloud_init.content
 }
 
-module asg {
+module "asg" {
   source                                   = "../../ec2-asg-lt"
   namespace                                = local.namespace
   stage                                    = local.stage

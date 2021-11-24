@@ -1,4 +1,4 @@
-module iam_policy_custom {
+module "iam_policy_custom" {
   source = "../../iam-policy-custom"
 }
 
@@ -11,7 +11,7 @@ locals {
   ]
 }
 
-module iam_groups {
+module "iam_groups" {
   source = "../../iam/groups"
   groups = {
     admin = concat(

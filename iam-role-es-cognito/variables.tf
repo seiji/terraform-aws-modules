@@ -1,3 +1,3 @@
-variable name {
+variable "name" {
   default = "ESCognitoAccess"
 }

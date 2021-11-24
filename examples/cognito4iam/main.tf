@@ -18,9 +18,9 @@ locals {
   name = "auth4iam"
 }
 
-data aws_caller_identity this {}
+data "aws_caller_identity" "this" {}
 
-module cognito {
+module "cognito" {
   source           = "../../cognito-iam"
   name             = local.name
   user_pool_domain = "${local.name}-${data.aws_caller_identity.this.account_id}"

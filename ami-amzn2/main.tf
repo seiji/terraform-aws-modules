@@ -1,4 +1,4 @@
-data aws_ami this {
+data "aws_ami" "this" {
   most_recent = true
   owners      = ["amazon"]
 

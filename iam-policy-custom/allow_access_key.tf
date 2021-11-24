@@ -1,4 +1,4 @@
-data aws_iam_policy_document allow_access_key {
+data "aws_iam_policy_document" "allow_access_key" {
   statement {
     actions = [
       "iam:CreateAccessKey",
@@ -20,7 +20,7 @@ data aws_iam_policy_document allow_access_key {
   }
 }
 
-resource aws_iam_policy allow_access_key {
+resource "aws_iam_policy" "allow_access_key" {
   name   = "allow-access-key"
   path   = "/"
   policy = data.aws_iam_policy_document.allow_access_key.json

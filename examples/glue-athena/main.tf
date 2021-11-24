@@ -12,7 +12,7 @@ locals {
   stage     = "staging"
 }
 
-module athena {
+module "athena" {
   source    = "../../athena"
   namespace = local.namespace
   stage     = local.stage

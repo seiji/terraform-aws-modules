@@ -1,11 +1,11 @@
-module label {
+module "label" {
   source     = "../label"
   namespace  = var.namespace
   stage      = var.stage
   attributes = var.attributes
 }
 
-resource aws_security_group this {
+resource "aws_security_group" "this" {
   name   = module.label.id
   vpc_id = var.vpc_id
 
@@ -19,7 +19,7 @@ resource aws_security_group this {
   tags = module.label.tags
 }
 
-resource aws_security_group_rule this {
+resource "aws_security_group_rule" "this" {
   for_each = { for r in var.rules : index(var.rules, r) => r }
 
   security_group_id        = aws_security_group.this.id

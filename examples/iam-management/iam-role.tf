@@ -1,4 +1,4 @@
-module assume_admin_role {
+module "assume_admin_role" {
   source = "../../iam-role"
   name   = "assume-admin-role"
   policy_arns = [
@@ -12,7 +12,7 @@ module assume_admin_role {
   }
 }
 
-module assume_power_role {
+module "assume_power_role" {
   source = "../../iam-role"
   name   = "assume-power-role"
   policy_arns = [
@@ -26,7 +26,7 @@ module assume_power_role {
   }
 }
 
-module assume_ssm_role {
+module "assume_ssm_role" {
   source = "../../iam-role"
   name   = "assume-ssm-role"
   policy_arns = [

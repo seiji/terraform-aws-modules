@@ -11,7 +11,7 @@ locals {
   ]
 }
 
-resource aws_autoscaling_group this {
+resource "aws_autoscaling_group" "this" {
   name                      = var.name
   desired_capacity          = var.desired_capacity
   enabled_metrics           = local.enabled_metrics
@@ -35,7 +35,7 @@ resource aws_autoscaling_group this {
   tags = module.label.tags_as_list_of_maps
 }
 
-resource aws_autoscaling_policy this {
+resource "aws_autoscaling_policy" "this" {
   name                      = "${var.name}-scaling"
   autoscaling_group_name    = aws_autoscaling_group.this.name
   policy_type               = "TargetTrackingScaling"

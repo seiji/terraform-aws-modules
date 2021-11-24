@@ -1,4 +1,4 @@
-resource aws_ssm_parameter this {
+resource "aws_ssm_parameter" "this" {
   for_each = var.parameters
 
   name  = "/${var.namespace}/${var.stage}/${each.key}"

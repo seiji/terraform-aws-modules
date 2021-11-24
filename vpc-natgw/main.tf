@@ -5,7 +5,7 @@ module "label" {
   attributes = ["nat"]
 }
 
-module vpc {
+module "vpc" {
   source                    = "../vpc"
   namespace                 = var.namespace
   stage                     = var.stage
@@ -21,13 +21,13 @@ module vpc {
   use_endpoint_monitoring   = var.use_endpoint_monitoring
 }
 
-resource aws_eip this {
+resource "aws_eip" "this" {
   vpc = true
 
   tags = module.label.tags
 }
 
-resource aws_nat_gateway this {
+resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.this.id
   subnet_id     = module.vpc.public_subnet_ids[0]
 
@@ -35,7 +35,7 @@ resource aws_nat_gateway this {
   depends_on = [aws_eip.this]
 }
 
-resource aws_route this {
+resource "aws_route" "this" {
   route_table_id         = module.vpc.default_route_table_private_id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.this.id

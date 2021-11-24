@@ -1,15 +1,15 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable destination_arn {
+variable "destination_arn" {
   type = string
 }
 
-variable log_group_name {
+variable "log_group_name" {
   type = string
 }

@@ -1,20 +1,20 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   default = []
 }
 
-variable vpc_id {
+variable "vpc_id" {
   type = string
 }
 
-variable rules {
+variable "rules" {
   type = list(object({
     from_port                = number
     to_port                  = number

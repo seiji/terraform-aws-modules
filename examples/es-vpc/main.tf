@@ -7,7 +7,7 @@ provider "aws" {
   region  = "ap-northeast-1"
 }
 
-data terraform_remote_state vpc {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -17,7 +17,7 @@ data terraform_remote_state vpc {
   }
 }
 
-data terraform_remote_state cognito {
+data "terraform_remote_state" "cognito" {
   backend = "s3"
 
   config = {
@@ -43,12 +43,12 @@ locals {
   }
 }
 
-module iam_role_es_cognito {
+module "iam_role_es_cognito" {
   source = "../../iam-role-es-cognito"
   name   = "ESCognitoAccess"
 }
 
-module es {
+module "es" {
   source                = "../../es"
   namespace             = local.namespace
   stage                 = local.stage
@@ -73,11 +73,11 @@ module es {
   }
 }
 
-module ami {
+module "ami" {
   source = "../../ami-amzn2"
 }
 
-module sg_ssh {
+module "sg_ssh" {
   source    = "../../vpc-sg"
   namespace = local.namespace
   stage     = local.stage
@@ -92,7 +92,7 @@ module sg_ssh {
   }]
 }
 
-resource aws_instance tunnel {
+resource "aws_instance" "tunnel" {
   ami           = module.ami.id
   instance_type = "t3.micro"
   subnet_id     = local.vpc.public_subnet_ids[0]

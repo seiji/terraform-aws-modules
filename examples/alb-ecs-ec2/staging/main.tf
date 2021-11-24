@@ -1,4 +1,4 @@
-data terraform_remote_state vpc {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -21,11 +21,11 @@ locals {
   # cloud_map_namespace_id = data.terraform_remote_state.vpc.outputs.cloud_map_namespace_id
 }
 
-module ami {
+module "ami" {
   source = "git::https://github.com/seiji/terraform-aws-ecs-ami.git?ref=master"
 }
 
-module launch {
+module "launch" {
   source                      = "../../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
@@ -40,7 +40,7 @@ module launch {
   root_block_device_size      = 30 # >= 30GB
 }
 
-module asg {
+module "asg" {
   source                                   = "../../../ec2-asg-lt"
   namespace                                = local.namespace
   stage                                    = local.stage
@@ -56,7 +56,7 @@ module asg {
   vpc_zone_identifier                      = local.vpc.private_subnet_ids
 }
 
-module sg_https {
+module "sg_https" {
   source      = "../../../vpc-sg-https"
   namespace   = local.namespace
   stage       = local.stage
@@ -64,13 +64,13 @@ module sg_https {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-data aws_acm_certificate this {
+data "aws_acm_certificate" "this" {
   domain      = "*.seiji.me"
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }
 
-module alb {
+module "alb" {
   source          = "../../../alb"
   namespace       = local.namespace
   stage           = local.stage
@@ -106,7 +106,7 @@ module alb {
   }
 }
 
-module ecs {
+module "ecs" {
   source           = "../../../ecs-ec2"
   namespace        = local.namespace
   stage            = local.stage
@@ -135,12 +135,12 @@ module ecs {
   # service_discovery_namespace_id = local.cloud_map_namespace_id
 }
 
-data aws_route53_zone this {
+data "aws_route53_zone" "this" {
   name         = "seiji.me."
   private_zone = false
 }
 
-module route53_record {
+module "route53_record" {
   source  = "../../../route53-record"
   name    = "${local.namespace}.seiji.me"
   zone_id = data.aws_route53_zone.this.zone_id

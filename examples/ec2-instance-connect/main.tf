@@ -7,7 +7,7 @@ provider "aws" {
   region  = "ap-northeast-1"
 }
 
-data terraform_remote_state vpc {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -28,11 +28,11 @@ locals {
   }
 }
 
-module ami {
+module "ami" {
   source = "../../ami-amzn2"
 }
 
-module sg_ssh {
+module "sg_ssh" {
   source    = "../../vpc-sg"
   namespace = local.namespace
   stage     = local.stage
@@ -47,7 +47,7 @@ module sg_ssh {
   }]
 }
 
-module launch {
+module "launch" {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
@@ -60,7 +60,7 @@ module launch {
   spot_price                  = "0.002"
 }
 
-module bastion {
+module "bastion" {
   source               = "../../ec2-asg-lc"
   namespace            = local.namespace
   stage                = local.stage

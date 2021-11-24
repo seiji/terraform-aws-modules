@@ -1,7 +1,7 @@
-variable s3_bucket {
+variable "s3_bucket" {
   type = string
 }
 
-variable dynamodb_table {
+variable "dynamodb_table" {
   type = string
 }

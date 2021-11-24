@@ -9,13 +9,13 @@ locals {
   }
 }
 
-module label {
+module "label" {
   source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 }
 
-resource aws_alb this {
+resource "aws_alb" "this" {
   name            = module.label.id
   internal        = false
   security_groups = var.security_groups
@@ -25,19 +25,19 @@ resource aws_alb this {
   tags = module.label.tags
 }
 
-resource aws_alb_listener https {
+resource "aws_alb_listener" "https" {
   load_balancer_arn = aws_alb.this.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = local.ssl_policy
   certificate_arn   = var.listener.certificate_arn
 
-  dynamic default_action {
+  dynamic "default_action" {
     for_each = [var.listener.default_action]
     content {
       type             = default_action.value.type
       target_group_arn = default_action.value.type == local.action_type.forward ? aws_alb_target_group.this.arn : null
-      dynamic fixed_response {
+      dynamic "fixed_response" {
         for_each = default_action.value.fixed_response != null ? [default_action.value.fixed_response] : []
         content {
           content_type = fixed_response.value.content_type
@@ -54,17 +54,17 @@ resource aws_alb_listener https {
   ]
 }
 
-resource aws_alb_listener_rule https {
+resource "aws_alb_listener_rule" "https" {
   for_each     = { for r in var.listener.rules : r.priority => r }
   listener_arn = aws_alb_listener.https.arn
   priority     = each.value.priority
 
-  dynamic action {
+  dynamic "action" {
     for_each = [each.value.action]
     content {
       type             = action.value.type
       target_group_arn = action.value.type == local.action_type.forward ? aws_alb_target_group.this.arn : null
-      dynamic fixed_response {
+      dynamic "fixed_response" {
         for_each = action.value.fixed_response != null ? [action.value.fixed_response] : []
         content {
           content_type = fixed_response.value.content_type
@@ -74,17 +74,17 @@ resource aws_alb_listener_rule https {
       }
     }
   }
-  dynamic condition {
+  dynamic "condition" {
     for_each = each.value.condition != null ? [each.value.condition] : []
     content {
-      dynamic http_header {
+      dynamic "http_header" {
         for_each = condition.value.http_header != null ? [condition.value.http_header] : []
         content {
           http_header_name = http_header.value.http_header_name
           values           = http_header.value.values
         }
       }
-      dynamic source_ip {
+      dynamic "source_ip" {
         for_each = condition.value.source_ip != null ? [condition.value.source_ip] : []
         content {
           values = source_ip.value.values
@@ -98,7 +98,7 @@ resource aws_alb_listener_rule https {
   ]
 }
 
-resource aws_alb_listener http {
+resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_alb.this.arn
   port              = "80"
   protocol          = "HTTP"
@@ -118,7 +118,7 @@ resource aws_alb_listener http {
   ]
 }
 
-resource aws_alb_target_group this {
+resource "aws_alb_target_group" "this" {
   name                 = module.label.id
   deregistration_delay = var.target_group.deregistration_delay
   port                 = var.target_group.port
@@ -126,7 +126,7 @@ resource aws_alb_target_group this {
   target_type          = var.target_group.target_type
   vpc_id               = var.vpc_id
 
-  dynamic health_check {
+  dynamic "health_check" {
     for_each = [for hc in var.target_group.health_check.enabled ? [var.target_group.health_check] : [] : {
       interval            = hc.interval
       path                = hc.path
@@ -143,7 +143,7 @@ resource aws_alb_target_group this {
       unhealthy_threshold = health_check.value.unhealthy_threshold
     }
   }
-  dynamic stickiness {
+  dynamic "stickiness" {
     for_each = [for stk in var.target_group.stickiness.enabled ? [var.target_group.stickiness] : [] : {
       type            = stk.type
       cookie_duration = stk.cookie_duration

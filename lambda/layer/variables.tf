@@ -1,16 +1,16 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable filename {
+variable "filename" {
   type = string
 }
 
-variable source_code_hash {
+variable "source_code_hash" {
   type = string
 }
 

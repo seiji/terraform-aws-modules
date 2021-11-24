@@ -1,4 +1,4 @@
-data aws_iam_policy_document assume_role {
+data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
     actions = [
@@ -16,7 +16,7 @@ data aws_iam_policy_document assume_role {
   }
 }
 
-data aws_iam_policy_document unauth {
+data "aws_iam_policy_document" "unauth" {
   statement {
     effect = "Allow"
     actions = [
@@ -27,7 +27,7 @@ data aws_iam_policy_document unauth {
   }
 }
 
-data aws_iam_policy_document auth {
+data "aws_iam_policy_document" "auth" {
   statement {
     effect = "Allow"
     actions = [

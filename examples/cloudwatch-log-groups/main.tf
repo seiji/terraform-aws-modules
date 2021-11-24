@@ -2,7 +2,7 @@ terraform {
   required_version = "~> 0.12.0"
 }
 
-provider aws {
+provider "aws" {
   version = "~> 2.50"
   region  = local.region
 }
@@ -13,7 +13,7 @@ locals {
   stage     = "staging"
 }
 
-module cloudwatch_log_group {
+module "cloudwatch_log_group" {
   source            = "../../cloudwatch-log-group"
   namespace         = local.namespace
   stage             = local.stage
@@ -21,7 +21,7 @@ module cloudwatch_log_group {
   retention_in_days = 7
 }
 
-module cloudwatch_log_metric_filter {
+module "cloudwatch_log_metric_filter" {
   source         = "../../cloudwatch-log-metric-filter"
   namespace      = local.namespace
   stage          = local.stage
@@ -32,13 +32,13 @@ PATTERN
   log_group_name = module.cloudwatch_log_group.name
 }
 
-module cloudwatch_log_s3 {
+module "cloudwatch_log_s3" {
   source    = "../../s3"
   namespace = local.namespace
   stage     = local.stage
 }
 
-module kinesis_firehose_s3 {
+module "kinesis_firehose_s3" {
   source         = "../../kinesis-firehose-s3"
   namespace      = local.namespace
   stage          = local.stage
@@ -46,7 +46,7 @@ module kinesis_firehose_s3 {
   log_group_name = module.cloudwatch_log_group.name
 }
 
-module cloudwatch_log_subscription_filter {
+module "cloudwatch_log_subscription_filter" {
   source          = "../../cloudwatch-log-subscription-filter"
   namespace       = local.namespace
   stage           = local.stage

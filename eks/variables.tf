@@ -1,16 +1,16 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable cluster_version {
+variable "cluster_version" {
   type = string
 }
 
-variable vpc_config {
+variable "vpc_config" {
   type = object({
     subnet_ids             = list(string)
     security_group_ids     = list(string)

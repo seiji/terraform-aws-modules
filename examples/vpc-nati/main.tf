@@ -9,7 +9,7 @@ terraform {
   }
 }
 
-provider aws {
+provider "aws" {
   version = ">= 2.62"
   region  = "ap-northeast-1"
 }
@@ -19,7 +19,7 @@ locals {
   stage     = "staging"
 }
 
-module vpc {
+module "vpc" {
   source          = "../../vpc-nati"
   namespace       = local.namespace
   stage           = local.stage

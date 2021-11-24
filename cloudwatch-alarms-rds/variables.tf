@@ -11,5 +11,5 @@ variable "sns_topic_arn" {
 }
 
 variable "db_instance_ids" {
-  type = list
+  type = list(any)
 }

@@ -2,7 +2,7 @@ locals {
   template_path = var.cloudwatch_agent_use ? "${path.module}/templates/cloud-init-cwa.yml" : "${path.module}/templates/cloud-init-${var.image_name}.yml"
 }
 
-data template_file cloud_init {
+data "template_file" "cloud_init" {
   template = file(local.template_path)
 
   vars = {
@@ -11,7 +11,7 @@ data template_file cloud_init {
   }
 }
 
-data template_file cloudwatch_agent_config {
+data "template_file" "cloudwatch_agent_config" {
   template = file("${path.module}/templates/cloudwatch-agent-config.json")
 
   vars = {
@@ -19,7 +19,7 @@ data template_file cloudwatch_agent_config {
   }
 }
 
-data template_cloudinit_config merged {
+data "template_cloudinit_config" "merged" {
   gzip          = true
   base64_encode = true
 

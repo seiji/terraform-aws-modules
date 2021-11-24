@@ -1,4 +1,4 @@
-module iam_role_eks_control {
+module "iam_role_eks_control" {
   source = "../iam-role"
   name   = var.control_name
   principals = {
@@ -11,7 +11,7 @@ module iam_role_eks_control {
   ]
 }
 
-module iam_role_eks_node {
+module "iam_role_eks_node" {
   source = "../iam-role"
   name   = var.node_name
   principals = {

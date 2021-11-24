@@ -1,47 +1,47 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable cidr_block {
+variable "cidr_block" {
   type = string
 }
 
-variable azs {
-  type = list
+variable "azs" {
+  type = list(any)
 }
 
-variable private_subnets {
-  type = list
+variable "private_subnets" {
+  type = list(any)
 }
 
-variable public_subnets {
-  type = list
+variable "public_subnets" {
+  type = list(any)
 }
 
-variable use_endpoint_ssm {
+variable "use_endpoint_ssm" {
   default = false
 }
 
-variable use_endpoint_ssm_messages {
+variable "use_endpoint_ssm_messages" {
   default = false
 }
 
-variable use_endpoint_ec2 {
+variable "use_endpoint_ec2" {
   default = false
 }
 
-variable use_endpoint_ec2_messages {
+variable "use_endpoint_ec2_messages" {
   default = false
 }
 
-variable use_endpoint_logs {
+variable "use_endpoint_logs" {
   default = false
 }
 
-variable use_endpoint_monitoring {
+variable "use_endpoint_monitoring" {
   default = false
 }

@@ -1,10 +1,10 @@
-resource aws_iam_group this {
+resource "aws_iam_group" "this" {
   for_each = var.groups
   name     = each.key
   path     = var.group_path
 }
 
-resource aws_iam_group_policy_attachment this {
+resource "aws_iam_group_policy_attachment" "this" {
   for_each = { for item in flatten([
     for n, policy_arns in var.groups : [
       for p in policy_arns : {
@@ -22,7 +22,7 @@ resource aws_iam_group_policy_attachment this {
   depends_on = [aws_iam_group.this]
 }
 
-resource aws_iam_user this {
+resource "aws_iam_user" "this" {
   for_each      = var.users
   force_destroy = true
   name          = each.key
@@ -34,7 +34,7 @@ resource aws_iam_user this {
   }
 }
 
-resource aws_iam_user_group_membership this {
+resource "aws_iam_user_group_membership" "this" {
   for_each = var.users
   user     = each.key
   groups = [for n in each.value :

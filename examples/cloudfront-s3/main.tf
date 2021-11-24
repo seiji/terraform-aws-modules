@@ -4,7 +4,7 @@ locals {
   alias     = "${join("-", [local.namespace, local.stage])}.seiji.me"
 }
 
-module s3_backend {
+module "s3_backend" {
   source     = "../../s3"
   namespace  = local.namespace
   stage      = local.stage
@@ -35,13 +35,13 @@ module s3_backend {
   }
 }
 
-data aws_acm_certificate seiji_me {
+data "aws_acm_certificate" "seiji_me" {
   provider = aws.us_east_1
   domain   = "*.seiji.me"
   statuses = ["ISSUED"]
 }
 
-module cloudfront {
+module "cloudfront" {
   source              = "../../cloudfront"
   namespace           = local.namespace
   stage               = local.stage
@@ -88,7 +88,7 @@ module cloudfront {
   }
 }
 
-resource aws_s3_bucket_policy this {
+resource "aws_s3_bucket_policy" "this" {
   bucket = module.s3_backend.id
 
   policy = <<POLICY
@@ -110,12 +110,12 @@ resource aws_s3_bucket_policy this {
 POLICY
 }
 
-data aws_route53_zone this {
+data "aws_route53_zone" "this" {
   name         = "seiji.me."
   private_zone = false
 }
 
-module route53_record {
+module "route53_record" {
   source  = "../../route53-record"
   name    = local.alias
   zone_id = data.aws_route53_zone.this.zone_id

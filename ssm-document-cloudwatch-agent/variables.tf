@@ -1,15 +1,15 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable name {
+variable "name" {
   type = string
 }
 
-variable config_name {
+variable "config_name" {
   type = string
 }

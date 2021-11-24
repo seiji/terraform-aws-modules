@@ -25,7 +25,7 @@ locals {
   ]
 }
 
-resource aws_autoscaling_group this {
+resource "aws_autoscaling_group" "this" {
   name                      = var.name
   desired_capacity          = var.desired_capacity
   enabled_metrics           = local.enabled_metrics
@@ -45,7 +45,7 @@ resource aws_autoscaling_group this {
         version            = "$Latest"
       }
 
-      dynamic override {
+      dynamic "override" {
         for_each = var.instance_types
         content {
           instance_type     = override.value

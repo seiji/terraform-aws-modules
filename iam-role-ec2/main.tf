@@ -1,11 +1,11 @@
-module label {
+module "label" {
   source     = "../label"
   namespace  = var.namespace
   stage      = var.stage
   attributes = ["ec2"]
 }
 
-module iam_role_ec2 {
+module "iam_role_ec2" {
   source = "../iam-role"
   name   = module.label.id
   principals = {
@@ -18,7 +18,7 @@ module iam_role_ec2 {
   ]
 }
 
-resource aws_iam_instance_profile this {
+resource "aws_iam_instance_profile" "this" {
   name = module.label.id
   role = module.iam_role_ec2.role.id
 }

@@ -1,12 +1,12 @@
-variable zone_id {
+variable "zone_id" {
   type = string
 }
 
-variable name {
+variable "name" {
   type = string
 }
 
-variable alias {
+variable "alias" {
   type = object({
     name    = string
     zone_id = string
@@ -14,12 +14,12 @@ variable alias {
   default = null
 }
 
-variable ttl {
+variable "ttl" {
   type    = number
   default = null
 }
 
-variable records {
+variable "records" {
   type    = list(string)
   default = null
 }

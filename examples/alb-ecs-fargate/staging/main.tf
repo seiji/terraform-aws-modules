@@ -1,4 +1,4 @@
-data terraform_remote_state vpc {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -20,7 +20,7 @@ locals {
   cluster_name = join("-", [local.namespace, local.stage])
 }
 
-module sg_https {
+module "sg_https" {
   source      = "../../../vpc-sg-https"
   namespace   = local.namespace
   stage       = local.stage
@@ -28,13 +28,13 @@ module sg_https {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-data aws_acm_certificate this {
+data "aws_acm_certificate" "this" {
   domain      = "*.seiji.me"
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }
 
-module alb {
+module "alb" {
   source          = "../../../alb"
   namespace       = local.namespace
   stage           = local.stage
@@ -70,7 +70,7 @@ module alb {
   }
 }
 
-module ecs {
+module "ecs" {
   source              = "../../../ecs-fargate"
   namespace           = local.namespace
   stage               = local.stage
@@ -88,12 +88,12 @@ module ecs {
   }
 }
 
-data aws_route53_zone this {
+data "aws_route53_zone" "this" {
   name         = "seiji.me."
   private_zone = false
 }
 
-module route53_record {
+module "route53_record" {
   source  = "../../../route53-record"
   name    = "${local.namespace}.seiji.me"
   zone_id = data.aws_route53_zone.this.zone_id

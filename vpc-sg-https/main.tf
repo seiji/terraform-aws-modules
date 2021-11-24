@@ -5,7 +5,7 @@ module "label" {
   attributes = concat(["https"], var.attributes)
 }
 
-resource aws_security_group this {
+resource "aws_security_group" "this" {
   name   = module.label.id
   vpc_id = var.vpc_id
 
@@ -19,7 +19,7 @@ resource aws_security_group this {
   tags = module.label.tags
 }
 
-resource aws_security_group_rule http {
+resource "aws_security_group_rule" "http" {
   security_group_id = aws_security_group.this.id
 
   type = "ingress"
@@ -30,7 +30,7 @@ resource aws_security_group_rule http {
   cidr_blocks = var.cidr_blocks
 }
 
-resource aws_security_group_rule https {
+resource "aws_security_group_rule" "https" {
   security_group_id = aws_security_group.this.id
   type              = "ingress"
 

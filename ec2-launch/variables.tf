@@ -1,83 +1,83 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable associate_public_ip_address {
+variable "associate_public_ip_address" {
   default = false
 }
 
-variable ami_block_device_mappings {
-  type = list
+variable "ami_block_device_mappings" {
+  type = list(any)
 }
 
-variable disable_api_termination {
+variable "disable_api_termination" {
   default = false
 }
 
-variable ebs_optimized {
+variable "ebs_optimized" {
   default = false
 }
 
-variable enable_monitoring {
+variable "enable_monitoring" {
   default = false
 }
 
-variable image_id {
+variable "image_id" {
   type = string
 }
 
-variable image_name {
+variable "image_name" {
   default = "amzn2"
 }
 
-variable instance_type {
+variable "instance_type" {
   default = "t3.micro"
 }
 
-variable iam_instance_profile {
+variable "iam_instance_profile" {
   default = null
 }
 
-variable key_name {
+variable "key_name" {
   type = string
 }
 
-variable security_groups {
+variable "security_groups" {
   default = []
 }
 
-variable metrics_collection_interval {
+variable "metrics_collection_interval" {
   default = 60
 }
 
-variable cloudwatch_agent_use {
+variable "cloudwatch_agent_use" {
   default = false
 }
 
-variable root_block_device_size {
+variable "root_block_device_size" {
   default = 8
 }
 
-variable root_block_device_type {
+variable "root_block_device_type" {
   default = "gp2"
 }
 
-variable spot_price {
+variable "spot_price" {
   default = null
 }
 
-variable userdata_part_cloud_config {
+variable "userdata_part_cloud_config" {
   default = ""
 }
 
-variable userdata_part_shellscript {
+variable "userdata_part_shellscript" {
   default = "echo 'shellscript';"
 }
 
-variable ecs_cluster_name {
+variable "ecs_cluster_name" {
   default = "default"
 }

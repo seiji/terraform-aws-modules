@@ -1,4 +1,4 @@
-data terraform_remote_state vpc {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -19,17 +19,17 @@ locals {
   }
 }
 
-module ami {
+module "ami" {
   source = "../../ami-amzn2"
 }
 
-module iam_role_ec2 {
+module "iam_role_ec2" {
   source    = "../../iam-role-ec2"
   namespace = local.namespace
   stage     = local.stage
 }
 
-module launch {
+module "launch" {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
@@ -53,13 +53,13 @@ runcmd:
 EOF
 }
 
-data aws_acm_certificate this {
+data "aws_acm_certificate" "this" {
   domain      = "*.seiji.me"
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }
 
-module alb {
+module "alb" {
   source          = "../../alb"
   namespace       = local.namespace
   stage           = local.stage
@@ -95,7 +95,7 @@ module alb {
   }
 }
 
-module asg {
+module "asg" {
   source               = "../../ec2-asg-lc"
   namespace            = local.namespace
   stage                = local.stage
@@ -108,7 +108,7 @@ module asg {
   vpc_zone_identifier  = local.vpc.private_subnet_ids
 }
 
-module sg_https {
+module "sg_https" {
   source      = "../../vpc-sg-https"
   namespace   = local.namespace
   stage       = local.stage
@@ -116,12 +116,12 @@ module sg_https {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-data aws_route53_zone this {
+data "aws_route53_zone" "this" {
   name         = "seiji.me."
   private_zone = false
 }
 
-module route53_record {
+module "route53_record" {
   source  = "../../route53-record"
   name    = "example.seiji.me"
   zone_id = data.aws_route53_zone.this.zone_id

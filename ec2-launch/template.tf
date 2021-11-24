@@ -1,4 +1,4 @@
-resource aws_launch_template this {
+resource "aws_launch_template" "this" {
   name = module.label.id
 
   block_device_mappings {

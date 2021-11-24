@@ -1,4 +1,4 @@
-resource aws_launch_configuration this {
+resource "aws_launch_configuration" "this" {
   name_prefix = "${module.label.id}-"
 
   associate_public_ip_address = var.associate_public_ip_address

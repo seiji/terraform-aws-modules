@@ -1,19 +1,19 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   default = []
 }
 
-variable pattern {
+variable "pattern" {
   type = string
 }
 
-variable log_group_name {
+variable "log_group_name" {
   type = string
 }

@@ -1,12 +1,12 @@
-data aws_ecs_task_definition this {
+data "aws_ecs_task_definition" "this" {
   task_definition = var.ecs_task_definition
 }
 
-resource random_id this {
+resource "random_id" "this" {
   byte_length = 1
 }
 
-resource aws_ecs_cluster this {
+resource "aws_ecs_cluster" "this" {
   name               = module.label.id
   capacity_providers = [aws_ecs_capacity_provider.this.name]
   default_capacity_provider_strategy {
@@ -19,7 +19,7 @@ resource aws_ecs_cluster this {
   tags       = module.label.tags
 }
 
-resource aws_ecs_capacity_provider this {
+resource "aws_ecs_capacity_provider" "this" {
   name = join("-", [module.label.id, random_id.this.hex])
   auto_scaling_group_provider {
     auto_scaling_group_arn         = var.asg_arn
@@ -35,7 +35,7 @@ resource aws_ecs_capacity_provider this {
   tags = module.label.tags
 }
 
-resource aws_ecs_service this {
+resource "aws_ecs_service" "this" {
   cluster                            = aws_ecs_cluster.this.id
   deployment_maximum_percent         = var.ecs_deployment_maximum_percent
   deployment_minimum_healthy_percent = var.ecs_deployment_minimum_healthy_percent
@@ -51,7 +51,7 @@ resource aws_ecs_service this {
     type = "ECS"
   }
 
-  dynamic load_balancer {
+  dynamic "load_balancer" {
     for_each = var.load_balancers
     content {
       target_group_arn = load_balancer.value.target_group_arn
@@ -92,7 +92,7 @@ resource aws_ecs_service this {
   }
 }
 
-resource aws_service_discovery_service this {
+resource "aws_service_discovery_service" "this" {
   count = var.service_discovery.enabled ? 1 : 0
   name  = module.label.id
 

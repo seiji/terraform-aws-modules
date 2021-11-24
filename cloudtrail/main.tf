@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../label"
   namespace  = var.namespace
   stage      = var.stage
@@ -6,7 +6,7 @@ module label {
   attributes = var.attributes
 }
 
-resource aws_cloudtrail this {
+resource "aws_cloudtrail" "this" {
   name                          = module.label.id
   cloud_watch_logs_group_arn    = var.cloudwatch_log_group_arn
   cloud_watch_logs_role_arn     = var.cloudwatch_logs_role_arn

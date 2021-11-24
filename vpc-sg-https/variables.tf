@@ -1,19 +1,19 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   default = []
 }
 
-variable vpc_id {
+variable "vpc_id" {
   type = string
 }
 
-variable cidr_blocks {
-  type = list
+variable "cidr_blocks" {
+  type = list(any)
 }

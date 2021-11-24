@@ -1,15 +1,15 @@
-output id {
+output "id" {
   value = local.name
 }
 
-output delimiter {
+output "delimiter" {
   value = var.delimiter
 }
 
-output tags {
+output "tags" {
   value = local.tags
 }
 
-output tags_list {
+output "tags_list" {
   value = local.tags_list
 }

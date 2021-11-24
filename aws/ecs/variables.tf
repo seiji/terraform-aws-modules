@@ -62,6 +62,11 @@ variable "health_check_grace_period_seconds" {
   default = 0
 }
 
+variable "launch_type" {
+  type    = string
+  default = "FARGATE"
+}
+
 variable "load_balancers" {
   type = list(object({
     container_name   = string

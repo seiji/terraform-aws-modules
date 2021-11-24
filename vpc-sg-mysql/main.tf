@@ -1,4 +1,4 @@
-module vpc_sg {
+module "vpc_sg" {
   source     = "../vpc-sg"
   namespace  = var.namespace
   stage      = var.stage

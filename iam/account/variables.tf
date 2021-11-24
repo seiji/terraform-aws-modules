@@ -1,4 +1,4 @@
-variable password_policy {
+variable "password_policy" {
   type = object({
     hard_expiry               = bool
     max_password_age          = number

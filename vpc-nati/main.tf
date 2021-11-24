@@ -2,14 +2,14 @@ locals {
   instance_type = "t3.nano"
 }
 
-module label {
+module "label" {
   source     = "../label"
   namespace  = var.namespace
   stage      = var.stage
   attributes = ["nat"]
 }
 
-module vpc {
+module "vpc" {
   source                    = "../vpc"
   namespace                 = var.namespace
   stage                     = var.stage
@@ -25,7 +25,7 @@ module vpc {
   use_endpoint_monitoring   = var.use_endpoint_monitoring
 }
 
-data aws_ami nat {
+data "aws_ami" "nat" {
   most_recent = true
   owners      = ["amazon"]
 
@@ -39,14 +39,14 @@ data aws_ami nat {
   }
 }
 
-resource aws_eip this {
+resource "aws_eip" "this" {
   vpc = true
 
   tags = module.label.tags
 }
 
 # resource aws_instance nati {
-resource aws_spot_instance_request this {
+resource "aws_spot_instance_request" "this" {
   ami                    = data.aws_ami.nat.image_id
   instance_type          = local.instance_type
   subnet_id              = module.vpc.public_subnet_ids[0]
@@ -63,13 +63,13 @@ resource aws_spot_instance_request this {
   }
 }
 
-resource aws_eip_association this {
+resource "aws_eip_association" "this" {
   instance_id   = aws_spot_instance_request.this.spot_instance_id
   allocation_id = aws_eip.this.id
   depends_on    = [aws_spot_instance_request.this, aws_eip.this]
 }
 
-resource aws_route this {
+resource "aws_route" "this" {
   route_table_id         = module.vpc.default_route_table_private_id
   destination_cidr_block = "0.0.0.0/0"
   instance_id            = aws_spot_instance_request.this.spot_instance_id

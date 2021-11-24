@@ -1,16 +1,16 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable bytes_scanned_cutoff_per_query {
+variable "bytes_scanned_cutoff_per_query" {
   default = 10485760
 }
 
-variable result {
+variable "result" {
   type = object({
     output_bucket = string
     output_prefix = string

@@ -1,12 +1,12 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable parameters {
+variable "parameters" {
   type = map(object({
     type  = string
     value = string

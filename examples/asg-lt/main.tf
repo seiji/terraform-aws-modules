@@ -2,12 +2,12 @@ terraform {
   required_version = "~> 0.12.0"
 }
 
-provider aws {
+provider "aws" {
   version = "~> 2.39"
   region  = "ap-northeast-1"
 }
 
-data terraform_remote_state vpc {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -28,17 +28,17 @@ locals {
   }
 }
 
-module ami {
+module "ami" {
   source = "../../ami-amzn2"
 }
 
-module iam_role_ec2 {
+module "iam_role_ec2" {
   source    = "../../iam-role-ec2"
   namespace = local.namespace
   stage     = local.stage
 }
 
-module launch {
+module "launch" {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
@@ -61,7 +61,7 @@ runcmd:
 EOF
 }
 
-module asg {
+module "asg" {
   source                                   = "../../ec2-asg-lt"
   namespace                                = local.namespace
   stage                                    = local.stage

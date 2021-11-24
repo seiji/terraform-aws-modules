@@ -1,8 +1,8 @@
-variable control_name {
+variable "control_name" {
   default = "eks-cluster-control"
 }
 
-variable node_name {
+variable "node_name" {
   default = "eks-cluster-node"
 }
 

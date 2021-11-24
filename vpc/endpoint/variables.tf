@@ -1,39 +1,39 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable attributes {
+variable "attributes" {
   default = []
 }
 
-variable service {
+variable "service" {
   type = string
 }
 
-variable vpc_id {
+variable "vpc_id" {
   type = string
 }
 
-variable private_dns_enabled {
+variable "private_dns_enabled" {
   type    = bool
   default = false
 }
 
-variable subnet_ids {
+variable "subnet_ids" {
   type    = list(string)
   default = []
 }
 
-variable security_group_ids {
+variable "security_group_ids" {
   type    = list(string)
   default = []
 }
 
-variable vpc_endpoint_type {
+variable "vpc_endpoint_type" {
   type    = string
   default = "Gateway"
 }

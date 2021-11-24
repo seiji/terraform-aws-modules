@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source     = "../../label"
   namespace  = var.namespace
   stage      = var.stage
@@ -6,7 +6,7 @@ module label {
   attributes = var.attributes
 }
 
-resource aws_elasticache_replication_group this {
+resource "aws_elasticache_replication_group" "this" {
   replication_group_description = module.label.id
   replication_group_id          = module.label.id
   number_cache_clusters         = var.number_cache_clusters
@@ -27,7 +27,7 @@ resource aws_elasticache_replication_group this {
   snapshot_retention_limit      = var.snapshot_retention_limit
   apply_immediately             = true
 
-  dynamic cluster_mode {
+  dynamic "cluster_mode" {
     for_each = [for m in var.cluster_mode != null ? [var.cluster_mode] : [] : m]
     content {
       replicas_per_node_group = cluster_mode.value.replicas_per_node_group
@@ -40,11 +40,11 @@ resource aws_elasticache_replication_group this {
   tags = module.label.tags
 }
 
-resource aws_elasticache_parameter_group this {
+resource "aws_elasticache_parameter_group" "this" {
   name   = module.label.id
   family = var.parameter_group.family
 
-  dynamic parameter {
+  dynamic "parameter" {
     for_each = var.parameter_group.parameters == null ? [] : var.parameter_group.parameters
     content {
       name  = parameter.value.name

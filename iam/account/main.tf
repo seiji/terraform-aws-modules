@@ -1,4 +1,4 @@
-resource aws_iam_account_password_policy this {
+resource "aws_iam_account_password_policy" "this" {
   allow_users_to_change_password = true
   hard_expiry                    = var.password_policy.hard_expiry
   max_password_age               = var.password_policy.max_password_age

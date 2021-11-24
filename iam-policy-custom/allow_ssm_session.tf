@@ -1,4 +1,4 @@
-data aws_iam_policy_document allow_ssm_session {
+data "aws_iam_policy_document" "allow_ssm_session" {
   statement {
     effect = "Allow"
     actions = [
@@ -20,7 +20,7 @@ data aws_iam_policy_document allow_ssm_session {
   }
 }
 
-resource aws_iam_policy allow_ssm_session {
+resource "aws_iam_policy" "allow_ssm_session" {
   name   = "allow-ssm-session"
   path   = "/"
   policy = data.aws_iam_policy_document.allow_ssm_session.json

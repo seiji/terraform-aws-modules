@@ -14,16 +14,16 @@ data "aws_backup_vault" "default" {
 resource "aws_backup_plan" "this" {
   name = module.label.id
 
-  dynamic rule {
+  dynamic "rule" {
     for_each = var.rules
     content {
       completion_window        = rule.value.completion_window
       enable_continuous_backup = rule.value.enable_continuous_backup
       recovery_point_tags      = rule.value.recovery_point_tags
-      rule_name         = rule.value.rule_name
-      schedule          = rule.value.schedule
+      rule_name                = rule.value.rule_name
+      schedule                 = rule.value.schedule
       start_window             = rule.value.start_window
-      target_vault_name = rule.value.target_vault_name
+      target_vault_name        = rule.value.target_vault_name
       copy_action {
         destination_vault_arn = data.aws_backup_vault.default.arn
       }

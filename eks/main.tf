@@ -1,14 +1,14 @@
-module label {
+module "label" {
   source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 }
 
-module iam_role_eks {
+module "iam_role_eks" {
   source = "../iam-role-eks"
 }
 
-resource aws_eks_cluster this {
+resource "aws_eks_cluster" "this" {
   name     = module.label.id
   role_arn = module.iam_role_eks.control_arn
 

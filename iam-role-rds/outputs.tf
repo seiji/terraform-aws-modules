@@ -1,7 +1,7 @@
-output id {
+output "id" {
   value = module.iam_role.id
 }
 
-output arn {
+output "arn" {
   value = module.iam_role.arn
 }

@@ -1,24 +1,24 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable vpc_id {
+variable "vpc_id" {
   type = string
 }
 
-variable subnets {
+variable "subnets" {
   type = list(string)
 }
 
-variable security_groups {
+variable "security_groups" {
   default = []
 }
 
-variable listener {
+variable "listener" {
   type = object({
     certificate_arn = string
     default_action = object({
@@ -55,7 +55,7 @@ variable listener {
   })
 }
 
-variable target_group {
+variable "target_group" {
   type = object({
     deregistration_delay = number
     health_check = object({

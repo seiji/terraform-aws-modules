@@ -1,10 +1,10 @@
-module label {
+module "label" {
   source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 }
 
-resource aws_kinesis_firehose_delivery_stream this {
+resource "aws_kinesis_firehose_delivery_stream" "this" {
   name        = module.label.id
   destination = "s3"
 
@@ -22,7 +22,7 @@ resource aws_kinesis_firehose_delivery_stream this {
   }
 }
 
-data aws_iam_policy_document bucket {
+data "aws_iam_policy_document" "bucket" {
   statement {
     effect = "Allow"
 
@@ -42,7 +42,7 @@ data aws_iam_policy_document bucket {
   }
 }
 
-data aws_iam_policy_document glue {
+data "aws_iam_policy_document" "glue" {
   statement {
     effect    = "Allow"
     actions   = ["glue:GetTableVersions"]
@@ -50,7 +50,7 @@ data aws_iam_policy_document glue {
   }
 }
 
-data aws_iam_policy_document logs {
+data "aws_iam_policy_document" "logs" {
   statement {
     effect = "Allow"
     actions = [
@@ -62,7 +62,7 @@ data aws_iam_policy_document logs {
   }
 }
 
-module iam_role_firehose {
+module "iam_role_firehose" {
   source = "../iam-role"
   name   = "${module.label.id}-firehose"
   principals = {

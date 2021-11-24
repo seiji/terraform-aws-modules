@@ -167,7 +167,7 @@ locals {
   }
 }
 
-resource aws_cloudwatch_log_metric_filter this {
+resource "aws_cloudwatch_log_metric_filter" "this" {
   for_each       = var.cloudwatch_metric_alarm.enabled ? local.metric_filter_patterns : {}
   name           = each.key
   pattern        = each.value
@@ -180,7 +180,7 @@ resource aws_cloudwatch_log_metric_filter this {
   }
 }
 
-resource aws_cloudwatch_metric_alarm this {
+resource "aws_cloudwatch_metric_alarm" "this" {
   for_each            = var.cloudwatch_metric_alarm.enabled ? local.metric_filter_patterns : {}
   alarm_name          = join("-", [local.metric_namespace, each.key])
   comparison_operator = local.metric_alarm.comparison_operator

@@ -28,8 +28,8 @@ variable "domain" {
 
 variable "endpoint_details" {
   type = object({
-    subnet_ids = list(string)
-    vpc_id     = string
+    subnet_ids         = list(string)
+    vpc_id             = string
     security_group_ids = list(string)
   })
   default = null
@@ -37,15 +37,15 @@ variable "endpoint_details" {
 
 variable "users" {
   type = list(object({
-    name = string
-    role      = string
-      entry  = string
-      target = string
-      posix_profile = object({
-        gid            = number
-        secondary_gids = list(string)
-        uid            = number
-      })
+    name   = string
+    role   = string
+    entry  = string
+    target = string
+    posix_profile = object({
+      gid            = number
+      secondary_gids = list(string)
+      uid            = number
+    })
   }))
   default = []
 }

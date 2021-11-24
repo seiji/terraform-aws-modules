@@ -13,7 +13,7 @@ locals {
   stage     = "staging"
 }
 
-module ecr_repos {
+module "ecr_repos" {
   source    = "../../ecr"
   namespace = local.namespace
   stage     = local.stage

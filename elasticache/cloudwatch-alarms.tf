@@ -4,7 +4,7 @@ locals {
   curr_connections_threshold = 40000
 }
 
-resource aws_cloudwatch_metric_alarm cpu_utilization {
+resource "aws_cloudwatch_metric_alarm" "cpu_utilization" {
   for_each            = var.alarm_options.enabled && (var.alarm_options.node_vcpu < 4) ? aws_elasticache_replication_group.this.member_clusters : toset([])
   alarm_name          = join("-", [module.label.id, "elasticache-CPUUtilization", each.value])
   alarm_description   = "CPUUtilization is ${local.cpu_percent_threshold}%"
@@ -25,7 +25,7 @@ resource aws_cloudwatch_metric_alarm cpu_utilization {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm engine_cpu_utilization {
+resource "aws_cloudwatch_metric_alarm" "engine_cpu_utilization" {
   for_each            = var.alarm_options.enabled && (var.alarm_options.node_vcpu >= 4) ? aws_elasticache_replication_group.this.member_clusters : toset([])
   alarm_name          = join("-", [module.label.id, "elasticache-EngineCPUUtilization", each.value])
   alarm_description   = "EngineCPUUtilization is ${local.cpu_percent_threshold}%"
@@ -46,7 +46,7 @@ resource aws_cloudwatch_metric_alarm engine_cpu_utilization {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm swap_usage {
+resource "aws_cloudwatch_metric_alarm" "swap_usage" {
   for_each            = var.alarm_options.enabled ? aws_elasticache_replication_group.this.member_clusters : toset([])
   alarm_name          = join("-", [module.label.id, "elasticache-SwapUsage", each.value])
   alarm_description   = "SwapUsage is ${local.swap_usage_threshold}"
@@ -67,7 +67,7 @@ resource aws_cloudwatch_metric_alarm swap_usage {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm evictions {
+resource "aws_cloudwatch_metric_alarm" "evictions" {
   for_each            = var.alarm_options.enabled ? aws_elasticache_replication_group.this.member_clusters : toset([])
   alarm_name          = join("-", [module.label.id, "elasticache-Evictions", each.value])
   alarm_description   = "Evictions is greater than 0."
@@ -88,7 +88,7 @@ resource aws_cloudwatch_metric_alarm evictions {
   tags = module.label.tags
 }
 
-resource aws_cloudwatch_metric_alarm curr_connections {
+resource "aws_cloudwatch_metric_alarm" "curr_connections" {
   for_each            = var.alarm_options.enabled ? aws_elasticache_replication_group.this.member_clusters : toset([])
   alarm_name          = join("-", [module.label.id, "elasticache-CurrConnections", each.value])
   alarm_description   = "CurrConnections is greater than ${local.curr_connections_threshold}"

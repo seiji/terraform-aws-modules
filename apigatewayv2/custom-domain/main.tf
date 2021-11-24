@@ -1,11 +1,11 @@
-module label {
+module "label" {
   source     = "../../label"
   namespace  = var.namespace
   stage      = var.stage
   attributes = var.attributes
 }
 
-resource aws_apigatewayv2_domain_name this {
+resource "aws_apigatewayv2_domain_name" "this" {
   domain_name = var.domain_name
   domain_name_configuration {
     certificate_arn = var.domain_name_configuration.certificate_arn
@@ -15,7 +15,7 @@ resource aws_apigatewayv2_domain_name this {
   tags = module.label.tags
 }
 
-resource aws_apigatewayv2_api_mapping this {
+resource "aws_apigatewayv2_api_mapping" "this" {
   for_each        = { for m in var.api_mapping : join("-", [m.api_id, m.stage]) => m }
   api_id          = each.value.api_id
   domain_name     = aws_apigatewayv2_domain_name.this.id

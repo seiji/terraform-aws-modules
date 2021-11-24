@@ -6,6 +6,6 @@
 #   value = aws_iam_role.ecs_service.arn
 # }
 #
-output instance_profile_id {
+output "instance_profile_id" {
   value = aws_iam_instance_profile.this.id
 }

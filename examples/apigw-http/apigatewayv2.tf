@@ -1,19 +1,19 @@
-data aws_acm_certificate this {
+data "aws_acm_certificate" "this" {
   domain      = "*.seiji.me"
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }
 
-data aws_route53_zone this {
+data "aws_route53_zone" "this" {
   name         = "seiji.me."
   private_zone = false
 }
 
-data aws_apigatewayv2_api this {
+data "aws_apigatewayv2_api" "this" {
   api_id = "12e5y1mfi2"
 }
 
-module apigatewayv2_custom_domain {
+module "apigatewayv2_custom_domain" {
   source      = "../../apigatewayv2/custom-domain"
   namespace   = local.namespace
   stage       = local.stage
@@ -32,7 +32,7 @@ module apigatewayv2_custom_domain {
   ]
 }
 
-module route53_record {
+module "route53_record" {
   source  = "../../route53-record"
   name    = "api.seiji.me"
   zone_id = data.aws_route53_zone.this.zone_id
@@ -42,6 +42,6 @@ module route53_record {
   }
 }
 
-output out {
+output "out" {
   value = data.aws_apigatewayv2_api.this
 }

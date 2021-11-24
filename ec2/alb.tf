@@ -13,7 +13,7 @@ resource "aws_alb_listener" "this" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
-  certificate_arn   = "${var.acm_arn}"
+  certificate_arn   = var.acm_arn
 
   default_action {
     target_group_arn = aws_alb_target_group.this.arn
@@ -41,7 +41,7 @@ resource "aws_alb_target_group" "this" {
   name     = var.name
   port     = 80
   protocol = "HTTP"
-  vpc_id   = "${var.vpc_id}"
+  vpc_id   = var.vpc_id
 
   health_check {
     interval            = 30

@@ -1,16 +1,16 @@
-variable namespace {
+variable "namespace" {
   type = string
 }
 
-variable stage {
+variable "stage" {
   type = string
 }
 
-variable elasticsearch_version {
+variable "elasticsearch_version" {
   type = string
 }
 
-variable vpc_options {
+variable "vpc_options" {
   type = object({
     enabled            = bool
     subnet_ids         = list(string)
@@ -23,7 +23,7 @@ variable vpc_options {
   }
 }
 
-variable cluster_config {
+variable "cluster_config" {
   type = object({
     instance_type            = string
     instance_count           = number
@@ -32,7 +32,7 @@ variable cluster_config {
   })
 }
 
-variable ebs_options {
+variable "ebs_options" {
   type = object({
     ebs_enabled = bool
     volume_type = string
@@ -45,23 +45,23 @@ variable ebs_options {
   }
 }
 
-variable encrypt_at_rest {
+variable "encrypt_at_rest" {
   default = false
 }
 
-variable kms_key_id {
+variable "kms_key_id" {
   default = null
 }
 
-variable node_to_node_encryption {
+variable "node_to_node_encryption" {
   default = false
 }
 
-variable automated_snapshot_start_hour {
+variable "automated_snapshot_start_hour" {
   default = 23
 }
 
-variable cognito_options {
+variable "cognito_options" {
   type = object({
     enabled          = bool
     user_pool_id     = string
@@ -78,24 +78,24 @@ variable cognito_options {
   }
 }
 
-variable search_logs_enabled {
+variable "search_logs_enabled" {
   default = false
 }
 
-variable index_logs_enabled {
+variable "index_logs_enabled" {
   default = false
 }
 
-variable application_logs_enabled {
+variable "application_logs_enabled" {
   default = false
 }
 
-variable allowed_ips {
+variable "allowed_ips" {
   type    = list(string)
   default = []
 }
 
-variable alarm_options {
+variable "alarm_options" {
   type = object({
     enabled       = bool
     alarm_actions = list(string)

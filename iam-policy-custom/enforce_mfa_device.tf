@@ -1,4 +1,4 @@
-data aws_iam_policy_document enforce_mfa_device {
+data "aws_iam_policy_document" "enforce_mfa_device" {
   statement {
     effect = "Allow"
     actions = [
@@ -71,7 +71,7 @@ data aws_iam_policy_document enforce_mfa_device {
   }
 }
 
-resource aws_iam_policy enforce_mfa_device {
+resource "aws_iam_policy" "enforce_mfa_device" {
   name   = "enforce-mfa-device"
   path   = "/"
   policy = data.aws_iam_policy_document.enforce_mfa_device.json

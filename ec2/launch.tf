@@ -13,13 +13,13 @@ locals {
 }
 
 resource "aws_launch_template" "this" {
-  count = "${local.use_asg ? 1 : 0}"
+  count = local.use_asg ? 1 : 0
 
   name_prefix = "default"
   key_name    = var.key_name
 
   iam_instance_profile {
-    name = "${aws_iam_instance_profile.ec2.id}"
+    name = aws_iam_instance_profile.ec2.id
   }
 
   image_id = var.image_id

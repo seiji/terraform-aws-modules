@@ -1,4 +1,4 @@
-module label {
+module "label" {
   source    = "../label"
   namespace = var.namespace
   stage     = var.stage
@@ -8,27 +8,27 @@ locals {
   domain_name = module.label.id
 }
 
-data aws_caller_identity this {}
+data "aws_caller_identity" "this" {}
 
-resource aws_iam_service_linked_role this {
+resource "aws_iam_service_linked_role" "this" {
   aws_service_name = "es.amazonaws.com"
-  provisioner local-exec {
+  provisioner "local-exec" {
     command = "sleep 10"
   }
 }
 
-resource aws_elasticsearch_domain this {
+resource "aws_elasticsearch_domain" "this" {
   domain_name           = local.domain_name
   elasticsearch_version = var.elasticsearch_version
 
-  dynamic vpc_options {
+  dynamic "vpc_options" {
     for_each = [for op in var.vpc_options.enabled ? [var.vpc_options] : [] : op]
     content {
       subnet_ids         = vpc_options.value.subnet_ids
       security_group_ids = vpc_options.value.security_group_ids
     }
   }
-  dynamic cluster_config {
+  dynamic "cluster_config" {
     for_each = [var.cluster_config]
     content {
       instance_type            = cluster_config.value.instance_type
@@ -36,7 +36,7 @@ resource aws_elasticsearch_domain this {
       dedicated_master_enabled = cluster_config.value.dedicated_master_enabled
       zone_awareness_enabled   = cluster_config.value.availability_zone_count > 1 ? true : false
 
-      dynamic zone_awareness_config {
+      dynamic "zone_awareness_config" {
         for_each = cluster_config.value.availability_zone_count > 1 ? [true] : []
         content {
           availability_zone_count = cluster_config.value.availability_zone_count
@@ -59,7 +59,7 @@ resource aws_elasticsearch_domain this {
   snapshot_options {
     automated_snapshot_start_hour = var.automated_snapshot_start_hour
   }
-  dynamic cognito_options {
+  dynamic "cognito_options" {
     for_each = [for op in var.cognito_options.enabled ? [var.cognito_options] : [] : op]
     content {
       enabled          = cognito_options.value.enabled
@@ -81,7 +81,7 @@ resource aws_elasticsearch_domain this {
   tags = module.label.tags
 }
 
-resource aws_elasticsearch_domain_policy cognito {
+resource "aws_elasticsearch_domain_policy" "cognito" {
   count       = var.cognito_options.enabled ? 1 : 0
   domain_name = aws_elasticsearch_domain.this.domain_name
 
@@ -110,7 +110,7 @@ POLICIES
 locals {
   allowed_ips = ["aa", "bbb"]
 }
-resource aws_elasticsearch_domain_policy allowed_ip {
+resource "aws_elasticsearch_domain_policy" "allowed_ip" {
   count       = length(var.allowed_ips) > 0 ? 1 : 0
   domain_name = aws_elasticsearch_domain.this.domain_name
 

@@ -8,13 +8,13 @@ variable "stage" {}
 variable "cidr_block" {}
 
 variable "azs" {
-  type = "list"
+  type = list(string)
 }
 
 variable "private_subnets" {
-  type = "list"
+  type = list(string)
 }
 
 variable "public_subnets" {
-  type = "list"
+  type = list(string)
 }

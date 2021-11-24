@@ -1,14 +1,14 @@
-module label {
+module "label" {
   source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 }
 
-data aws_ecs_task_definition this {
+data "aws_ecs_task_definition" "this" {
   task_definition = var.ecs_task_definition
 }
 
-resource aws_ecs_cluster this {
+resource "aws_ecs_cluster" "this" {
   name = module.label.id
 
   capacity_providers = ["FARGATE", "FARGATE_SPOT"]
@@ -21,7 +21,7 @@ resource aws_ecs_cluster this {
   tags = module.label.tags
 }
 
-resource aws_ecs_service this {
+resource "aws_ecs_service" "this" {
   cluster                            = aws_ecs_cluster.this.id
   deployment_maximum_percent         = var.ecs_deployment_maximum_percent
   deployment_minimum_healthy_percent = var.ecs_deployment_minimum_healthy_percent
@@ -40,7 +40,7 @@ resource aws_ecs_service this {
     weight            = 1
   }
 
-  dynamic load_balancer {
+  dynamic "load_balancer" {
     for_each = var.load_balancers
     content {
       target_group_arn = load_balancer.value.target_group_arn

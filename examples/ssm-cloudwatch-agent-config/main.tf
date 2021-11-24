@@ -26,11 +26,11 @@ locals {
   }
 }
 
-module ami {
+module "ami" {
   source = "../../ami-amzn2"
 }
 
-data terraform_remote_state vpc {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -40,13 +40,13 @@ data terraform_remote_state vpc {
   }
 }
 
-module iam_role_ec2 {
+module "iam_role_ec2" {
   source    = "../../iam-role-ec2"
   namespace = local.namespace
   stage     = local.stage
 }
 
-module lc {
+module "lc" {
   source                      = "../../ec2-launch"
   namespace                   = local.namespace
   stage                       = local.stage
@@ -70,7 +70,7 @@ runcmd:
 EOF
 }
 
-module asg {
+module "asg" {
   source               = "../../ec2-asg-lc"
   namespace            = local.namespace
   stage                = local.stage
@@ -83,7 +83,7 @@ module asg {
 }
 
 data "template_file" "cloudwatch_agent_config" {
-  template = "${file("./templates/cloudwatch-agent-config.json")}"
+  template = file("./templates/cloudwatch-agent-config.json")
 }
 
 module "ssm_parameters" {

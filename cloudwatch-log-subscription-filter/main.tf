@@ -1,10 +1,10 @@
-module label {
+module "label" {
   source    = "../label"
   namespace = var.namespace
   stage     = var.stage
 }
 
-resource aws_cloudwatch_log_subscription_filter this {
+resource "aws_cloudwatch_log_subscription_filter" "this" {
   name            = module.label.id
   log_group_name  = var.log_group_name
   filter_pattern  = ""
@@ -13,7 +13,7 @@ resource aws_cloudwatch_log_subscription_filter this {
   distribution    = "ByLogStream"
 }
 
-data aws_iam_policy_document firehose {
+data "aws_iam_policy_document" "firehose" {
   statement {
     effect    = "Allow"
     actions   = ["firehose:*"]
@@ -21,7 +21,7 @@ data aws_iam_policy_document firehose {
   }
 }
 
-module iam_role_logs {
+module "iam_role_logs" {
   source = "../iam-role"
   name   = "${module.label.id}-logs"
   principals = {

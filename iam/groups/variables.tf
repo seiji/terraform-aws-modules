@@ -1,17 +1,17 @@
-variable groups {
+variable "groups" {
   type = map(list(string))
 }
 
-variable group_path {
+variable "group_path" {
   type    = string
   default = "/"
 }
 
-variable users {
+variable "users" {
   type = map(list(string))
 }
 
-variable user_path {
+variable "user_path" {
   type    = string
   default = "/"
 }

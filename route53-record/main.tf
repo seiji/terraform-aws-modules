@@ -1,9 +1,9 @@
-resource aws_route53_record this {
+resource "aws_route53_record" "this" {
   zone_id = var.zone_id
   name    = var.name
   type    = "A"
 
-  dynamic alias {
+  dynamic "alias" {
     for_each = [for a in var.alias != null ? [var.alias] : [] : a]
     content {
       name                   = alias.value.name

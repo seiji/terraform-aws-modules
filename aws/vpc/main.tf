@@ -4,14 +4,13 @@ module "label" {
   env        = var.env
   attributes = var.attributes
   name       = var.name
-  add_tags   = var.add_tags
 }
 
 resource "aws_default_vpc" "this" {
   count                = var.default ? 1 : 0
   enable_dns_hostnames = true
   enable_dns_support   = true
-  tags                 = module.label.tags
+  tags                 = merge(module.label.tags, var.add_tags)
 }
 
 resource "aws_vpc" "this" {
@@ -19,7 +18,7 @@ resource "aws_vpc" "this" {
   cidr_block           = var.cidr_block
   enable_dns_hostnames = true
   enable_dns_support   = true
-  tags                 = module.label.tags
+  tags                 = merge(module.label.tags, var.add_tags)
 }
 
 locals {

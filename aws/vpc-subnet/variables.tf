@@ -11,6 +11,10 @@ variable "attributes" {
   default = []
 }
 
+variable "add_tags" {
+  type    = map(string)
+  default = {}
+}
 variable "name" {
   type    = string
   default = ""

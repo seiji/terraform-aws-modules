@@ -1,0 +1,59 @@
+#cloud-config
+#
+repo_update: true
+repo_upgrade: "security"
+write_files:
+  - path: /etc/sysctl.d/99-sysctl.conf
+    owner: root
+    permissions: 0644
+    content: |
+      fs.file-max=1048576
+      fs.nr_open=1048576
+      net.core.somaxconn=65535
+      net.ipv4.tcp_max_syn_backlog=65536
+      net.core.netdev_max_backlog=16384
+      net.core.rmem_max=16777216
+      net.core.wmem_max=16777216
+      net.ipv4.tcp_rmem=4096 87380 16777216
+      net.ipv4.tcp_wmem=4096 65536 16777216
+      net.ipv4.tcp_max_tw_buckets=65536
+      net.ipv4.conf.all.arp_ignore =1
+      net.ipv4.conf.all.arp_announce=2
+      net.ipv4.ip_local_port_range=1024 65535
+      net.ipv4.tcp_fin_timeout=15
+      net.ipv4.tcp_tw_reuse=1
+      vm.swappiness=10
+      vm.panic_on_oom=0
+  - path: /etc/systemd/system.conf.d/limits.conf
+    owner: root
+    permissions: 0644
+    content: |
+      [Manager]
+      DefaultLimitNOFILE=65536
+      DefaultLimitNPROC=65536
+  - path: /etc/cloudwatch-agent-config.json
+    encoding: b64
+    owner: root
+    permissions: '0644'
+    content: ${cwa_content}
+  - path: /etc/skel/.bashrc
+    permissions: 0644
+    content: |
+      # .bashrc
+
+      # Source global definitions
+      if [ -f /etc/bashrc ]; then
+      . /etc/bashrc
+      fi
+
+      # Uncomment the following line if you don't like systemctl's auto-paging feature:
+      # export SYSTEMD_PAGER=
+
+      # User specific aliases and functions
+      alias ll='ls -la --color=auto'
+runcmd:
+  - systemctl restart systemd-sysctl
+  - systemctl stop postfix.service
+  - systemctl disable postfix.service
+  - yum install -y https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+  - /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/etc/cloudwatch-agent-config.json -s

@@ -3,6 +3,7 @@ module "label" {
   service    = var.service
   env        = var.env
   attributes = var.attributes
+  add_tags   = var.add_tags
   name       = var.name
 }
 

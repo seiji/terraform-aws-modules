@@ -15,10 +15,11 @@ resource "aws_route53_zone" "this" {
 }
 
 resource "aws_route53_record" "ns" {
-  zone_id    = aws_route53_zone.this.zone_id
-  name       = module.label.id
-  type       = "NS"
-  ttl        = "172800"
-  records    = aws_route53_zone.this.name_servers
-  depends_on = [aws_route53_zone.this]
+  allow_overwrite = true
+  zone_id         = aws_route53_zone.this.zone_id
+  name            = module.label.id
+  type            = "NS"
+  ttl             = "172800"
+  records         = [for s in aws_route53_zone.this.name_servers : "${s}."]
+  depends_on      = [aws_route53_zone.this]
 }

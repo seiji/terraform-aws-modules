@@ -21,6 +21,11 @@ variable "add_tags" {
   default = {}
 }
 
+variable "deployment_circuit_breaker_rollback" {
+  type    = bool
+  default = false
+}
+
 variable "deployment_controller_type" {
   type    = string
   default = "ECS"
@@ -36,6 +41,11 @@ variable "deployment_minimum_healthy_percent" {
   default = 100
 }
 
+variable "enable_execute_command" {
+  type    = bool
+  default = false
+}
+
 variable "desired_count" {
   type    = number
   default = 0
@@ -48,7 +58,7 @@ variable "cluster" {
   })
   default = {
     capacity_providers        = ["FARGATE", "FARGATE_SPOT"]
-    default_capacity_provider = "FARGATE"
+    default_capacity_provider = null
   }
 }
 
@@ -60,11 +70,6 @@ variable "capacity_provider" {
 variable "health_check_grace_period_seconds" {
   type    = number
   default = 0
-}
-
-variable "launch_type" {
-  type    = string
-  default = "FARGATE"
 }
 
 variable "load_balancers" {
@@ -82,6 +87,7 @@ variable "network_configuration" {
     security_groups  = list(string)
     assign_public_ip = bool
   })
+  default = null
 }
 
 variable "platform_version" {
@@ -91,4 +97,28 @@ variable "platform_version" {
 
 variable "task_definition" {
   type = string
+}
+
+variable "appautoscaling" {
+  type = object({
+    target = object({
+      min_capacity = number
+      max_capacity = number
+    })
+    scheduled_scale_out = object({
+      min_capacity = number
+      max_capacity = number
+      schedule     = string
+    })
+    scheduled_scale_in = object({
+      min_capacity = number
+      max_capacity = number
+      schedule     = string
+    })
+  })
+  default = {
+    target              = null
+    scheduled_scale_out = null
+    scheduled_scale_in  = null
+  }
 }

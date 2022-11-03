@@ -12,7 +12,8 @@ resource "aws_efs_file_system" "this" {
   lifecycle_policy {
     transition_to_ia = "AFTER_30_DAYS"
   }
-  tags = module.label.tags
+  encrypted = true
+  tags      = module.label.tags
 }
 
 resource "aws_efs_mount_target" "this" {

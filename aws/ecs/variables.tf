@@ -99,6 +99,15 @@ variable "task_definition" {
   type = string
 }
 
+variable "service_discovery" {
+  type = object({
+    namespace_id   = string
+    container_name = string
+    container_port = number
+  })
+  default = null
+}
+
 variable "appautoscaling" {
   type = object({
     target = object({

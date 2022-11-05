@@ -85,6 +85,14 @@ resource "aws_ecs_service" "this" {
       assign_public_ip = network_configuration.value.assign_public_ip
     }
   }
+  dynamic "service_registries" {
+    for_each = var.service_discovery != null ? [var.service_discovery] : []
+    content {
+      registry_arn   = aws_service_discovery_service.this[0].arn
+      container_name = service_registries.value.container_name
+      container_port = service_registries.value.container_port
+    }
+  }
   task_definition = "${data.aws_ecs_task_definition.this.family}:${data.aws_ecs_task_definition.this.revision}"
   tags            = module.label.tags
   depends_on = [
@@ -96,5 +104,22 @@ resource "aws_ecs_service" "this" {
       desired_count,
       task_definition,
     ]
+  }
+}
+
+resource "aws_service_discovery_service" "this" {
+  count = var.service_discovery != null ? 1 : 0
+  name  = module.label.id
+  dns_config {
+    namespace_id = var.service_discovery.namespace_id
+    dns_records {
+      ttl  = 60
+      type = "SRV"
+    }
+    routing_policy = "MULTIVALUE"
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
   }
 }

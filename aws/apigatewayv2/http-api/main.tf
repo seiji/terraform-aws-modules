@@ -26,41 +26,57 @@ resource "aws_apigatewayv2_api" "this" {
   tags = module.label.tags
 }
 
+resource "aws_apigatewayv2_vpc_link" "this" {
+  count              = var.vpc_link != null ? 1 : 0
+  name               = module.label.id
+  security_group_ids = var.vpc_link.security_group_ids
+  subnet_ids         = var.vpc_link.subnet_ids
+  tags               = module.label.tags
+}
+
 resource "aws_apigatewayv2_integration" "this" {
-  for_each               = { for i in var.integrations : i.connection_id => i }
+  for_each               = var.integrations
   api_id                 = aws_apigatewayv2_api.this.id
-  connection_id          = each.value.connection_type != "INTERNET" ? each.value.connection_id : null
+  connection_id          = try(aws_apigatewayv2_vpc_link.this[0].id, null)
   connection_type        = each.value.connection_type
-  credentials_arn        = each.value.credentials_arn
   integration_method     = each.value.integration_method
   integration_type       = each.value.integration_type
-  integration_subtype    = each.value.integration_subtype
   integration_uri        = each.value.integration_uri
   payload_format_version = each.value.payload_format_version
-  request_parameters     = each.value.request_parameters
+  depends_on             = [aws_apigatewayv2_vpc_link.this]
 }
 
 resource "aws_apigatewayv2_route" "this" {
   for_each   = { for r in var.routes : r.route_key => r }
   api_id     = aws_apigatewayv2_api.this.id
   route_key  = each.value.route_key
-  target     = "integrations/${aws_apigatewayv2_integration.this[each.value.target_key].id}"
+  target     = "integrations/${aws_apigatewayv2_integration.this[each.value.integration_key].id}"
   depends_on = [aws_apigatewayv2_integration.this]
 }
 
 resource "aws_apigatewayv2_deployment" "this" {
+  count       = length(var.routes) > 0 ? 1 : 0
   api_id      = aws_apigatewayv2_api.this.id
   description = "Automatic deployment triggered by changes to the Api configuration"
   lifecycle {
     create_before_destroy = true
   }
+  depends_on = [aws_apigatewayv2_route.this]
 }
 
 resource "aws_apigatewayv2_stage" "this" {
+  count         = length(var.routes) > 0 ? 1 : 0
   api_id        = aws_apigatewayv2_api.this.id
   name          = "$default"
   auto_deploy   = true
-  deployment_id = aws_apigatewayv2_deployment.this.id
+  deployment_id = aws_apigatewayv2_deployment.this[0].id
+  dynamic "access_log_settings" {
+    for_each = var.access_log_settings != null ? [var.access_log_settings] : []
+    content {
+      destination_arn = access_log_settings.value.destination_arn
+      format          = access_log_settings.value.format
+    }
+  }
   lifecycle {
     ignore_changes = [deployment_id, default_route_settings]
   }
@@ -85,6 +101,16 @@ resource "aws_apigatewayv2_api_mapping" "this" {
   count       = var.domain_name != null ? 1 : 0
   api_id      = aws_apigatewayv2_api.this.id
   domain_name = aws_apigatewayv2_domain_name.this[0].id
-  stage       = aws_apigatewayv2_stage.this.name
+  stage       = aws_apigatewayv2_stage.this[0].name
   depends_on  = [aws_apigatewayv2_domain_name.this]
+}
+
+resource "aws_lambda_permission" "this" {
+  count         = var.lambda_permission != null ? 1 : 0
+  statement_id  = var.lambda_permission.statement_id
+  action        = "lambda:InvokeFunction"
+  function_name = var.lambda_permission.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.this.execution_arn}/*/*${var.lambda_permission.source_path}"
+  depends_on    = [aws_apigatewayv2_api.this]
 }

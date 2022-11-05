@@ -7,23 +7,34 @@ variable "env" {
 }
 
 variable "attributes" {
-  type    = list(string)
-  default = []
+  type     = list(string)
+  nullable = false
+  default  = []
 }
 
 variable "name" {
-  type    = string
-  default = ""
+  type     = string
+  nullable = false
+  default  = ""
 }
 
 variable "add_tags" {
-  type    = map(string)
-  default = {}
+  type     = map(string)
+  nullable = false
+  default  = {}
 }
 
 variable "description" {
   type    = string
   default = "Managed by Terraform"
+}
+
+variable "access_log_settings" {
+  type = object({
+    destination_arn = string
+    format          = string
+  })
+  default = null
 }
 
 variable "cors_configuration" {
@@ -39,8 +50,9 @@ variable "cors_configuration" {
 }
 
 variable "disable_execute_api_endpoint" {
-  type    = bool
-  default = false
+  type     = bool
+  nullable = false
+  default  = false
 }
 
 variable "domain_name" {
@@ -56,24 +68,39 @@ variable "domain_name" {
 }
 
 variable "integrations" {
-  type = list(object({
-    connection_id          = string
+  type = map(object({
     connection_type        = string
-    credentials_arn        = string
     integration_method     = string
     integration_type       = string
-    integration_subtype    = string
     integration_uri        = string
     payload_format_version = string
-    request_parameters     = map(string)
   }))
-  default = []
+  nullable = false
+  default  = {}
 }
 
 variable "routes" {
   type = list(object({
-    route_key  = string
-    target_key = string
+    route_key       = string
+    integration_key = string
   }))
-  default = []
+  nullable = false
+  default  = []
+}
+
+variable "vpc_link" {
+  type = object({
+    security_group_ids = list(string)
+    subnet_ids         = list(string)
+  })
+  default = null
+}
+
+variable "lambda_permission" {
+  type = object({
+    function_name = string
+    source_path   = string
+    statement_id  = string
+  })
+  default = null
 }
